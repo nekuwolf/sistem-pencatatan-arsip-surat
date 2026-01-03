@@ -1,0 +1,134 @@
+{{-- 
+passed attribute:
+OPTION AUTOGEN(using name, eg [name]Input) id: 
+MUST name: {similar to lucid model name?}
+OPTION minLength: '0'
+OPTION maxLength: '0'
+OPTION labelStyle: 'floating/normal'
+OPTION value: can be used to prefill or using value.old from adonis
+OPTION placeholder: 
+--}}
+@let(inputId = id || `${name}Input`)
+@let(isInvalid = invalidMessage && invalidMessage.length > 0)
+@let(hasButton = button && button.text)
+@let(hasIcon = icon && icon.name)
+
+@if(hasButton)
+  <div class="input-group has-validation">
+@end
+
+<div class="{{ style ? style.wrapper : '' }} {{ enableFloatingLabel === true ? 'form-floating' : '' }}">
+  {{-- Label --}}
+  @if (label && !enableFloatingLabel)
+    <label for="{{ inputId }}" class="form-label">{{ label }}</label>
+  @endif
+
+  {{-- Split Input --}}
+  @if (split === true)
+    @let(splitValue = value ? value.split('') : [])
+    {{-- @let(splitPlaceholder = placeholder ? placeholder.split('') : []) --}}
+    <div class="d-flex gap-2">
+      @each(i in Array.from({ length: splitFieldCount || maxLength }, (_, idx) => idx + 1))
+        <input
+          type="{{ type || 'text' }}"
+          {{ splitValue[i - 1] ? 'value="{{ splitValue[i - 1] }}"' : '' }}
+          id="{{ `${name}-${i}` }}"
+          {{-- name="{{ `${name}-${i}` }}" --}}
+          class="form-control text-center {{ isInvalid ? 'is-invalid cstm-is-invalid-icon-none' : '' }} {{ type === 'number' ? 'number-input-no-arrow' : '' }}"
+          maxlength="{{ splitMaxLength || '1' }}"
+          minlength="{{ splitMinLength || '1' }}"
+          {{-- placeholder="{{ splitPlaceholder[i - 1] || '' }}" --}}
+          {{ disabled ? 'disabled' : '' }}
+          cstm-split-input="{{ name }}"
+          cstm-split-input-index="{{ i }}"
+        />
+      @endeach
+    </div>
+  @endif
+
+  {{-- Left Icon --}}
+  @if (hasIcon && icon.position === 'left')
+    <span class="input-group-text">
+      <i class="{{ icon.name }}"></i>
+    </span>
+  @endif
+
+  <input
+    id="{{ inputId }}"
+    name="{{ name }}"
+    type="{{ type || 'text' }}"
+    placeholder="{{ placeholder || name }}"
+    class="form-control {{ style ? style.input : '' }} {{ isInvalid ? 'is-invalid' : '' }} {{ split === true ? 'd-none' : '' }}"
+    {{ disabled ? 'disabled' : '' }}
+    {{ value ? 'value="' + value + '"' : '' }}
+    {{ minLength ? 'minlength="' + minlength + '"' : '' }}
+    {{ maxLength ? 'maxlength="' + maxLength + '"' : '' }}
+    {{ split === true ? 'cstm-split-input-join="' + name + '"' : '' }}
+    {{ ariaHelp ? 'aria-describedby="' + inputId + 'Help"' : '' }}
+    {{ type === 'password' ? 'cstm-data-toggle-password="' + name + '"' : '' }}
+
+    {{-- dynamic custom attributes --}}
+    @if(inputAttrs)
+      @each(pair in Object.entries(inputAttrs))
+        {{ pair[0] }}="{{ pair[1] }}"
+      @endeach
+    @endif
+  />
+
+  {{-- Right Icon --}}
+  @if (hasIcon && icon.position === 'right')
+    <span class="input-group-text">
+      <i class="{{ icon.name }}"></i>
+    </span>
+  @endif
+
+  {{-- Optional Button --}}
+  @if (hasButton)
+    <button
+      class="btn {{ button.style || 'btn-outline-secondary' }}"
+      type="{{ button.type || 'button' }}"
+
+      @if (button.onClick)
+        onclick="{{ button.onClick }}"
+      @endif
+
+      @if(type === 'password') 
+        cstm-data-toggle-password-btn="{{ name }}"
+      @end
+      
+      {{-- dynamic custom attributes --}}
+      @if(buttonAttrs)
+        @each(pair in Object.entries(buttonAttrs))
+          {{ pair[0] }}="{{ pair[1] }}"
+        @endeach
+      @endif
+    >
+      {{ button.text }}
+    </button>
+  @endif
+
+  @if (label && enableFloatingLabel)
+    <label for="{{ inputId }}" class="form-label">{{ label }}</label>
+  @endif
+  
+  {{-- Help --}}
+  @if(ariaHelp)
+    <div id="{{ inputId }}Help" class="form-text d-flex align-items-center text-start px-1 mb-2">
+      <i class="bi bi-info-circle-fill me-2"></i>
+      {{ ariaHelp }}
+    </div>
+  @endif
+
+  {{-- Error --}}
+  @if (isInvalid)
+    <div class="invalid-feedback d-flex align-items-center text-start px-1 mb-2">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <p class="m-0">{{ invalidMessage }}</p>
+    </div>
+  @endif
+</div>
+
+
+@if(hasButton)
+  </div>
+@end

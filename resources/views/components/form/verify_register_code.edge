@@ -1,0 +1,36 @@
+<form hx-get="{{ route('auth.register.create') }}" hx-target="this" hx-swap="outerHTML">
+  @if(emailValue || emailErrorMessage)
+    @!component('components/input/input', {
+      id: 'emailInput',
+      name: 'email',
+      labelText: 'Email',
+      labelIcon: 'envelope',
+      type: 'email',
+      placeholder: 'example@company.com',
+      value: emailValue || '',
+      errorMessage: emailErrorMessage || '',
+      enableFloatingLabel: true
+    })
+  @end
+  
+  @!component('components/input/split', {
+    id: 'registerCodeInput',
+    name: 'register_code',
+    labelText: 'Register Code',
+    type: 'text',
+    placeholder: 'abc123',
+    labelStyle: 'mt-3',
+    fieldCount: 6,
+    helpText: 'Request an invite link/register code from an admin or registered employee.',
+    value: registerCodeValue || '',
+    errorMessage: registerCodeErrorMessage || '',
+  })
+
+  @!component('components/button/button', {
+    style: 'mt-4 w-100',
+    type: 'submit',
+    text: 'Verify',
+    loadingIndicatorText: 'Verifying...',
+    enableLoadingIndicator: true
+  })
+</form>

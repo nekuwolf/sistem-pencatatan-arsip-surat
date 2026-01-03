@@ -1,0 +1,69 @@
+<form method="POST" action="{{ route('auth.login.store') }}" class="row g-3 mt-1">
+  {{ csrfField() }}
+  
+  @if(loginFormErrorMessage)
+    <div class="col-12">
+      @!component('components/alert', { variant: 'warning', message: loginFormErrorMessage, style: 'mb-0' })
+    </div>
+  @end
+  
+  <div class="col-12">
+    @component('components/input/input', {
+      id: 'email',
+      name: 'email',
+      labelText: 'Email',
+      labelIcon: 'envelope',
+      labelIconIsFill: false,
+      type: 'email',
+      value: emailValue || '',
+      placeholder: 'example@company.com',
+      isRequired: true,
+      enableFloatingLabel: true,
+      autocomplete: 'email',
+      errorMessage: emailErrorMessage || ''
+    })
+    @end
+  </div>
+
+  <div class="col-12">
+    @component('components/input/input', {
+      type: 'password',
+      id: 'passwordInput',
+      name: 'password',
+      labelText: 'Password',
+      labelIcon: 'key',
+      labelIconIsFill: false,
+      value: passwordValue || '',
+      isRequired: true,
+      autocomplete: 'current-password',
+      enableFloatingLabel: true,
+      placeholder: 'supersecurepassword',
+      cstmDataTogglePassword: 'password',
+      errorMessage: passwordErrorMessage || ''
+    })
+      @slot('suffix')
+        @!component('components/button/button', {
+          style: 'input-group-text',
+          variant: 'secondary',
+          isOutline: true,
+          type: 'button',
+          text: 'Show',
+          iconName: 'eye',
+          textAlt: 'Hide',
+          iconNameAlt: 'eye-slash',
+          cstmDataTogglePasswordBtn: 'password'
+        })
+      @end
+    @end
+  </div>
+  
+  <div class="col-12">
+    @!component('components/button/button', {
+      style: 'mt-3 w-100',
+      type: 'submit',
+      text: 'Login',
+      loadingIndicatorText: 'Logging in...',
+      enableLoadingIndicator: true
+    })
+  </div>
+</form>

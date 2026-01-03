@@ -1,0 +1,72 @@
+<form class="" method="POST" action="{{ route('auth.register.store') }}">
+  {{ csrfField() }}
+  @component('components/input/input', {
+    id: 'registerCode',
+    name: 'register_code',
+    labelText: 'Register Code',
+    labelIcon: 'asterisk',
+    labelIconIsFill: false,
+    type: 'text',
+    value: registerCode || '',
+    placeholder: 'ABC123',
+    required: true,
+    enableFloatingLabel: true,
+    isDisabled: true,
+    helpText: 'This register code can only be used once (invalid after successfull registration)',
+    errorMessage: errors?.register_code?.message || ''
+  })
+  @end
+  
+  @component('components/input/input', {
+    id: 'email',
+    name: 'email',
+    labelText: 'Email',
+    labelIcon: 'envelope',
+    labelIconIsFill: false,
+    type: 'email',
+    value: email || '',
+    placeholder: 'example@company.com',
+    required: true,
+    enableFloatingLabel: true,
+    autocomplete: 'email',
+    style: 'mt-3',
+  })
+  @end
+
+  @!component('components/input/input', {
+    type: 'password',
+    id: 'passwordInput',
+    name: 'password',
+    labelText: 'Password',
+    labelIcon: 'key',
+    labelIconIsFill: false,
+    autocomplete: 'new-password',
+    enableFloatingLabel: true,
+    placeholder: 'supersecurepassword',
+    style: 'cstm-focus-within-z-2 cstm-mb-n1-px rounded-bottom-0 mt-3',
+    autocomplete: 'new-password',
+  })
+
+  @!component('components/input/input', {
+    type: 'password',
+    id: 'confirmPasswordInput',
+    name: 'password_confirmation',
+    labelText: 'Confirm Password',
+    labelIcon: 'key',
+    labelIconIsFill: false,
+    autocomplete: 'new-password',
+    enableFloatingLabel: true,
+    placeholder: 'supersecurepassword',
+    style: 'cstm-focus-within-z-2 cstm-mt-n1-px rounded-top-0',
+    errorMessage: 'Error testingError testingError testingError testingError testing',
+    autocomplete: 'new-password',
+  })
+  
+  @!component('components/button/button', {
+    style: 'mt-4 w-100',
+    type: 'submit',
+    text: 'Register',
+    loadingIndicatorText: 'Registering...',
+    enableLoadingIndicator: true
+  })
+</form>

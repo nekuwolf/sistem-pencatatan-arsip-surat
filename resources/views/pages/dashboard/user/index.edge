@@ -1,0 +1,22 @@
+@layout.dashboard({ pageTitle: 'User Data Dashboard' })
+  @slot('head')
+    @vite(['resources/css/components/profile_picture.scss', 'resources/js/components/profile_picture.js', 'resources/js/utils/input_actions.js'])
+  @endslot
+
+  @slot('main')
+    @!component('components/dashboard/breadcrumb', {
+      items: [
+        { label: 'Dashboard', iconName: 'grid-1x2'},
+        { label: 'User Data', href: route('user.index'), iconName: 'people'},
+      ]
+    })
+    <h4 class="fs-4 mb-0">User Data</h4>
+
+    {{-- Render Desktop Table --}}
+    @!component('components/data_display/table_desktop', { columns: users.columns, datas: users.datas, style: 'mt-3' })
+
+    {{-- Render Mobile List --}}
+    @!component('components/data_display/mobile_list', { columns: users.columns, datas: users.datas, style: 'mt-3' })
+    
+  @endslot
+@end

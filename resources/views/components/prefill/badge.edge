@@ -1,0 +1,28 @@
+@let(color = 'secondary')
+@let(isColorSubtle = true)
+
+@if(text === 'Read')
+  @assign(color = 'success')
+
+@elseif(text === 'Unread')
+  @assign(color = 'warning')
+
+@elseif(text === 'Already Dispositioned')
+  @assign(color = 'success')
+
+@elseif(text === 'No Disposition')
+  @assign(color = 'warning')
+
+@elseif(text === 'Archived')
+  @assign(color = 'primary')
+
+@elseif(text === 'Not Archived')
+  @assign(color = 'danger')
+@end
+
+@let(bgClass = isColorSubtle ? `bg-${color}-subtle` : `bg-${color}`)
+@let(textClass = isColorSubtle ? `text-${color}-emphasis` : (color === 'warning' ? 'text-dark' : 'text-white'))
+
+<span class="badge {{ bgClass }} {{ textClass }} rounded-pill">
+  {{ text }}
+</span>

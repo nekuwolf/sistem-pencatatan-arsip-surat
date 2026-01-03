@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="{{ bsTheme || 'auto' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ title || 'Default Title' }}</title>
+  <meta name="description" content="{{pageDescription || 'Default Description'}}">
+  @if ($slots.head)
+    {{{ await $slots.head() }}}
+  @endif
+  @vite(['resources/js/app.js', 'resources/css/app.scss'])
+</head>
+<body {{
+  html.attrs({
+    class: [
+      bodyStyle,
+    ],
+    style: inlineStyle
+  })
+}}>
+  @if($slots.main)
+    {{{ await $slots.main() }}}
+  @end
+</body>
+</html>

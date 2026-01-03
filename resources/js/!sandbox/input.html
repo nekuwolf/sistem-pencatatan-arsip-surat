@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+<body class="container-xxl p-5">
+  <div class="input-group has-validation">
+    <span class="input-group-text">
+      <i class="bi bi-bootstrap-fill"></i>
+    </span>
+    <div class="form-floating">
+      <input type="text" class="form-control is-invalid" id="demoInputFloating" placeholder="Demo input" aria-describedby="demoInputFloatingHelp" required>
+      <label for="demoInputFloating">Demo Input Floating</label>
+    </div>
+    <button class="input-group-text btn btn-outline-secondary" type="button" id="button-addon2">
+      <i class="bi bi-eye"></i>
+    </button>
+    <div class="invalid-feedback form-text d-flex align-items-start text-start">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <p class="m-0">Demo input floating error.</p>
+    </div>
+  </div>
+  <div id="demoInputFloatingHelp" class="form-text d-flex align-items-start text-start">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    <p class="m-0">Demo input floating help text.</p>
+  </div>
+
+  <br>
+
+  <div class="mb-3 has-validation">
+    <div class="form-floating">
+      <input type="text" class="form-control is-invalid" id="demoInput" placeholder="Demo input" aria-describedby="demoInputHelp" required>
+      <label for="demoInput">Demo Input Floating</label>
+    </div>
+    <div class="invalid-feedback d-flex align-items-start">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <p class="m-0">Demo input floating error.</p>
+    </div>
+    <div id="demoInputHelp" class="form-text d-flex align-items-start">
+      <i class="bi bi-info-circle-fill me-2"></i>
+      <p class="m-0">Demo input floating help text.</p>
+    </div>
+  </div>
+
+  <br>
+  
+  <label for="demoInput" class="form-label">Demo Input</label>
+  <div class="input-group has-validation">
+    <span class="input-group-text">
+      <i class="bi bi-bootstrap-fill"></i>
+    </span>
+    <input type="text" class="form-control is-invalid" id="demoInput" aria-describedby="demoInputHelp demoInputFeedback" required>
+    <button class="input-group-text btn btn-outline-secondary" type="button">
+      <i class="bi bi-eye"></i>
+    </button>
+    <div id="demoInputFeedback"
+      class="invalid-feedback d-flex align-items-start text-start">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <p class="m-0">Demo input error.</p>
+    </div>
+  </div>
+  <div id="demoInputHelp"
+    class="form-text d-flex align-items-start text-start mt-1">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    <p class="m-0">Demo input help text.</p>
+  </div>
+
+  <br>
+
+  <div class="mb-3">
+    <label for="demoInput" class="form-label">Demo Input Floating</label>
+    <input type="text" class="form-control is-invalid" id="demoInput" placeholder="Demo input" aria-describedby="demoInputHelp" required>
+    <div class="invalid-feedback">
+      <div class="d-flex align-items-start">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <p class="m-0">Demo input floating error.</p>
+      </div>
+    </div>
+    <div id="demoInputHelp" class="form-text d-flex align-items-start">
+      <i class="bi bi-info-circle-fill me-2"></i>
+      <p class="m-0">Demo input floating help text.</p>
+    </div>
+  </div>
+
+  <br>
+
+  <label for="demoSelect" class="form-label">Demo Input</label>
+  <div class="input-group has-validation">
+    <span class="input-group-text">
+      <i class="bi bi-bootstrap-fill"></i>
+    </span>
+    <select type="text" class="form-select is-invalid" id="demoSelect" aria-describedby="demoSelectHelp demoSelectFeedback" required>
+      <option selected>Choose...</option>
+      <option value="1">One</option>
+      <option value="2">Two</option>
+      <option value="3">Three</option>
+    </select>
+    <button class="input-group-text btn btn-outline-secondary" type="button">
+      <i class="bi bi-eye"></i>
+    </button>
+    <div id="demoSelectFeedback"
+      class="invalid-feedback d-flex align-items-start text-start">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <p class="m-0">Demo select error.</p>
+    </div>
+  </div>
+  <div id="demoSelectHelp"
+    class="form-text d-flex align-items-start text-start mt-1">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    <p class="m-0">Demo select help text.</p>
+  </div>
+
+  <br>
+
+  <div class="mb-3">
+    <label for="demoSelect" class="form-label">Demo Input</label>
+    <select class="form-select is-invalid" id="demoSelect" aria-describedby="demoSelectHelp demoSelectFeedback" required>
+      <option selected>Choose...</option>
+      <option value="1">One</option>
+      <option value="2">Two</option>
+      <option value="3">Three</option>
+    </select>
+    <div id="demoSelectFeedback" class="invalid-feedback">
+      <div class="d-flex align-items-start text-start">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <p class="m-0">Demo select error.</p>
+      </div>
+    </div>
+    <div id="demoSelectHelp" class="form-text d-flex align-items-start text-start mt-1">
+      <i class="bi bi-info-circle-fill me-2"></i>
+      <p class="m-0">Demo select help text.</p>
+    </div>
+  </div>
+
+  <br>
+  
+  <label for="demoTextArea" class="form-label">Demo Textarea</label>
+  <div class="input-group has-validation">
+    <span class="input-group-text">
+      <i class="bi bi-bootstrap-fill"></i>
+    </span>
+    <textarea type="text" class="form-control is-invalid" id="demoTextArea" aria-describedby="demoTextAreaHelp demoTextAreaFeedback" required></textarea>
+    <button class="input-group-text btn btn-outline-secondary" type="button">
+      <i class="bi bi-eye"></i>
+    </button>
+    <div id="demoTextAreaFeedback"
+      class="invalid-feedback d-flex align-items-start text-start">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <p class="m-0">Demo textarea error.</p>
+    </div>
+  </div>
+  <div id="demoTextAreaHelp"
+    class="form-text d-flex align-items-start text-start mt-1">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    <p class="m-0">Demo textarea help text.</p>
+  </div>
+
+  <br>
+
+  <div class="mb-3">
+    <label for="demoInput" class="form-label">Demo Input Floating</label>
+    <textarea type="text" class="form-control is-invalid" id="demoInput" placeholder="Demo input" aria-describedby="demoInputHelp" required></textarea>
+    <div class="invalid-feedback">
+      <div class="d-flex align-items-start">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <p class="m-0">Demo input floating error.</p>
+      </div>
+    </div>
+    <div id="demoInputHelp" class="form-text d-flex align-items-start">
+      <i class="bi bi-info-circle-fill me-2"></i>
+      <p class="m-0">Demo input floating help text.</p>
+    </div>
+  </div>
+</body>
+</html>

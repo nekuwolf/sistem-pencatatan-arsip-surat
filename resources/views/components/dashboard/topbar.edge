@@ -1,0 +1,22 @@
+<nav class="px-3 navbar navbar-expand-lg sticky-top">
+    <button class="btn btn-outline-secondary d-lg-none" type="button" id="mobile-sidebar-toggle">
+        <i class="bi bi-list"></i>
+    </button>
+    <button class="btn btn-outline-secondary d-none d-lg-block" type="button" id="desktop-sidebar-toggle">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <div class="ms-auto d-flex align-items-center">
+        <span class="d-none d-sm-inline me-3">
+            {{ auth.user?.full_name }}
+        </span>
+
+        <div class="profile-pic-size-small profile-box rounded-circle shadow-sm"
+             cstmtag-profile-picture
+             cstm-data-no-img-char="AL">
+            <img
+                src="{{ asset('public/images/valve_source_engine_missing_content_512_512.png') }}"
+                alt="User">
+        </div>
+    </div>
+</nav>

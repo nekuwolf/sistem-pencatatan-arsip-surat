@@ -1,0 +1,50 @@
+@layout({ title: "Confirm OTP Page" })
+  @slot('head')
+    <meta name="description" content="OTP Confirmation">
+    @vite(['resources/css/pages/verify_otp.scss'])
+  @endslot
+
+  @slot('main')
+    <main class="form-verify-otp w-100 m-auto">
+      <form> {{-- POST /account/register/confirm_otp?email=user@example.com&code= --}}
+        <img
+          class="mb-4"
+          src="{{ asset('images/placeholder-white-512-512.png') }}"
+          alt=""
+          width="72"
+          height="57"
+        />
+        <h1 class="h3 mb-3 fw-normal">OTP Confirmation</h1>
+        <p>Let's confirm your credential</p>
+        <div class="form-floating">
+          <input
+            type="text"
+            class="form-control verify-otp"
+            id="OTPCode"
+            placeholder="OTP Code"
+          />
+          <label for="OTPCode">OTP Code</label>
+        </div>
+        <p>One Time Password (OTP) Code is being sent to your credential{{ address_sent ? ', at <b>' + address_sent + '</b>.' : '.' }}</p>
+        <form method="POST" action="#"> {{-- POST /account/register/resend_otp?email=user@example.com --}}
+          <input
+            type="hidden"
+            id="hidden-email"
+            value="{{ address_sent }}"
+          />
+          <p>Didn't receive your OTP Code,
+            <button class="" type="submit"> {{-- TODO: make this looks seamless --}}
+              resend.
+            </button>
+          </p>
+        </form>
+        <button class="btn btn-primary w-100 py-2" type="submit">
+          {{ is_redirect_to ? 'Continue' : 'Verify' }}
+        </button>
+        <p class="mt-4 mb-1 text-body-secondary text-center">{{ app_name }}</p>
+        <p class="mt-1 mb-1 text-body-secondary text-center">{{ organization_name }}</p>
+        <p class="mt-1 mb-1 text-body-secondary text-center">&copy; {{ app_year }}</p>
+      </form>
+    </main>
+  @endslot
+@end

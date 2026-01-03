@@ -1,0 +1,14 @@
+@layout({ title: "Welcome page title" })
+  @slot('head')
+    <meta name="description" content="A welcome page made with EdgeJS">
+  @endslot
+
+  @slot('main')
+    <h1>Hello world</h1>
+    <p><a href="{{ route('dashboard.index') }}">dashboard</a></p>
+    <p><a href="{{ route('auth.login.create') }}">login</a></p>
+    <p><a href="{{ route('auth.register.create') }}">register</a></p>
+    {{-- <p><a href="{{ route('auth.register.verify_otp') }}">register verify otp</a></p> --}}
+    
+  @endslot
+@end

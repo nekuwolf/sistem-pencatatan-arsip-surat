@@ -1,0 +1,118 @@
+@import "cropperjs/dist/cropper.css";
+/* --- Layout Utilities --- */
+.avatar-wrapper {
+    width: 80px;
+}
+
+/* --- Profile Box --- */
+.profile-box {
+    position: relative;
+    aspect-ratio: 1 / 1; 
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    background-color: #f8f9fa;
+    container-type: inline-size;
+}
+
+// .profile-box:hover { 
+//     transform: scale(1.05);
+// }
+
+.profile-box img {
+    width: 100%;
+    height: 100%; 
+    object-fit: cover; 
+    display: block;
+}
+
+.profile-initials {
+    width: 100%; 
+    height: 100%; 
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    color: white; 
+    font-weight: 600; 
+    text-transform: uppercase;
+    user-select: none;
+    font-size: 45cqw; 
+    line-height: 1;
+}
+
+/* Helper for JS generated initials */
+.fs-2x {
+    font-size: 200%;
+}
+
+/* --- Loading Overlay --- */
+.profile-loading-overlay {
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(255,255,255,0.8); 
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    z-index: 5;
+    transition: opacity 0.3s ease;
+}
+
+/* --- Modal Preview --- */
+.modal-profile-preview {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    overflow: hidden; 
+    position: relative; 
+    margin: 0 auto; 
+    cursor: pointer;
+    border: 4px solid #fff; 
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+.modal-initials-text {
+    font-size: 5rem;
+}
+
+.hover-overlay {
+    opacity: 0; 
+    transition: opacity 0.3s ease;
+}
+
+/* Show overlay on hover OR when dragging file over */
+.modal-profile-preview:hover .hover-overlay,
+.modal-profile-preview.drag-active .hover-overlay { 
+    opacity: 1; 
+}
+
+/* --- Cropper Modal Styles --- */
+.cropper-container-wrapper {
+    height: 500px;
+    background-color: #ffffff;
+    position: relative;
+    overflow: hidden;
+}
+
+.cropper-view-box {
+    border-radius: 50%;
+    outline: 2000px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 1px #fff;
+}
+
+.cropper-modal {
+    background-color: transparent;
+    opacity: 0;
+}
+
+.cropper-face {
+    background-color: transparent; 
+}
+
+.modal-profile-preview.view-only:hover .hover-overlay {
+    opacity: 0 !important;
+    pointer-events: none;
+}

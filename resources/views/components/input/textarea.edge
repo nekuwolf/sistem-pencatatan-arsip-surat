@@ -1,0 +1,102 @@
+@let(inputId = id || name)
+@let(errorId = `${inputId}Feedback`)
+@let(helpId = `${inputId}Help`)
+
+{{-- Determine if error exists in Flash Messages (Adonis standard) or manual prop --}}
+@let(_errorMessage = flashMessages.get(`errors.${name}`) || errorMessage)
+
+@if(labelText && !enableFloatingLabel)
+  @if(labelText)
+    <label for="{{ inputId }}" class="form-label">
+      @if(labelIcon)
+        @!component('components/bi_icon', { iconName: labelIcon, isFill: labelIconIsFill })
+      @end
+      {{ labelText }}
+    </label>
+  @end
+@end
+
+{{-- Outer Wrapper: Logic to switch between standard spacing and input-group --}}
+<div {{
+  html.attrs({
+    class: [
+      {
+        'input-group': ($slots.prefix || $slots.suffix)
+      }
+    ]
+  })
+}}>
+  
+  {{-- 1. Prefix Slot (Left) --}}
+  @if($slots.prefix)
+    {{{ await $slots.prefix() }}}
+  @end
+
+  {{-- 2. Input & Label Area --}}
+  @if(enableFloatingLabel)
+    {{-- Floating Label Structure --}}
+    <div {{
+      html.attrs({
+        class: [
+          'form-floating',
+          {
+            'is-invalid': hasError
+          }
+        ]
+      })
+    }}>
+  @end
+
+  <textarea {{
+    html.attrs({
+      id: inputId,
+      name: name,
+      type: type || 'text',
+      placeholder: placeholder || labelText || 'Input',
+      'cstm-data-toggle-password': cstmDataTogglePassword || '',
+      'aria-describedby': `${hasError ? errorId : ''} ${help ? helpId : ''}`.trim(),
+      'cstm-autogrow-height': cstmAutogrowHeight ? 'true' : 'false',
+      'cstm-autogrow-height-minpx': cstmAutogrowHeightMinPx,
+      'cstm-autogrow-height-maxpx': cstmAutogrowHeightMaxPx,
+      class: [
+        'form-control',
+        {
+          'is-invalid': hasError
+        },
+        style
+      ]
+    })
+  }}>{{ value || old(name) || '' }}</textarea>
+
+  @if(enableFloatingLabel)
+    <label for="{{ inputId }}">
+      @if(labelIcon)
+        @!component('components/bi_icon', { iconName: labelIcon, isFill: labelIconIsFill })
+      @end
+      {{ labelText }}
+    </label>
+    </div>
+  @end
+
+  {{-- 3. Suffix Slot (Right) --}}
+  @if($slots.suffix)
+    {{{ await $slots.suffix() }}}
+  @end
+
+  {{-- 4. Validation Feedback --}}
+  @if(_errorMessage)
+    <div id="{{ errorId }}" class="invalid-feedback d-flex align-items-start text-start">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      {{ _errorMessage }}
+    </div>
+  @end
+
+</div>
+
+{{-- 5. Help Text (Always outside the input-group to prevent breaking layout) --}}
+@if(helpText)
+  <div id="{{ helpId }}" class="form-text d-flex align-items-start text-start mt-1">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    {{ helpText }}
+  </div>
+@end

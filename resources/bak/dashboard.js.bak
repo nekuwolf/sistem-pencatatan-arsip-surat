@@ -1,0 +1,247 @@
+
+    {{-- <style>
+        /* Use Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        :root {
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 88px;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1050; /* Higher than navbar */
+            background-color: #111827; /* Dark background */
+            color: #f8f9fa;
+            transition: all 0.3s ease-in-out;
+            overflow-y: auto;
+            overflow-x: hidden; /* Hide horizontal scrollbar */
+        }
+
+        /* Sidebar Brand */
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px; /* Match navbar height */
+            padding: 1.5rem 1rem;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .sidebar-brand-icon {
+            font-size: 1.75rem;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .sidebar-brand-text {
+            margin-left: 0.75rem;
+        }
+        
+        /* Sidebar Nav */
+        .sidebar-nav {
+            padding: 1rem;
+        }
+        
+        .sidebar-header {
+            color: #6b7280; /* Gray text */
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 0.5rem 1rem;
+            margin-top: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            color: #d1d5db; /* Lighter gray text */
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem; /* Rounded corners for links */
+            font-weight: 500;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #374151; /* Darker hover */
+            color: #fff;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #4f46e5; /* Active color */
+            color: #fff;
+        }
+
+        .sidebar .nav-link i {
+            font-size: 1.25rem;
+            min-width: 2rem; /* Ensure icons align */
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .sidebar .nav-link .nav-link-text {
+            margin-left: 0.75rem;
+        }
+        
+        /* Submenu (Collapse) */
+        .sidebar .submenu {
+            background-color: #1f2937; /* Slightly lighter dark */
+            border-radius: 0.5rem;
+            margin-top: 0.25rem;
+        }
+        
+        .sidebar .submenu .nav-link {
+            padding-left: 3rem; /* Indent submenu links (was 3.75rem) */
+            font-size: 0.875rem;
+            color: #9ca3af; /* Muted submenu text */
+        }
+        
+        .sidebar .submenu .nav-link:hover {
+            background-color: #374151;
+            color: #fff;
+        }
+        
+        .sidebar .nav-link[data-bs-toggle="collapse"]::after {
+            content: '\f282'; /* Bootstrap Icon chevron down */
+            font-family: 'bootstrap-icons';
+            margin-left: auto;
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .sidebar .nav-link[data-bs-toggle="collapse"][aria-expanded="true"]::after {
+            transform: rotate(-180deg);
+        }
+
+        /* --- Main Content --- */
+        .main-content {
+            padding-left: var(--sidebar-width); /* Make space for sidebar */
+            transition: all 0.3s ease-in-out;
+            width: 100%;
+        }
+
+        .main-content .navbar {
+            height: 60px;
+            background-color: #fff;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .profile-picture {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* --- Collapsed State (Desktop) --- */
+        body.sidebar-collapsed .sidebar {
+            width: var(--sidebar-collapsed-width);
+        }
+        
+        body.sidebar-collapsed .main-content {
+            padding-left: var(--sidebar-collapsed-width);
+        }
+
+        body.sidebar-collapsed .sidebar .sidebar-brand-text,
+        body.sidebar-collapsed .sidebar .nav-link-text,
+        body.sidebar-collapsed .sidebar .sidebar-header,
+        body.sidebar-collapsed .sidebar .nav-link[data-bs-toggle="collapse"]::after {
+            display: none;
+        }
+
+        body.sidebar-collapsed .sidebar .sidebar-brand {
+            padding-left: 0;
+            padding-right: 0;
+            justify-content: center;
+        }
+        
+        body.sidebar-collapsed .sidebar .nav-link {
+            justify-content: center;
+            padding-left: 0; /* <-- ADDED THIS */
+            padding-right: 0; /* <-- ADDED THIS */
+        }
+        
+        body.sidebar-collapsed .sidebar:not(:hover) .submenu {
+            /* Hide ALL submenus when sidebar is collapsed AND not hovered */
+            display: none;
+        }
+
+        /* --- Collapsed Hover (Desktop) --- */
+        /* This makes the sidebar float over content on hover */
+        body.sidebar-collapsed .sidebar:hover {
+            width: var(--sidebar-width);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            z-index: 1051; /* Ensure it's above navbar */
+        }
+        
+        body.sidebar-collapsed .sidebar:hover .sidebar-brand-text,
+        body.sidebar-collapsed .sidebar:hover .nav-link-text,
+        body.sidebar-collapsed .sidebar:hover .sidebar-header,
+        body.sidebar-collapsed .sidebar:hover .nav-link[data-bs-toggle="collapse"]::after {
+            display: inline-block; /* Show text */
+        }
+        
+        body.sidebar-collapsed .sidebar:hover .sidebar-brand {
+            padding: 1.5rem 1rem; /* Restore padding */
+            /* justify-content: center; is default, no change needed */
+        }
+
+        body.sidebar-collapsed .sidebar:hover .nav-link {
+            justify-content: flex-start; /* Align icon and text to left */
+            padding-left: 1rem; /* <-- ADDED THIS: Restore horizontal padding */
+            padding-right: 1rem; /* <-- ADDED THIS: Restore horizontal padding */
+        }
+
+        /* --- Mobile/Offcanvas State --- */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                left: calc(-1 * var(--sidebar-width)); /* Hide offscreen */
+                transition: all 0.3s ease-in-out;
+            }
+
+            .main-content {
+                padding-left: 0;
+            }
+            
+            /* This backdrop is shown when the mobile menu is open */
+            .sidebar-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 1040; /* Below sidebar, above content */
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease-in-out;
+            }
+            
+            body.sidebar-open .sidebar {
+                left: 0; /* Slide in */
+            }
+            
+            body.sidebar-open .sidebar-backdrop {
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            /* * NEW FIX:
+             * Force dropdown to be 'position: absolute' on mobile.
+             * By default, .navbar-expand-lg makes it 'position: static' on mobile,
+             * which breaks the flex alignment of our navbar when the dropdown is opened.
+             */
+            .navbar .navbar-nav .dropdown-menu {
+                position: absolute;
+            }
+        }
+    </style> --}}

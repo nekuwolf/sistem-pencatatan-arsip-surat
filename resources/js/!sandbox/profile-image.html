@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile Upload Demo</title>
+
+<!-- Bootstrap 5.3.3 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<!-- Cropper.js -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+<style>
+/* --- Layout Utilities --- */
+.avatar-wrapper {
+    width: 80px;
+}
+
+/* --- Profile Box --- */
+.profile-box {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1; 
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    background-color: #f8f9fa;
+}
+
+.profile-box:hover { 
+    transform: scale(1.05); 
+}
+
+.profile-box img {
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    display: block;
+}
+
+.profile-initials {
+    width: 100%; 
+    height: 100%; 
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    color: white; 
+    font-weight: 600; 
+    text-transform: uppercase;
+    user-select: none;
+}
+
+/* Helper for JS generated initials */
+.fs-2x {
+    font-size: 200%;
+}
+
+/* --- Loading Overlay --- */
+.profile-loading-overlay {
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(255,255,255,0.8); 
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    z-index: 5;
+    transition: opacity 0.3s ease;
+}
+
+/* --- Modal Preview --- */
+.modal-profile-preview {
+    width: 200px; 
+    height: 200px; 
+    border-radius: 50%;
+    overflow: hidden; 
+    position: relative; 
+    margin: 0 auto; 
+    cursor: pointer;
+    border: 4px solid #fff; 
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+.modal-initials-text {
+    font-size: 5rem;
+}
+
+.hover-overlay {
+    opacity: 0; 
+    transition: opacity 0.3s ease;
+}
+
+/* Show overlay on hover OR when dragging file over */
+.modal-profile-preview:hover .hover-overlay,
+.modal-profile-preview.drag-active .hover-overlay { 
+    opacity: 1; 
+}
+
+/* --- Cropper Modal Styles --- */
+.cropper-container-wrapper {
+    height: 500px;
+    background-color: #ffffff;
+    position: relative;
+    overflow: hidden;
+}
+
+.cropper-view-box {
+    border-radius: 50%;
+    outline: 2000px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 1px #fff;
+}
+
+.cropper-modal {
+    background-color: transparent;
+    opacity: 0;
+}
+
+.cropper-face {
+    background-color: transparent; 
+}
+</style>
+</head>
+<body class="bg-light py-5">
+
+<div class="container">
+    <div class="row text-center mb-5">
+        <div class="col">
+            <h1 class="display-6 fw-bold">Profile Upload Demo</h1>
+            <p class="text-muted">Compresses to JPEG and uploads via API endpoint.</p>
+        </div>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <!-- Sample avatar 1 -->
+        <div class="col-6 col-md-3 col-lg-2">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="avatar-wrapper">
+                        <div class="profile-box rounded-circle shadow-sm" cstm-data-no-img-char="AL">
+                            <img src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="User">
+                        </div>
+                    </div>
+                    <div class="mt-3 small fw-bold">Click Me</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample avatar 2 -->
+        <div class="col-6 col-md-3 col-lg-2">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="avatar-wrapper">
+                        <div class="profile-box rounded-circle shadow-sm" cstm-data-no-img-char="JD">
+                            <img src="https://broken-link-example.com/img.jpg" alt="User">
+                        </div>
+                    </div>
+                    <div class="mt-3 small fw-bold">Test Me</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 1: Image Preview / Selection -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fs-5">Profile Photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center pb-3">
+                <div class="modal-profile-preview" id="modalProfileContainer">
+                    <!-- Initials & fallback -->
+                    <img id="modalImage" class="w-100 h-100 object-fit-cover d-none" alt="Modal Preview">
+                    <span id="modalInitials" class="w-100 h-100 justify-content-center align-items-center text-white fw-bold modal-initials-text d-none"></span>
+
+                    <!-- Hover Overlay -->
+                    <div class="hover-overlay position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex flex-column justify-content-center align-items-center text-white">
+                        <i class="bi bi-camera-fill fs-2 mb-2"></i>
+                        <span class="small fw-bold">Change Photo</span>
+                    </div>
+
+                    <!-- Loading Spinner -->
+                    <div id="modalLoading" class="position-absolute top-0 start-0 w-100 h-100 bg-white d-flex justify-content-center align-items-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-muted small mt-3 mb-0">Click the image or drag & drop to select a new file.</p>
+                <input type="file" id="fileInput" accept="image/*" hidden>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 2: Cropping -->
+<div class="modal fade" id="cropModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crop Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="cropper-container-wrapper d-flex justify-content-center align-items-center">
+                    <img id="cropperImage" class="d-block" class="cstm-maxw-100 cstm-maxh-100" alt="Cropper Preview">
+                </div>
+            </div>
+            <div class="modal-footer flex-column flex-sm-row justify-content-between gap-2">
+                <div class="d-flex align-items-center gap-2 w-100 w-sm-auto">
+                    <i class="bi bi-zoom-out text-secondary"></i>
+                    <input type="range" class="form-range flex-grow-1" id="zoomRange" min="0" max="2" step="0.05">
+                    <i class="bi bi-zoom-in text-secondary"></i>
+                </div>
+                <div class="d-flex justify-content-end gap-2 w-100 w-sm-auto">
+                    <button type="button" class="btn btn-secondary" id="btnCancelCrop">Cancel</button>
+                    <button type="button" id="btnSaveCrop" class="btn btn-primary">Save & Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 3: Error Message -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title text-danger"><i class="bi bi-exclamation-circle-fill me-2"></i>Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage" class="mb-0">Something went wrong.</p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // -- Elements --
+    const containers = document.querySelectorAll('[cstm-data-no-img-char]');
+    
+    // Preview Modal
+    const previewModalEl = document.getElementById('imagePreviewModal');
+    const previewModal = new bootstrap.Modal(previewModalEl);
+    const modalContainer = document.getElementById('modalProfileContainer');
+    const modalImg = document.getElementById('modalImage');
+    const modalInitials = document.getElementById('modalInitials');
+    const modalLoading = document.getElementById('modalLoading');
+    const fileInput = document.getElementById('fileInput');
+
+    // Crop Modal
+    const cropModalEl = document.getElementById('cropModal');
+    const cropModal = new bootstrap.Modal(cropModalEl);
+    const cropperImage = document.getElementById('cropperImage');
+    const btnSaveCrop = document.getElementById('btnSaveCrop');
+    const btnCancelCrop = document.getElementById('btnCancelCrop');
+    const zoomRange = document.getElementById('zoomRange');
+
+    // Error Modal
+    const errorModalEl = document.getElementById('errorModal');
+    const errorModal = new bootstrap.Modal(errorModalEl);
+    const errorMessageEl = document.getElementById('errorMessage');
+
+    // -- State --
+    let activeProfileBox = null;
+    let cropper = null;
+    
+    // -- Config --
+    const MAX_FILE_MB = 10;
+    const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+    const UPLOAD_ENDPOINT = '/api/avatar/upload'; // Change this to your real endpoint
+
+    // -- Helpers --
+    const setVisibility = (element, isVisible, displayClass = 'd-block') => {
+        if (!element) return;
+        if (isVisible) {
+            element.classList.remove('d-none');
+            if (displayClass && displayClass !== 'd-block') element.classList.add(displayClass);
+        } else {
+            element.classList.add('d-none');
+            if (displayClass && displayClass !== 'd-block') element.classList.remove(displayClass);
+        }
+    };
+
+    const setPreviewLoading = (isLoading) => setVisibility(modalLoading, isLoading, 'd-flex');
+
+    const showError = (message) => {
+        errorMessageEl.textContent = message;
+        errorModal.show();
+    };
+
+    // -- Initialization --
+    containers.forEach(container => {
+        const char = container.getAttribute('cstm-data-no-img-char') || "??";
+        const img = container.querySelector('img');
+
+        // Dynamic BG color
+        let hash = 0;
+        for (let i=0;i<char.length;i++){hash=char.charCodeAt(i)+((hash<<5)-hash);}
+        container.dataset.bgColor = `hsl(${Math.abs(hash % 360)}, 65%, 40%)`;
+
+        // Loader
+        const loader = document.createElement('div');
+        loader.className = 'profile-loading-overlay';
+        loader.innerHTML = '<div class="spinner-border spinner-border-sm text-secondary" role="status"></div>';
+        container.appendChild(loader);
+
+        const removeLoader = () => {
+            if(loader.parentNode){
+                loader.style.opacity = '0';
+                setTimeout(() => { if(loader.parentNode) loader.remove(); }, 300);
+            }
+        };
+        setTimeout(removeLoader, 5000);
+
+        const renderPlaceholder = () => {
+            removeLoader();
+            if(img) setVisibility(img, false);
+            container.style.backgroundColor = container.dataset.bgColor;
+            
+            let span = container.querySelector('.profile-initials');
+            if(!span){
+                span = document.createElement('span');
+                span.className = 'profile-initials fs-2x';
+                span.innerText = char;
+                container.appendChild(span);
+            } else {
+                setVisibility(span, true, 'd-flex');
+            }
+        };
+
+        if(img){
+            img.onerror = renderPlaceholder;
+            img.onload = removeLoader;
+            if(img.complete){
+                if(img.naturalWidth > 0) removeLoader(); 
+                else renderPlaceholder();
+            }
+        } else {
+            renderPlaceholder();
+        }
+
+        // On Click -> Open Preview Modal
+        container.addEventListener('click', () => {
+            activeProfileBox = container;
+
+            // Reset UI
+            setVisibility(modalImg, false);
+            setVisibility(modalInitials, false);
+            setPreviewLoading(false);
+
+            // Determine content
+            const isImgVisible = img && !img.classList.contains('d-none') && img.src;
+            
+            if(isImgVisible){
+                modalImg.src = img.src;
+                setVisibility(modalImg, true);
+                modalContainer.style.backgroundColor = 'transparent';
+                if(!modalImg.complete) setPreviewLoading(true);
+            } else {
+                modalInitials.innerText = char;
+                setVisibility(modalInitials, true, 'd-flex');
+                modalContainer.style.backgroundColor = container.dataset.bgColor;
+            }
+            previewModal.show();
+        });
+    });
+
+    // Preview Image Load Handlers
+    modalImg.onload = () => setPreviewLoading(false);
+    modalImg.onerror = () => {
+        setPreviewLoading(false);
+        setVisibility(modalImg, false);
+        setVisibility(modalInitials, true, 'd-flex');
+        if(activeProfileBox){
+            modalInitials.innerText = activeProfileBox.getAttribute('cstm-data-no-img-char');
+            modalContainer.style.backgroundColor = activeProfileBox.dataset.bgColor;
+        }
+    };
+
+    // -- File Selection Handling --
+    
+    ["dragenter","dragover"].forEach(evt => 
+        modalContainer.addEventListener(evt, e => {
+            e.preventDefault(); 
+            modalContainer.classList.add("border", "border-primary", "border-2", "drag-active");
+        })
+    );
+    ["dragleave","drop"].forEach(evt => 
+        modalContainer.addEventListener(evt, e => {
+            e.preventDefault(); 
+            modalContainer.classList.remove("border", "border-primary", "border-2", "drag-active");
+        })
+    );
+    
+    modalContainer.addEventListener("drop", (e) => {
+        const file = e.dataTransfer.files[0];
+        if(file) handleNewFile(file);
+    });
+    modalContainer.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", (e) => handleNewFile(e.target.files[0]));
+
+    function handleNewFile(file){
+        if(!file) return;
+
+        // File Type Validation
+        if (!ALLOWED_TYPES.includes(file.type)) {
+            showError(`Invalid file type. Please upload a PNG, JPG/JPEG, or WEBP image.`); 
+            return;
+        }
+
+        if(file.size > MAX_FILE_MB*1024*1024){
+            showError(`File too large, max ${MAX_FILE_MB} MB`); 
+            return;
+        }
+        
+        setPreviewLoading(true);
+        const reader = new FileReader();
+        reader.onload = e => {
+            setPreviewLoading(false);
+            cropperImage.src = e.target.result;
+            previewModal.hide();
+            cropModal.show();
+            fileInput.value = '';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // -- Cropper Logic --
+
+    cropModalEl.addEventListener('shown.bs.modal', () => {
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(cropperImage, {
+            aspectRatio: 1,
+            viewMode: 1,
+            dragMode: 'move',
+            background: false,
+            autoCropArea: 0.8,
+            movable: true,
+            zoomable: true,
+            zoomOnWheel: true,
+            ready: function() {
+                const imageData = this.cropper.getImageData();
+                const currentZoom = imageData.width / imageData.naturalWidth;
+                zoomRange.min = 0.1; 
+                zoomRange.max = 3.0;
+                zoomRange.value = currentZoom;
+            },
+            zoom: function(event) {
+                zoomRange.value = event.detail.ratio;
+            }
+        });
+    });
+
+    zoomRange.addEventListener('input', (e) => {
+        if (cropper) cropper.zoomTo(parseFloat(e.target.value));
+    });
+
+    cropModalEl.addEventListener('hidden.bs.modal', () => {
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+        cropperImage.src = '';
+        zoomRange.value = 1;
+    });
+
+    btnCancelCrop.addEventListener('click', () => {
+        cropModal.hide();
+        previewModal.show();
+    });
+
+    // ----------------------------------------------------
+    // UPDATED SAVE LOGIC: Upload to Endpoint
+    // ----------------------------------------------------
+    btnSaveCrop.addEventListener('click', () => {
+        if(!cropper || !activeProfileBox) return;
+
+        const originalBtnText = btnSaveCrop.innerHTML;
+        btnSaveCrop.disabled = true;
+        btnSaveCrop.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...';
+
+        // 1. Get Canvas (1024x1024)
+        const canvasHigh = cropper.getCroppedCanvas({ 
+            width: 1024, 
+            height: 1024, 
+            imageSmoothingQuality: 'high'
+        });
+
+        // 2. Convert to BLOB (Binary Large Object) for Upload
+        // We use JPEG with 0.9 Quality
+        canvasHigh.toBlob(async (blob) => {
+            if(!blob) {
+                showError("Image generation failed.");
+                btnSaveCrop.disabled = false;
+                btnSaveCrop.innerHTML = originalBtnText;
+                return;
+            }
+
+            // 3. Prepare FormData (Standard for file uploads)
+            const formData = new FormData();
+            formData.append('avatar', blob, 'avatar.jpg');
+
+            try {
+                // =========================================================
+                // REAL UPLOAD IMPLEMENTATION
+                // =========================================================
+                
+                /* // UNCOMMENT THIS BLOCK TO ENABLE REAL UPLOAD
+                const response = await fetch(UPLOAD_ENDPOINT, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    // Attempt to parse server error message
+                    let errMsg = `Upload failed (Status: ${response.status})`;
+                    try {
+                        const errData = await response.json();
+                        if(errData.message) errMsg = errData.message;
+                    } catch(e) {}
+                    throw new Error(errMsg);
+                }
+                
+                // If code reaches here, response is 200 OK
+                // const result = await response.json(); // If you need server response
+                */
+
+                // =========================================================
+                // MOCK SIMULATION (For Demo Purpose Only)
+                // =========================================================
+                await new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        const simulateSuccess = false; // Toggle false to test error
+                        if (simulateSuccess) {
+                            resolve({ success: true });
+                        } else {
+                            reject(new Error("Simulated Server Error: Invalid file format"));
+                        }
+                    }, 1500);
+                });
+                // =========================================================
+
+                // 4. Success: Update UI with the local blob
+                // Note: In real app, you might use the URL returned by server
+                const localUrl = URL.createObjectURL(blob);
+                
+                let boxImg = activeProfileBox.querySelector('img');
+                if(!boxImg){
+                    boxImg = document.createElement('img');
+                    activeProfileBox.insertBefore(boxImg, activeProfileBox.firstChild);
+                }
+                
+                // Prevent memory leak by revoking old URL if it was a blob
+                if(boxImg.src.startsWith('blob:')) URL.revokeObjectURL(boxImg.src);
+                
+                boxImg.src = localUrl;
+                setVisibility(boxImg, true);
+                
+                const boxSpan = activeProfileBox.querySelector('.profile-initials');
+                if(boxSpan) setVisibility(boxSpan, false);
+
+                // Close Modal
+                cropModal.hide();
+
+            } catch (err) {
+                // 5. Error Handling
+                showError(err.message);
+            } finally {
+                // Reset Button State
+                btnSaveCrop.disabled = false;
+                btnSaveCrop.innerHTML = originalBtnText;
+            }
+
+        }, 'image/jpeg', 0.9);
+    });
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

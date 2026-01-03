@@ -1,0 +1,136 @@
+@import 'bootstrap/scss/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+@import 'tom-select/dist/css/tom-select.bootstrap5.css';
+
+.cstm-mt-n1-px {
+    margin-top: -1px !important;
+}
+
+.cstm-mb-n1-px {
+    margin-bottom: -1px !important;
+}
+
+.cstm-ml-n1-px {
+    margin-left: -1px !important;
+}
+
+.cstm-mr-n1-px {
+    margin-right: -1px !important;
+}
+
+.cstm-maxw-480px {
+    max-width: 480px;
+}
+
+.cstm-h-100px {
+    height: 100px !important;
+}
+
+.cstm-fieldsizing-content-minh100px-maxh350px {
+  field-sizing: content;
+  min-height: 100px;
+  max-height: 350px;
+}
+
+.cstm-focus-within-z-2:focus-within {
+    z-index: 2 !important;
+}
+
+.cstm-focus-within-z-4:focus-within {
+    z-index: 4 !important;
+}
+
+@media (min-width: 768px) {
+  .cstm-shadow-md-lg {
+    box-shadow: var(--bs-box-shadow-lg) !important;
+  }
+
+  .cstm-bg-md-tertiary {
+    background-color: var(--bs-tertiary-bg) !important;
+  } 
+}
+
+@media (min-width: 992px) {
+  .cstm-top-80-lg { top: 80px; }
+  .cstm-maxh-100vh-100-lg { max-height: calc(100vh - 100px); }
+  .cstm-overflowy-auto-lg { overflow-y: auto; }
+}
+
+.cstm-maxw-100 {
+  max-width: 100% !important;
+}
+
+.cstm-maxh-100 {
+  max-height: 100% !important;
+}
+
+.profile-pic-size-small {
+  width: 40px;
+  height: 40px;
+}
+
+.profile-pic-size-medium {
+  width: 60px;
+  height: 60px;
+}
+
+.profile-pic-size-large {
+  width: 80px;
+  height: 80px;
+}
+
+.logo-pic-size-small {
+  width: 50px;
+  height: 50px;
+}
+
+.logo-pic-size-medium {
+  width: 70px;
+  height: 70px;
+}
+
+.logo-pic-size-large {
+  width: 90px;
+  height: 90px;
+}
+
+/* Custom class to hide the invalid icon */
+.cstm-is-invalid-icon-none.is-invalid,
+.was-validated .cstm-is-invalid-icon-none:invalid {
+    background-image: none !important;
+    padding-right: calc(var(--bs-border-width) * 2 + .75rem) !important;
+}
+
+
+/* Remove arrows in Chrome, Safari, Edge, Opera */
+.number-input-no-arrow::-webkit-inner-spin-button,
+.number-input-no-arrow::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove arrows in Firefox */
+.number-input-no-arrow {
+  -moz-appearance: textfield;
+}
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bg-body-tertiary-blur {
+  --bs-bg-opacity: .8;
+  background-color: rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity)) !important;
+  backdrop-filter: blur(10px);
+}

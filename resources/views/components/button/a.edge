@@ -1,0 +1,52 @@
+@let(bsButtonStyle = `btn-${isOutline ? 'outline-' : ''}${variant || 'primary'}`)
+<a {{
+  html.attrs({
+    id: id,
+    href: href || '#',
+    role: role || 'button',
+    'cstm-data-toggle-password-btn': cstmDataTogglePasswordBtn,
+    'cstmtag-button-loading': enableLoadingIndicator ? 'true' : 'false',
+    class: [
+      'btn',
+      bsButtonStyle,
+      style
+    ]
+  })
+}}>
+  <span class="cstmtag-icon-main">
+    @if(iconName)
+      @!component('components/bi_icon', { 
+        iconName: iconName,
+        isFill: isFill,
+      })
+    @end
+    @if(text)
+      {{ text || '' }}
+    @end
+  </span>
+  <span class="cstmtag-icon-alt d-none" hidden>
+    @if(iconNameAlt)
+      @!component('components/bi_icon', { 
+        iconName: iconNameAlt,
+        isFill: isFillAlt,
+      })
+    @end
+    @if(textAlt)
+      {{ textAlt || '' }}
+    @end
+  </span>
+  @if(enableLoadingIndicator)
+  <span class="cstmtag-loading-indicator d-none" hidden>
+    <span {{
+      html.attrs({
+        'aria-hidden': 'true',
+        class: [
+          'spinner-border',
+          'spinner-border-sm',
+        ]
+      })
+    }}></span>
+    <span role="status">{{loadingIndicatorText || 'Loading...'}}</span>
+  </span>
+  @end
+</a>

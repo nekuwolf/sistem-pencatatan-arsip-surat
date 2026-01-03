@@ -1,0 +1,36 @@
+@component('components/form/input/index', {
+  type: type,
+  id: id,
+  name: name,
+  placeholder: placeholder,
+  label: label,
+  value: value,
+  hidden: true,
+  ariaHelp: ariaHelp,
+  invalidMessage: invalidMessage,
+  attributes: {
+    'cstm-split-input-join': name
+  }
+})
+  @slot('main')
+    <div class="d-flex gap-2">
+      @each(i in Array.from({ length: splitCount || 1 }, (_, idx) => idx + 1))
+        @!component('components/form/input/index', { 
+          type: type,
+          id: `${id}-${i}`,
+          style: {
+            input: 'text-center cstm-is-invalid-icon-none number-input-no-arrow',
+            wrapper: 'mb-0'
+          },
+          invalid: invalidMessage ? true : false,
+          minLength: '1',
+          maxLength: '1',
+          attributes: {
+            'cstm-split-input': name,
+            'cstm-split-input-index': i
+          }
+        })
+      @endeach
+    </div>
+  @end
+@end

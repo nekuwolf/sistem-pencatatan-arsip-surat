@@ -1,0 +1,67 @@
+<div class="table-responsive d-none d-md-block {{ style || '' }}">
+  <table class="table table-bordered table-striped table-hover align-start mb-0">
+    <thead>
+      <tr>
+        @each(col in columns.filter(c => !c.hidden))
+          <th scope="col">
+            {{ col.label }}
+          </th>
+        @end
+      </tr>
+    </thead>
+    <tbody>
+      @each(row in datas)
+        <tr>
+          @each(col in columns.filter(c => !c.hidden))
+            @let(cell = row[col.key])
+            <td>
+              @if(cell !== null && cell !== undefined)
+                {{-- 1. Normalize everything to an array to avoid code duplication --}}
+                @let(items = Array.isArray(cell) ? cell : [cell])
+
+                @each(item in items)
+                  @let(val = typeof item === 'object' ? item.value : item)
+                  @let(mark = typeof item === 'object' ? item.mark : null)
+
+                  @if(mark === 'STATUSBADGE')
+                    @!component('components/prefill/badge', { text: val })
+                  @elseif(mark === 'ACTIONVIEWDETAIL')
+                    @!component('components/button/a', {
+                      style: 'w-100 py-1 px-2',
+                      text: 'View',
+                      href: val,
+                      iconName: 'eye',
+                      isOutline: true,
+                    })
+                  @elseif(mark === 'ACTIONEDIT')
+                    @!component('components/button/a', {
+                      style: 'w-100 mt-1 py-1 px-2',
+                      variant: 'success',
+                      text: 'Edit',
+                      href: val,
+                      iconName: 'pencil',
+                      isOutline: true,
+                    })
+                  @elseif(mark === 'ACTIONDELETE')
+                    @!component('components/button/a', {
+                      style: 'w-100 mt-1 py-1 px-2',
+                      variant: 'danger',
+                      text: 'Delete',
+                      href: val,
+                      iconName: 'trash',
+                      isOutline: true,
+                    })
+                  @elseif(mark === 'PICTURE')
+                    <img class="img-fluid profile-pic-size-small" src="{{ val }}">
+                  @else
+                    {{ val }}
+                  @end
+                @end
+              @end
+            </td>
+          @end
+        </tr>
+      @end
+    </tbody>
+  </table>
+</div>

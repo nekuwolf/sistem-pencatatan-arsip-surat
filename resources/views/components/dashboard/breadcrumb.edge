@@ -1,0 +1,41 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb {{ style || '' }}">
+    @each((item, index) in items)
+      <li {{
+        html.attrs({
+          class: [
+            'breadcrumb-item',
+            {
+              'active': !href
+            }
+          ],
+          'aria-current': index === items.length - 1 ? 'page' : ''
+        })
+      }}>
+      @if(index !== items.length - 1 || href)
+        <a {{
+          html.attrs({
+            href: item.href
+          })
+        }}>
+          @if(item.iconName)
+            @!component('components/bi_icon', { 
+              iconName: item.iconName,
+              isFill: item.iconIsFill,
+            })
+          @end
+          {{ item.label }}
+        </a>
+      @else
+        @if(item.iconName)
+          @!component('components/bi_icon', { 
+            iconName: item.iconName,
+            isFill: item.iconIsFill,
+          })
+        @end
+        {{ item.label }}
+      @end
+      </li>
+    @endeach
+  </ol>
+</nav>

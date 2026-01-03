@@ -1,0 +1,32 @@
+// html,
+// body {
+//   height: 100%;
+//   width: 100%;
+//   display: flex;
+//   align-items: center;
+// }
+
+// .form-register {
+//   max-width: 480px;
+//   padding: 1rem;
+// }
+
+.form-register .form-floating:focus-within {
+  z-index: 2;
+}
+
+// .form-register .email {
+//   margin-bottom: 10px;
+// }
+
+// .form-register .confirm-password {
+//   margin-bottom: -1px;
+//   border-bottom-right-radius: 0;
+//   border-bottom-left-radius: 0;
+// }
+
+// .form-register .password {
+//   margin-bottom: 10px;
+//   border-top-left-radius: 0;
+//   border-top-right-radius: 0;
+// }

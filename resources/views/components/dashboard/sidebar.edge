@@ -1,0 +1,132 @@
+<aside class="sidebar d-flex flex-column flex-shrink-0">
+    <a href="{{ route('dashboard.index') }}" class="sidebar-brand">
+        {{-- <i class="bi bi-bootstrap-fill sidebar-brand-icon"></i> --}}
+        <img src="{{ asset('public/images/valve_source_engine_missing_content_512_512.png') }}" alt="{{ G_APP_SHORT_NAME }}" class="sidebar-brand-img">
+        <span class="sidebar-brand-text">{{ G_APP_SHORT_NAME }}</span>
+    </a>
+
+    <ul class="nav nav-pills flex-column px-2 py-2 sidebar-nav">
+        
+        <li class="sidebar-header">
+            <span class="sidebar-header-text">Main</span>
+        </li>
+        
+        <li class="nav-item">
+            <a href="{{ route('dashboard.index') }}" class="nav-link {{ request.url() === route('dashboard.index') ? 'active' : '' }}" aria-current="page">
+                <i class="bi bi-grid-1x2-fill"></i>
+                <span class="nav-link-text">Dashboard</span>
+            </a>
+        </li>
+        
+
+        <li class="sidebar-header">
+            <span class="sidebar-header-text">Data Management</span>
+        </li>
+        
+        <li class="nav-item">
+            <a href="{{ route('mail.index') }}" class="nav-link {{ request.url() === route('mail.index') ? 'active' : '' }}" aria-current="page">
+                <i class="bi bi-envelope-fill"></i>
+                <span class="nav-link-text">Mail</span>
+            </a>
+        </li>
+
+        <li class="nav-item mt-2">
+            <a href="{{ route('archive.index') }}" class="nav-link {{ request.url() === route('archive.index') ? 'active' : '' }}" aria-current="page">
+                <i class="bi bi-archive-fill"></i>
+                <span class="nav-link-text">Mail Archive</span>
+            </a>
+        </li>
+
+        {{-- @if(userRole === G_USER_ROLE.EMPLOYEE.ID || userRole === G_USER_ROLE.ADMIN.ID)
+        @end --}}
+        <li class="nav-item mt-2">
+          <a href="{{ route('user.index') }}" class="nav-link {{ request.url() === route('user.index') ? 'active' : '' }}" aria-current="page">
+            <i class="bi bi-people-fill"></i>
+            <span class="nav-link-text">User</span>
+          </a>
+        </li>
+
+        <li class="nav-item mt-2">
+          <a href="{{ route('registerInviteLink.index') }}" class="nav-link {{ request.url() === route('registerInviteLink.index') ? 'active' : '' }}" aria-current="page">
+            <i class="bi bi-share-fill"></i>
+            <span class="nav-link-text">Invite Link</span>
+          </a>
+        </li>
+        
+        {{-- <li class="nav-item">
+            <a class="nav-link collapsed {{ request.urlPath().startsWith('/reports') ? 'active' : '' }}" data-bs-toggle="collapse" href="#reports-submenu" role="button" aria-expanded="false" aria-controls="reports-submenu">
+                <i class="bi bi-bar-chart-fill"></i>
+                <span class="nav-link-text">Reports</span>
+            </a>
+            <div class="collapse submenu {{ request.urlPath().startsWith('/reports') ? 'show' : '' }}" id="reports-submenu">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="{{ route('reports.daily') }}" class="nav-link {{ request.url() === route('reports.daily') ? 'active' : '' }}">
+                            <span class="nav-link-text">Daily Reports</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-link-text">Weekly Reports</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-link-text">Analytics</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li> --}}
+
+        {{-- <li class="nav-item">
+            <a class="nav-link collapsed {{ request.url() === route('mail.index') ? 'active' : '' }}" data-bs-toggle="collapse" href="#mail-submenu" role="button" aria-expanded="false" aria-controls="mail-submenu">
+                <i class="bi bi-bar-chart-fill"></i>
+                <span class="nav-link-text">Surat</span>
+            </a>
+            <div class="collapse submenu " id="mail-submenu">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link {{ request.url() === route('mail.create') ? 'active' : '' }}">
+                            <span class="nav-link-text">Registrasi Surat</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-link-text">Weekly Reports</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-link-text">Analytics</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li> --}}
+        
+        {{-- <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="bi bi-gear-fill"></i>
+                <span class="nav-link-text">Settings</span>
+            </a>
+        </li> --}}
+    </ul>
+
+    <ul class="nav nav-pills flex-column px-2 py-2 mt-auto border-top border-secondary-subtle sidebar-nav">
+      <!-- Footer nav at the bottom -->
+      <li class="nav-item">
+          <a href="{{ route('account.profile') }}" class="nav-link {{ request.url() === route('account.profile') ? 'active' : '' }}">
+              <i class="bi bi-person-circle"></i>
+              <span class="nav-link-text">Profile</span>
+          </a>
+      </li>
+
+      <li class="nav-item mt-2">
+          <a href="{{ route('auth.logout.store') }}" class="nav-link text-danger">
+              <i class="bi bi-box-arrow-right"></i>
+              <span class="nav-link-text">Logout</span>
+          </a>
+      </li>
+    </ul>
+</aside>

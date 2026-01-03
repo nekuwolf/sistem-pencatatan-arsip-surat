@@ -1,0 +1,190 @@
+
+  <form action="#" method="POST" enctype="multipart/form-data">
+    {{ csrfField() }}
+    
+    <div class="row g-4">
+      {{-- Left Column: Avatar & Status --}}
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body text-center p-5">
+            <div class="mb-4 position-relative d-inline-block">
+              {{-- Logic to get the latest avatar or a placeholder --}}
+              @if(userData.userAvatars && userData.userAvatars.length > 0)
+                <img src="{{ userData.userAvatars[0].url }}" alt="Avatar" class="rounded-circle img-fluid border border-3 border-white shadow" style="width: 150px; height: 150px; object-fit: cover;">
+              @else
+                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white mx-auto shadow" style="width: 150px; height: 150px; font-size: 3rem;">
+                  {{ userData.fullName.charAt(0) }}
+                </div>
+              @endif
+              
+              <label for="avatarUpload" class="position-absolute bottom-0 end-0 btn btn-sm btn-primary rounded-circle" style="width: 35px; height: 35px; padding: 0; display: grid; place-items: center; cursor: pointer;">
+                <i class="bi bi-camera"></i>
+                <input type="file" id="avatarUpload" name="avatar" class="d-none" accept="image/*">
+              </label>
+            </div>
+
+            <h4 class="h5 mb-1">{{ userData.fullName }}</h4>
+            <p class="text-muted small mb-3">{{ userData.email }}</p>
+
+            <hr>
+
+            <div class="text-start">
+              <label class="form-label text-muted small fw-bold">Current Status</label>
+              <div class="d-flex flex-wrap gap-2">
+                @each(tag in userData.userStatusTags)
+                  <span class="badge bg-light text-dark border">{{ tag.name }}</span>
+                @end
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{-- Right Column: Edit Form --}}
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white py-3">
+            <h5 class="card-title mb-0">Profile Details</h5>
+          </div>
+          <div class="card-body p-4">
+            
+            {{-- Section 1: Personal Info --}}
+            <h6 class="text-primary mb-3 small fw-bold"><i class="bi bi-person me-2"></i>Personal Information</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-12">
+                @!component('components/form/input/index', {
+                  id: 'fullName',
+                  name: 'full_name',
+                  label: 'Full Name',
+                  type: 'text',
+                  value: userData.fullName,
+                  placeholder: 'John Doe',
+                  required: true
+                })
+              </div>
+
+              <div class="col-md-6">
+                {{-- Mapping Gender Options --}}
+                @!component('components/form/input/index', {
+                  id: 'gender',
+                  name: 'gender_id',
+                  label: 'Gender',
+                  type: 'select',
+                  value: userData.genderId,
+                  options: genders.map(g => ({ value: g.id, label: g.name }))
+                })
+              </div>
+
+              <div class="col-md-6">
+                @!component('components/form/input/index', {
+                  id: 'birthDate',
+                  name: 'birth_date',
+                  label: 'Date of Birth',
+                  type: 'date',
+                  value: userData.birthDate ? userData.birthDate.toFormat('yyyy-MM-dd') : ''
+                })
+              </div>
+
+              <div class="col-md-12">
+                 @!component('components/form/input/index', {
+                  id: 'birthPlace',
+                  name: 'birth_place',
+                  label: 'Place of Birth',
+                  type: 'text',
+                  value: userData.birthPlace,
+                  placeholder: 'City, Country'
+                })
+              </div>
+            </div>
+
+            <hr class="my-4 text-muted opacity-25">
+
+            {{-- Section 2: Contact Info --}}
+            <h6 class="text-primary mb-3 small fw-bold"><i class="bi bi-geo-alt me-2"></i>Contact Information</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                @!component('components/form/input/index', {
+                  id: 'email',
+                  name: 'email',
+                  label: 'Email Address',
+                  type: 'email',
+                  value: userData.email,
+                  readonly: true,
+                  ariaHelp: 'Contact admin to change email'
+                })
+              </div>
+
+              <div class="col-md-6">
+                @!component('components/form/input/index', {
+                  id: 'phone',
+                  name: 'personal_phone_number',
+                  label: 'Phone Number',
+                  type: 'tel',
+                  value: userData.personalPhoneNumber,
+                  placeholder: '+1 234 567 8900'
+                })
+              </div>
+
+              <div class="col-12">
+                @!component('components/form/input/index', {
+                    id: 'homeAddress',
+                    name: 'full_home_address',
+                    label: 'Full Address',
+                    type: 'text',
+                    value: userData.fullHomeAddress,
+                    placeholder: 'Street, City, Country',
+                    ariaHelp: 'Your full home address',
+                })
+              </div>
+            </div>
+
+            <hr class="my-4 text-muted opacity-25">
+
+            {{-- Section 3: Organization & Role --}}
+            <h6 class="text-primary mb-3 small fw-bold"><i class="bi bi-briefcase me-2"></i>Employment</h6>
+            <div class="row g-3">
+              <div class="col-md-6">
+                @!component('components/form/input/index', {
+                  id: 'organization',
+                  name: 'organization_id',
+                  label: 'Organization',
+                  type: 'select',
+                  value: userData.organizationId,
+                  options: organizations.map(o => ({ value: o.id, label: o.name }))
+                })
+              </div>
+
+              <div class="col-md-6">
+                @!component('components/form/input/index', {
+                  id: 'department',
+                  name: 'department_id',
+                  label: 'Department',
+                  type: 'select',
+                  value: userData.departmentId,
+                  options: departments.map(d => ({ value: d.id, label: d.name }))
+                })
+              </div>
+
+              <div class="col-md-12">
+                 @!component('components/form/input/index', {
+                  id: 'jobRole',
+                  name: 'job_role_id',
+                  label: 'Job Role / Designation',
+                  type: 'select',
+                  value: userData.jobRoleId,
+                  options: jobRoles.map(j => ({ value: j.id, label: j.name }))
+                })
+              </div>
+            </div>
+
+            {{-- Form Actions --}}
+            <div class="mt-5 d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-light border">Cancel</button>
+              <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>

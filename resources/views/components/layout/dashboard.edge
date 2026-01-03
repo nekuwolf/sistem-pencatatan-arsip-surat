@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="{{ bsTheme || 'auto' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ pageTitle || 'Default Title' }}</title>
+  <meta name="description" content="{{ pageDescription || pageTitle || 'Default Description' }}">
+  @if ($slots.head)
+    {{{ await $slots.head() }}}
+  @endif
+  @vite(['resources/js/app.js', 'resources/js/components/profile_picture.js', 'resources/css/components/profile_picture.scss', 'resources/css/app.scss', 'resources/css/pages/dashboard.scss', 'resources/js/components/sidebar.js'])
+</head>
+<body {{
+  html.attrs({
+    class: [
+      bodyStyle,
+    ]
+  })
+}}>
+  @!component('components/dashboard/sidebar')
+  <div class="sidebar-backdrop d-lg-none"></div>
+  <div class="main-content">
+    @!component('components/dashboard/topbar')
+    <main class="container-xxl {{ mainStyle || 'p-3' }}">
+      @if($slots.main)
+        {{{ await $slots.main() }}}
+      @end
+    </main>
+    @!component('components/footer')
+  </div>
+
+  <!-- Modal 1: Image Preview / Selection -->
+  <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fs-5">Profile Photo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center pb-3">
+          <div class="modal-profile-preview" id="modalProfileContainer">
+            <!-- Initials & fallback -->
+            <img id="modalImage" class="w-100 h-100 object-fit-cover d-none" alt="Modal Preview">
+            <span id="modalInitials" class="w-100 h-100 justify-content-center align-items-center text-white fw-bold modal-initials-text d-none"></span>
+
+            <!-- Hover Overlay -->
+            <div class="hover-overlay position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex flex-column justify-content-center align-items-center text-white">
+              <i class="bi bi-camera-fill fs-2 mb-2"></i>
+              <span class="small fw-bold">Change Photo</span>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="modalLoading" class="position-absolute top-0 start-0 w-100 h-100 bg-white d-flex justify-content-center align-items-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+
+          <p id="modalUploadHint" class="text-muted small mt-3 mb-0">Click the image or drag & drop to select a new file.</p>
+          <input type="file" id="fileInput" accept="image/*" hidden>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Cropping -->
+  <div class="modal fade" id="cropModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Crop Image</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="cropper-container-wrapper d-flex justify-content-center align-items-center">
+            <img id="cropperImage" class="d-none" alt="Cropper Preview">
+          </div>
+        </div>
+        <div class="modal-footer flex-column flex-sm-row justify-content-between gap-2">
+          <div class="d-flex align-items-center gap-2 w-100 w-sm-auto">
+            <i class="bi bi-zoom-out text-secondary"></i>
+            <input type="range" class="form-range flex-grow-1" id="zoomRange" min="0" max="1" step="0.01">
+            <i class="bi bi-zoom-in text-secondary"></i>
+          </div>
+          <div class="d-flex justify-content-end gap-2 w-100 w-sm-auto">
+            <button type="button" class="btn btn-secondary" id="btnCancelCrop">Cancel</button>
+            <button type="button" id="btnSaveCrop" class="btn btn-primary">Save & Upload</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Error Message -->
+  <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title text-danger"><i class="bi bi-exclamation-circle-fill me-2"></i>Error</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p id="errorMessage" class="mb-0">Something went wrong.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+@let(inputId = id || name)
+@let(feedbackId = `${inputId}Feedback`)
+@let(helpId = `${inputId}Help`)
+@let(errorId = `errors.${name}`)
+@let(_joinInputIsHidden = joinInputIsHidden || true)
+@let(hasError = errorMessage ? true : false)
+
+{{-- Determine if error exists in Flash Messages (Adonis standard) or manual prop --}}
+@if(labelText && !enableFloatingLabel)
+  @if(labelText)
+    <label {{
+      html.attrs({
+        for: inputId,
+        class: [
+          'form-label',
+          labelStyle
+        ]
+      })
+    }}>
+      @if(labelIcon)
+        @!component('components/bi_icon', { iconName: labelIcon, isFill: labelIconIsFill })
+      @end
+      {{ labelText }}
+    </label>
+  @end
+@end
+
+{{-- Outer Wrapper: Logic to switch between standard spacing and input-group --}}
+<div class="d-flex gap-2">
+  @each(i in Array.from({ length: fieldCount || 1 }, (_, idx) => idx + 1))
+    <input {{
+      html.attrs({
+        id: `${inputId}-${i}`,
+        type: type || 'text',
+        minlength: '1',
+        maxlength: '1',
+        'aria-describedby': `${hasError ? feedbackId : ''} ${help ? helpId : ''}`.trim(),
+        autocomplete: 'off',
+        autocapitalize: 'off',
+        'cstm-split-input': name,
+        'cstm-split-input-index': i,
+        'required': isRequired,
+        class: [
+          'form-control',
+          'text-center',
+          {
+            'number-input-no-arrow': type === 'number',
+            'is-invalid cstm-is-invalid-icon-none': hasError
+          },
+          style
+        ]
+      })
+    }}/>
+  @end
+
+  <input {{
+    html.attrs({
+      id: inputId,
+      name: name,
+      type: type || 'text',
+      value: old(name) || value,
+      placeholder: placeholder || labelText || 'Input',
+      'aria-describedby': `${hasError ? feedbackId : ''} ${help ? helpId : ''}`.trim(),
+      'cstm-split-input-join': name,
+      'hidden': _joinInputIsHidden,
+      'required': isRequired,
+      class: [
+        'form-control',
+        'mt-3',
+        {
+          'is-invalid': hasError,
+          'd-none' : _joinInputIsHidden
+        },
+      ]
+    })
+  }}/>
+</div>
+
+{{-- 4. Validation Feedback --}}
+@if(hasError)
+  <div id="{{ feedbackId }}" class="invalid-feedback d-flex align-items-start text-start">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {{ errorMessage }}
+  </div>
+@end
+
+{{-- 5. Help Text (Always outside the input-group to prevent breaking layout) --}}
+@if(helpText)
+  <div id="{{ helpId }}" class="form-text d-flex align-items-start text-start mt-1">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    {{ helpText }}
+  </div>
+@end

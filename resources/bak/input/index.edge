@@ -1,0 +1,143 @@
+@let(isInvalid = invalidMessage && invalidMessage.length > 0)
+@let(hasButton = button && button.text)
+@let(hasIcon = icon && icon.name)
+
+@if(hasButton || hasIcon)
+  <div class="input-group has-validation">
+@end
+
+{{-- Left Icon --}}
+@if (hasIcon && icon.position === 'left')
+  <span class="input-group-text">
+    <i class="{{ icon.name }}"></i>
+  </span>
+@endif
+
+<div class="{{ style?.wrapper || 'mb-3'}} {{ enableFloatingLabel === true ? 'form-floating' : '' }}">
+  {{-- Label --}}
+  @if (label && !enableFloatingLabel)
+    <label for="{{ id }}" class="form-label">{{ label }}</label>
+  @endif
+
+  @if(type !== 'select')
+    <input
+      @if(id) 
+        id="{{ id }}"
+      @endif
+      @if(name)
+        name="{{ name }}"
+      @endif
+      type="{{ type || 'text' }}"
+      @if(placeholder)
+        placeholder="{{ placeholder }}"
+      @endif
+      class="form-control {{ style?.input || '' }} {{ isInvalid || invalid ? 'is-invalid' : '' }}"
+      {{ hidden === true ? 'hidden' : '' }}
+      @if(autocomplete)
+        autocomplete="{{ autocomplete }}"
+      @endif
+      @if(value)
+        value="{{ value }}"
+      @endif
+      @if(minLength)
+        minlength="{{ minLength }}"
+      @endif
+      @if(maxLength)
+        maxlength="{{ maxLength }}"
+      @endif
+      @if(split === true)
+        cstm-split-input-join="{{ name }}"
+      @endif
+      @if(ariaHelp)
+        aria-describedby="{{ id }}Help"
+      @endif
+
+      @if(attributes)
+        @each(pair in Object.entries(attributes))
+          {{ pair[0] }}="{{ pair[1] }}"
+        @endeach
+      @endif
+    />
+    
+  @else
+    <select
+      @if(id) 
+        id="{{ id }}"
+      @endif
+      @if(name)
+        name="{{ name }}"
+      @endif
+      class="form-select {{ style?.input || '' }} {{ isInvalid ? 'is-invalid' : '' }}"
+      {{ hidden === true ? 'hidden' : '' }}
+
+      @if(attributes)
+        @each(pair in Object.entries(attributes))
+          {{ pair[0] }}="{{ pair[1] }}"
+        @endeach
+      @endif
+    >
+      @each(option in options)
+        <option value="{{ option.value }}" {{ value == option.value ? 'selected' : '' }}>
+          {{ option.label }}
+        </option>
+      @endeach
+    </select>
+  @end
+
+  {{-- Right Icon --}}
+  @if (hasIcon && icon.position === 'right')
+    <span class="input-group-text">
+      <i class="{{ icon.name }}"></i>
+    </span>
+  @endif
+
+  {{-- Optional Button --}}
+  @if (hasButton)
+    <button
+      type="{{ button.type || 'button' }}"
+      class="btn {{ button.style || 'btn-outline-secondary' }}"
+      
+      @if(button.onClick)
+        onclick="{{ button.onClick }}"
+      @end
+
+      @if(button.attributes)
+        @each(pair in Object.entries(button.attributes))
+          {{ pair[0] }}="{{ pair[1] }}"
+        @endeach
+      @endif
+    >
+      {{ button.text }}
+    </button>
+  @endif
+
+  @if (label && enableFloatingLabel)
+    <label for="{{ id }}" class="form-label">{{ label }}</label>
+  @endif
+
+  @if ($slots.main)
+    {{{ await $slots.main() }}}
+  @endif
+  
+  
+</div>
+
+{{-- Help --}}
+@if(ariaHelp)
+  <div id="{{ id }}" class="form-text d-flex align-items-start text-start">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    {{ ariaHelp }}
+  </div>
+@endif
+
+{{-- Error --}}
+@if (isInvalid)
+  <div class="invalid-feedback d-flex align-items-start text-start">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <p class="m-0">{{ invalidMessage }}</p>
+  </div>
+@endif
+
+@if(hasButton || hasIcon)
+  </div>
+@end

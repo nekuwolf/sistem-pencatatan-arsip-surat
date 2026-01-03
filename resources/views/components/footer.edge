@@ -1,0 +1,27 @@
+<footer class="mt-auto bg-body-tertiary container-fluid border-top">
+    <div class="container-xxl d-flex flex-wrap justify-content-center justify-content-md-between align-items-center py-3 px-0"> 
+        
+        <!-- Copyright Column: col-12 on mobile, text-center on mobile -->
+        <div class="col-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-start mb-2 mb-md-0"> 
+            <span class="mb-0 text-body-secondary text-center text-md-start">
+                <!-- Format: © YEAR ORGANIZATION_NAME - APP_NAME -->
+
+                <!-- On mobile: Show organization_short_name and app_short_name -->
+                <span class="d-md-none">&copy; {{ G_APP_YEAR_MADE }} {{ G_ORGANIZATION_SHORT_NAME }} - {{ G_APP_SHORT_NAME }}</span>
+
+                <!-- On larger screens: Show organization_name and app_name -->
+                <span class="d-none d-md-inline">&copy; {{ G_APP_YEAR_MADE }} {{ G_ORGANIZATION_NAME }} - {{ G_APP_NAME }}</span>
+            </span> 
+        </div> 
+        
+        <!-- Social Links Column: col-12 on mobile, justify-content-center on mobile -->
+        <div class="col-12 col-md-3 d-flex justify-content-center justify-content-md-end">
+            <a href="#" class="ms-3 link-opacity-50-hover">
+                <i class="bi bi-link"></i> E-Surat
+            </a>
+            <a href="#" class="ms-3 link-opacity-50-hover">
+                <i class="bi bi-link"></i> Simak Dihati
+            </a>
+        </div>
+    </div>
+</footer>

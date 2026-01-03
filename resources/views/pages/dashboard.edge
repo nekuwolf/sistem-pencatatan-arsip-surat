@@ -1,0 +1,104 @@
+@layout.dashboard({ title: "Dashboard" })
+
+  @slot('head')
+    <meta name="description" content="Main dashboard page">
+  @endslot
+
+  @slot('main')
+    <h1 class="h3 mb-4">Dashboard</h1>
+
+    <div class="row">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            @component('components/stat/index', {
+                title: 'Earnings (Monthly)',
+                value: '$40,000',
+                icon: 'bi-cash-coin',
+                color: 'primary'
+            })
+            @end
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            @component('components/stat/index', {
+                title: 'Tasks Completed',
+                value: '1,200',
+                icon: 'bi-calendar-check',
+                color: 'success'
+            })
+            @end
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            @component('components/stat/index', {
+                title: 'New Users',
+                value: '78',
+                icon: 'bi-people',
+                color: 'info'
+            })
+            @end
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            @component('components/stat/index', {
+                title: 'Pending Tickets',
+                value: '18',
+                icon: 'bi-chat-dots',
+                color: 'warning'
+            })
+            @end
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header border-0 bg-transparent py-3">
+            <h6 class="m-0 fw-bold text-dark">Sample Table</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>John Doe</td>
+                            <td>john@example.com</td>
+                            <td>Admin</td>
+                            <td><span class="badge rounded-pill bg-success-subtle text-success-emphasis">Active</span></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2</th>
+                            <td>Jane Smith</td>
+                            <td>jane@example.com</td>
+                            <td>User</td>
+                            <td><span class="badge rounded-pill bg-success-subtle text-success-emphasis">Active</span></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">3</th>
+                            <td>Mike Johnson</td>
+                            <td>mike@example.com</td>
+                            <td>User</td>
+                            <td><span class="badge rounded-pill bg-warning-subtle text-warning-emphasis">Pending</span></td>
+                        </tr>
+                            <tr>
+                            <th scope="row">4</th>
+                            <td>Sarah Brown</td>
+                            <td>sarah@example.com</td>
+                            <td>Editor</td>
+                            <td><span class="badge rounded-pill bg-danger-subtle text-danger-emphasis">Suspended</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+  @endslot
+@end

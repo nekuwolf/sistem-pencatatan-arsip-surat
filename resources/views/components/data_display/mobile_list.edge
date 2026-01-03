@@ -1,0 +1,62 @@
+<div class="list-group d-md-none {{ style || '' }}">
+  @each(row in datas)
+    {{-- 1. Extract columns using single-line expressions --}}
+    @let(titleCol = columns.find(c => row[c.key]?.mark === 'TITLE'))
+    @let(subTitleCol = columns.find(c => row[c.key]?.mark === 'SUBTITLE'))
+    @let(contentCol = columns.find(c => row[c.key]?.mark === 'CONTENT'))
+    @let(subContentCol = columns.find(c => row[c.key]?.mark === 'SUBCONTENT'))
+    
+    {{-- 2. Extract the Action URL (Single line logic) --}}
+    @let(actionCol = columns.find(c => Array.isArray(row[c.key]) ? row[c.key].some(i => i.mark === 'ACTIONVIEWDETAIL') : row[c.key]?.mark === 'ACTIONVIEWDETAIL'))
+    
+    @let(actionUrl = actionCol ? (Array.isArray(row[actionCol.key]) ? row[actionCol.key].find(i => i.mark === 'ACTIONVIEWDETAIL')?.value : row[actionCol.key]?.value) : '#')
+
+    <a href="{{ actionUrl }}" class="list-group-item list-group-item-action position-relative py-3">
+      <span class="d-block">
+        
+        {{-- Header: Title & Subtitle --}}
+        <span class="d-flex justify-content-between align-items-center">
+          @if(titleCol)
+            <p class="mb-0 fw-bold text-body-emphasis text-truncate pe-1">{{ row[titleCol.key].value }}</p>
+          @end
+          
+          @if(subTitleCol)
+            <p class="mb-0 text-nowrap small text-body-secondary">{{ row[subTitleCol.key].value }}</p>
+          @end
+        </span>
+
+        {{-- Contents --}}
+        @if(contentCol)
+          <p class="mt-1 mb-0 pe-4 text-body text-truncate text-wrap line-clamp-1">{{ row[contentCol.key].value }}</p>
+        @end
+
+        @if(subContentCol)
+          <p class="mt-1 mb-0 pe-4 text-body-secondary text-truncate text-wrap line-clamp-2">{{ row[subContentCol.key].value }}</p>
+        @end
+
+
+        {{-- Badges (Looping through columns for marks) --}}
+        <div class="d-flex flex-wrap gap-1 mt-2 pe-4">
+          @each(col in columns)
+            @let(cell = row[col.key])
+            @if(cell)
+              @if(Array.isArray(cell))
+                @each(item in cell)
+                  @if(item.mark === 'STATUSBADGE')
+                    @!component('components/prefill/badge', { text: item.value })
+                  @end
+                @end
+              @elseif(cell.mark === 'STATUSBADGE')
+                @!component('components/prefill/badge', { text: cell.value })
+              @end
+            @end
+          @end
+        </div>
+      </span>
+
+      <span class="position-absolute top-50 end-0 translate-middle-y me-3">
+        <i class="bi bi-chevron-right"></i>
+      </span>
+    </a>
+  @end
+</div>

@@ -1,0 +1,22 @@
+@layout.dashboard({ pageTitle: 'Register Invite Link Dashboard' })
+  {{-- @slot('head')
+    @vite(['resources/css/components/profile_picture.scss', 'resources/js/components/profile_picture.js', 'resources/js/utils/input_actions.js'])
+  @endslot --}}
+
+  @slot('main')
+    @!component('components/dashboard/breadcrumb', {
+      items: [
+        { label: 'Dashboard', iconName: 'grid-1x2'},
+        { label: 'Register Invite Link', href: route('registerInviteLink.index'), iconName: 'share'},
+      ]
+    })
+    <h4 class="fs-4">User Data</h4>
+
+    {{-- Render Desktop Table --}}
+    {{-- @!component('components/data_display/table_desktop', { columns, datas, style: 'mt-3' }) --}}
+
+    {{-- Render Mobile List --}}
+    {{-- @!component('components/data_display/mobile_list', { columns, datas, style: 'mt-3' }) --}}
+    
+  @endslot
+@end

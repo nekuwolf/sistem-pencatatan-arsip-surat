@@ -1,0 +1,39 @@
+@layout({ title: 'Register Code Verification', pageDescription: 'Register Code Verification', bodyStyle: 'd-flex flex-column min-vh-100'})
+  @slot('head')
+    @vite(['resources/css/pages/register.scss', 'resources/js/utils/input_actions.js'])
+  @endslot
+
+  @slot('main')
+    <main class="container-xxl d-flex align-items-center justify-content-center flex-grow-1 py-4">
+      <!-- Card wrapper uses bg-body-tertiary (the dark equivalent of bg-white/bg-light) -->
+      <div class="cstm-maxw-480px p-4 p-md-5 rounded-4 w-100 bg-body cstm-bg-md-tertiary shadow-none cstm-shadow-md-lg">
+        
+        <!-- Image Placeholder: Updated to use light text on dark primary color for dark mode -->
+        <img
+          class="mb-4 rounded-circle"
+          src="{{ asset('public/images/valve_source_engine_missing_content_512_512.png') }}"
+          alt="App Logo"
+          width="72"
+          height="72"
+        />
+        
+        <!-- Text colors are handled automatically by data-bs-theme="dark" -->
+        <h1 class="h3 mb-3 fw-normal">Register</h1>
+        <p class="text-muted mb-0">Let's make an account for you</p>
+        
+        @!component('components/form/verify_register_code', {
+          registerCodeValue: registerCodeValue,
+          registerCodeErrorMessage: registerCodeErrorMessage,
+          emailValue: emailValue,
+          emailErrorMessage: emailErrorMessage
+        })
+        
+        <!-- Links use text-body-secondary and text-primary (all colors automatically adjusted for dark mode) -->
+        <p class="mt-4 mb-0 text-body-secondary">
+          Already have an account? <a href="{{ route('auth.login.create') }}" class="text-decoration-none text-primary">Login here</a>
+        </p>
+      </div>
+    </main>
+    @!footer({})
+  @endslot
+@end
