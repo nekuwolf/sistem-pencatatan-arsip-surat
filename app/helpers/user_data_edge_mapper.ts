@@ -19,25 +19,25 @@ export function mapUsersDatasToDesktopTableMobileListEdgeView(users: User[] | Us
       { key: 'jobUserRole', label: 'Job Role' },
       { key: 'status', label: 'Status' },
       { key: 'profilePicture', label: 'Profile Picture' },
-      { key: 'actions', label: 'Actions' },
+      // { key: 'actions', label: 'Actions' },
     ],
 
     datas: userArray.map((user: User) => {
       return {
         id: { value: user.id, mark: 'SUBTITLE' },
-        fullName: { value: user.full_name || '', mark: 'TITLE' },
+        fullName: { value: user.fullName || '', mark: 'TITLE' },
         email: { value: user.email || '', mark: 'CONTENT' },
-        phone: { value: user.personal_phone_number || '', mark: 'SUBCONTENT' },
-        birthDatePlace: { value: [user.birth_date?.toISODate(), user.birth_place].filter(Boolean).join(', ') },
-        home: { value: user.full_home_address || '' },
+        phone: { value: user.personalPhoneNumber || '', mark: 'SUBCONTENT' },
+        birthDatePlace: { value: [user.birthDate?.toISODate(), user.birthPlace].filter(Boolean).join(', ') },
+        home: { value: user.fullHomeAddress || '' },
         gender: { value: user.gender?.name || '' },
         deptOrg: { value: [user.department?.name, user.organization?.name].filter(Boolean).join(' - ') },
         jobUserRole: {
-          value: [user.job_role?.name, user.role?.name ? `(${user.role.name})` : null].filter(Boolean).join(' ')
+          value: [user.jobRole?.name, user.role?.name ? `(${user.role.name})` : null].filter(Boolean).join(' ')
         },
-        status: user.user_status_tag?.map(tag => ({ value: tag.name, mark: 'STATUSBADGE' })) || [],
+        status: user.userStatusTag?.map(tag => ({ value: tag.name, mark: 'STATUSBADGE' })) || [],
         profilePicture: { value: router.makeUrl('users.picture.show', { userId: user.id }), mark: 'PICTURE' },
-        actions: [{ value: router.makeUrl('users.show', { userId: user.id }), mark: 'ACTIONVIEWDETAIL' }]
+        // actions: [{ value: router.makeUrl('users.show', { userId: user.id }), mark: 'ACTIONVIEWDETAIL' }]
       };
     }),
   };

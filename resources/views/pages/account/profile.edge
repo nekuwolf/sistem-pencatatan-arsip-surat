@@ -8,9 +8,7 @@
 
     @!component('components/dashboard/breadcrumb', {
       items: [
-        { label: 'Home', href: '/', icon: 'bi bi-house', clickable: true },
-        { label: 'Account', clickable: false },
-        { label: 'Profile', href: '/account/profile', clickable: true }
+        { label: 'Profile', iconName: 'person' },
       ]
     })
 
@@ -21,7 +19,7 @@
       <div class="col-12 col-lg-2 position-relative">
         <div class="sticky-lg-top z-0 p-3 bg-body-tertiary rounded border cstm-top-80-lg cstm-maxh-100vh-100-lg cstm-overflowy-auto-lg">
           <div class="avatar-wrapper mx-auto">
-            @let(variable = auth.user?.full_name)
+            @let(variable = auth.user?.fullName)
             <div class="profile-box rounded-circle shadow-sm" cstmtag-profile-picture cstm-data-profile-picture-upload-endpoint="{{ route('account.profile.picture.update') }}" cstm-data-csrf-token="{{ csrfToken }}">
               <img src="{{ route('account.profile.picture.index', { userId: auth.user?.id }) }}" alt="User">
             </div>

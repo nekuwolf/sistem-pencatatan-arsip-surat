@@ -6,6 +6,7 @@ import MailPriority from '#models/mail_priority'
 import MailCode from '#models/mail_code'
 import User from '#models/user' 
 import UploadedFile from './uploaded_file.js'
+import { TransactionClientContract } from '@adonisjs/lucid/types/database'
 // import UploadedFile from '#models/uploaded_file' // Uncomment if you have this model
 
 export default class Mail extends BaseModel {
@@ -37,6 +38,18 @@ export default class Mail extends BaseModel {
 
   @column()
   declare mailContentSummary: string | null
+
+  @column()
+  declare rackName: string | null
+  
+  @column()
+  declare shelfName: string | null
+  
+  @column()
+  declare boxName: string | null
+  
+  @column()
+  declare envelopeName: string | null
 
   @column()
   declare mailTypeId: number
@@ -78,6 +91,41 @@ export default class Mail extends BaseModel {
   declare createdByUser: BelongsTo<typeof User>
 
   // An mail is created by an user, an user can have multiple mail
-  @hasOne(() => UploadedFile, { foreignKey: 'uploadedFileId' })
-  declare uploadedMailFile: HasOne<typeof UploadedFile>
+  @belongsTo(() => UploadedFile, { foreignKey: 'uploadedMailFileId' })
+  declare uploadedMailFile: BelongsTo<typeof UploadedFile>
+
+  public static async allMailInOrganizationIdPreloadEverythingPaginate(
+    organizationId: number,
+    currentPage: number,
+    itemPerPage?: number,
+    client?: TransactionClientContract
+  ) {
+    return await this.query({ client })
+      .join('user', 'mail.created_by_user_id', 'user.id')
+      .where('user.organization_id', organizationId)
+      .preload('mailType')
+      .preload('mailPriority')
+      .preload('uploadedMailFile')
+      .preload('mailCode')
+      .preload('createdByUser')
+      .orderBy('mail.created_at', 'desc')
+      .paginate(currentPage, itemPerPage || 10)
+  }
+
+  public static async allMailByUserIdPreloadEverythingPaginate(
+    userId: number,
+    currentPage: number,
+    itemPerPage?: number,
+    client?: TransactionClientContract
+  ) {
+    return await this.query({ client })
+      .where('created_by_user_id', userId)
+      .preload('mailType')
+      .preload('mailPriority')
+      .preload('uploadedMailFile')
+      .preload('mailCode')
+      .preload('createdByUser')
+      .orderBy('created_at', 'desc')
+      .paginate(currentPage, itemPerPage || 10)
+  }
 }

@@ -41,7 +41,7 @@ export default class UserProfileController {
 
     // 5. Render the main profile page and pass the flag
     return view.render('pages/account/profile', {
-      isEditing: isEditing,
+      isEditing,
       genderOptions,
     })
   }
@@ -80,9 +80,9 @@ export default class UserProfileController {
   /**
    * Show record
    */
-  public async show({ auth, request, response, session }: HttpContext) {
+  // public async show({ auth, request, response, session }: HttpContext) {
   
-  }
+  // }
   
 
   /**

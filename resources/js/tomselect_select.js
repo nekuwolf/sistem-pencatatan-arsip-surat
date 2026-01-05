@@ -93,6 +93,7 @@ function initTomSelect(root = document) {
           const fetchOptions = {
             method,
             signal: controller.signal,
+            credentials: 'same-origin',
             headers: {
               'X-Requested-With': 'XMLHttpRequest',
             },

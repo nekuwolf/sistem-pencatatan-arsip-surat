@@ -39,8 +39,8 @@ export default class MailArchive extends BaseModel {
   // --- Relationships ---
   
   // An mail archive has one mail
-  @hasOne(() => Mail, { foreignKey: 'mailId' })
-  declare mail: HasOne<typeof Mail>
+  @belongsTo(() => Mail, { foreignKey: 'mailId' })
+  declare mail: BelongsTo<typeof Mail>
 
   // An mail archive can be assigned to one archive envelope, archive envelope have many mail archive 
   @belongsTo(() => ArchiveEnvelope, { foreignKey: 'envelopeId' })

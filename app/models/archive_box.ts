@@ -35,8 +35,8 @@ export default class ArchiveBox extends BaseModel {
   // --- Relationships ---
 
   // A box can only be placed in one rack/shelf position
-  @hasOne(() => ArchiveRackShelfOrder, { foreignKey: 'rackShelfOrderId' })
-  declare rackShelfOrder: HasOne<typeof ArchiveRackShelfOrder>
+  @belongsTo(() => ArchiveRackShelfOrder, { foreignKey: 'rackShelfOrderId' })
+  declare rackShelfOrder: BelongsTo<typeof ArchiveRackShelfOrder>
 
   // A box can have many envelopes
   @hasMany(() => ArchiveEnvelope, { foreignKey: 'boxId' })

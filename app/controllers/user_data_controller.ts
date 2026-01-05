@@ -18,13 +18,13 @@ export default class UserDataController {
     let paginatorResult;
 
     // 2. Fetch the Paginator based on role
-    if (user.roleId === G_USER_ROLE.ADMIN.ID) {
+    if (user.isAdmin) {
       paginatorResult = await User.allUserInOrganizationIdPreloadEverythingPaginate(
         user.organizationId, 
         page
       )
     } 
-    else if (user.roleId === G_USER_ROLE.EMPLOYEE.ID) {
+    else if (user.isEmployee) {
       paginatorResult = await User.allUserInDepartmentIdInOrganizationIdPreloadEverythingPaginate(
         user.departmentId, 
         user.organizationId, 

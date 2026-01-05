@@ -27,7 +27,7 @@
       labelText: 'Full Name',
       labelIcon: 'person',
       labelIconIsFill: false,
-      value: auth.user.full_name || '-',
+      value: auth.user.fullName || '-',
       isReadonly: true,
       isDisabled: true
     })
@@ -54,7 +54,7 @@
       labelIcon: 'calendar',
       labelIconIsFill: false,
       // Formatting Luxon DateTime to human readable string since it's view only
-      value: auth.user.birth_date ? auth.user.birth_date.toFormat('dd/MM/yyyy') : '-',
+      value: auth.user.birthDate ? auth.user.birthDate.toFormat('dd/MM/yyyy') : '-',
       isReadonly: true,
       isDisabled: true
     })
@@ -67,7 +67,7 @@
       labelText: 'Place of Birth',
       labelIcon: 'geo-alt',
       labelIconIsFill: false,
-      value: auth.user.birth_place || '-',
+      value: auth.user.birthPlace || '-',
       isReadonly: true,
       isDisabled: true
     })
@@ -104,7 +104,7 @@
       labelText: 'Phone Number',
       labelIcon: 'telephone',
       labelIconIsFill: false,
-      value: auth.user.personal_phone_number || '-',
+      value: auth.user.personalPhoneNumber || '-',
       isReadonly: true,
       isDisabled: true
     })
@@ -117,7 +117,7 @@
       labelText: 'Home Address',
       labelIcon: 'house-door',
       labelIconIsFill: false,
-      value: auth.user.full_home_address || '-',
+      value: auth.user.fullHomeAddress || '-',
       cstmAutogrowHeight: true,
       cstmAutogrowHeightMinPx: '100',
       isReadonly: true,
@@ -166,7 +166,7 @@
       labelText: 'Job Role / Designation',
       labelIcon: 'person-gear',
       labelIconIsFill: false,
-      value: auth.user.job_role?.name || '-',
+      value: auth.user.jobRole?.name || '-',
       isReadonly: true,
       isDisabled: true
     })

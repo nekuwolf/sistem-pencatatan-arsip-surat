@@ -18,6 +18,13 @@
 
 @elseif(text === 'Not Archived')
   @assign(color = 'danger')
+
+@elseif(text === 'Diarsipkan')
+  @assign(color = 'success')
+
+@elseif(text === 'Belum Diarsipkan')
+  @assign(color = 'warning')
+
 @end
 
 @let(bgClass = isColorSubtle ? `bg-${color}-subtle` : `bg-${color}`)

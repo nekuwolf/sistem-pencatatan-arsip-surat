@@ -25,7 +25,6 @@
       iconName: 'x-lg',
       isOutline: true,
       variant: 'secondary',
-      size: 'sm' // Optional: 'sm' usually looks better for header actions
     })
   </div>
 
@@ -38,7 +37,7 @@
       labelIcon: 'person',
       labelIconIsFill: false,
       // Logic: Try old input first, then DB value, then empty string
-      value: old('full_name') || auth.user.full_name || '', 
+      value: old('full_name') || auth.user.fullName || '', 
       isReadonly: false, 
       isDisabled: false
     })
@@ -54,7 +53,7 @@
       isRequired: true,
       enableFloatingLabel: false,
       options: genderOptions || [],
-      errorMessage: flashMessages.get('errors.gender_id') || '',
+      errorMessage: flashMessages.get('errors.genderId') || '',
     })
   </div>
 
@@ -68,7 +67,7 @@
       labelIcon: 'calendar',
       labelIconIsFill: false,
       // .toISODate() is needed for input type="date" if using Luxon DateTime
-      value: old('birth_date') || (auth.user.birth_date ? auth.user.birth_date.toISODate() : '') || '',
+      value: old('birth_date') || (auth.user.birthDate ? auth.user.birthDate.toISODate() : '') || '',
       isReadonly: false,
       isDisabled: false
     })
@@ -82,7 +81,7 @@
       labelText: 'Place of Birth',
       labelIcon: 'geo-alt',
       labelIconIsFill: false,
-      value: old('birth_place') || auth.user.birth_place || '',
+      value: old('birth_place') || auth.user.birthPlace || '',
       isReadonly: false,
       isDisabled: false
     })
@@ -123,7 +122,7 @@
       labelText: 'Phone Number',
       labelIcon: 'telephone',
       labelIconIsFill: false,
-      value: old('personal_phone_number') || auth.user.personal_phone_number || '',
+      value: old('personal_phone_number') || auth.user.personalPhoneNumber || '',
       isReadonly: false,
       isDisabled: false
     })
@@ -137,7 +136,7 @@
       labelText: 'Home Address',
       labelIcon: 'house-door',
       labelIconIsFill: false,
-      value: old('full_home_address') || auth.user.full_home_address || '',
+      value: old('full_home_address') || auth.user.fullHomeAddress || '',
       cstmAutogrowHeight: true,
       cstmAutogrowHeightMinPx: '100',
       isReadonly: false,
@@ -189,7 +188,7 @@
       labelText: 'Job Role / Designation',
       labelIcon: 'person-gear',
       labelIconIsFill: false,
-      value: auth.user.job_role?.name || '',
+      value: auth.user.jobRole?.name || '',
       isReadonly: true,
       isDisabled: true
     })

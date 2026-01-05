@@ -1,0 +1,33 @@
+@component('components/layout/dashboard', { title: 'Mail Dashboard Page', pageDescription: 'Mail Dashboard Page' })
+  @slot('head')
+    <meta name="description" content="Profile">
+    @vite(['resources/js/utils/input_actions.js'])
+  @endslot
+
+  @slot('main')
+
+    @!component('components/dashboard/breadcrumb', {
+      items: [
+        { label: 'Dashboard', icon: 'grid-1x2' },
+        { label: 'Mail', icon: 'envelope' }
+      ]
+    })
+
+    <h4 class="mt-3 fs-4">Mail</h4>
+
+    <div class="p-3 bg-body-tertiary rounded border">
+      @if(isViewingDetail)
+        {{-- Include the View Only version --}}
+        @include('pages/mail/partials/form/show')
+      @end
+      @if(isEditing)
+        {{-- Include the Form version you created earlier --}}
+        @include('pages/mail/partials/form/edit')
+      @end
+      @if(isCreatingNew)
+        {{-- Include the View Only version --}}
+        @include('pages/mail/partials/form/create')
+      @end
+    </div>
+  @endslot
+@end

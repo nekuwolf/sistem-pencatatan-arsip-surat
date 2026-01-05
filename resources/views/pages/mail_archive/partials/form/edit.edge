@@ -1,0 +1,91 @@
+<form action="{{ route('mails.update', { mailId: mail.id }) }}" method="POST" enctype="multipart/form-data">
+  {{ csrfField() }}
+
+  <div class="row g-3">
+    <div class="col">
+      <h6 class="fw-bold mb-0">
+        @!component('components/bi_icon', { iconName: 'pencil-square', isFill: true })
+        Update Mail Information
+      </h6>
+    </div>
+    
+    <div class="col-auto">
+      @!component('components/button/a', {
+        text: 'Cancel Edit',
+        href: route('mails.show', { mailId: mail.id }),
+        iconName: 'x-lg',
+        isOutline: true,
+        variant: 'secondary',
+      })
+    </div>
+
+    {{-- Mail Source --}}
+    <div class="col-md-6">
+      @component('components/input/input', {
+        name: 'mail_source',
+        labelText: 'Mail Source',
+        value: old('mail_source') || mail.mailSource,
+        isRequired: true
+      })
+      @end
+    </div>
+
+    {{-- Full Mail Code --}}
+    <div class="col-md-6">
+      @component('components/input/input', {
+        name: 'full_mail_code',
+        labelText: 'Full Mail Code',
+        value: old('full_mail_code') || mail.fullMailCode,
+        isRequired: true
+      })
+      @end
+    </div>
+
+    {{-- Dates --}}
+    <div class="col-md-6">
+      @component('components/input/input', {
+        name: 'mail_date',
+        type: 'date',
+        labelText: 'Mail Date',
+        value: old('mail_date') || mail.mailDate?.toISODate(),
+        isRequired: true
+      })
+      @end
+    </div>
+
+    {{-- Dropdowns --}}
+    <div class="col-md-6">
+      @!component('components/input/select', {
+        name: 'mail_type_id',
+        labelText: 'Mail Type',
+        options: mailTypeOptions || [],
+        value: old('mail_type_id') || mail.mailTypeId,
+        isRequired: true
+      })
+    </div>
+
+    {{-- File Section --}}
+    <div class="col-12 mt-4">
+      <div class="p-3 border rounded bg-light">
+        <label class="fw-bold mb-2">Replace Attachment</label>
+        <p class="small text-muted">Leave empty to keep the current file.</p>
+        @component('components/input/input', {
+          name: 'mail_file',
+          type: 'file',
+          labelText: 'Upload New Document'
+        })
+        @end
+      </div>
+    </div>
+
+    <div class="col-12">
+      @!component('components/button/button', {
+        style: 'mt-3 w-100',
+        type: 'submit',
+        text: 'Update Mail Record',
+        enableLoadingIndicator: true,
+        variant: 'primary'
+      })
+    </div>
+  </div>
+</form>

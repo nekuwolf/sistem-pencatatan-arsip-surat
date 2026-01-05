@@ -33,6 +33,6 @@ export default class ArchiveRackShelfOrder extends BaseModel {
   declare box: HasOne<typeof ArchiveBox>
 
   // A rack shelf order belong to an organization
-  @belongsTo(() => Organization, { foreignKey: 'organizationsId' })
+  @belongsTo(() => Organization, { foreignKey: 'organizationId' })
   declare organization: BelongsTo<typeof Organization>
 }

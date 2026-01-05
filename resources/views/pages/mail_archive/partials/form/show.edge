@@ -1,0 +1,68 @@
+<div class="row g-3">
+  <div class="col-12 d-flex justify-content-between align-items-center">
+    <h5 class="mb-0 text-primary">Mail Details</h5>
+    @!component('components/button/a', {
+      text: 'Edit Mail',
+      href: route('mails.show', { mailId: mail.id }, { qs: { edit: 'true' } }),
+      iconName: 'pencil-square',
+      variant: 'warning'
+    })
+  </div>
+
+  <div class="col-md-6">
+    <label class="small text-muted d-block">Mail Source</label>
+    <p class="fw-bold">{{ mail.mailSource || '-' }}</p>
+  </div>
+
+  <div class="col-md-6">
+    <label class="small text-muted d-block">Full Mail Code</label>
+    <p class="fw-bold">{{ mail.fullMailCode || '-' }}</p>
+  </div>
+
+  <div class="col-md-4">
+    <label class="small text-muted d-block">Agenda Number</label>
+    <p>{{ mail.agendaNumber || '-' }}</p>
+  </div>
+
+  <div class="col-md-4">
+    <label class="small text-muted d-block">Mail Date</label>
+    <p>{{ mail.mailDate ? mail.mailDate.toFormat('dd LLL yyyy') : '-' }}</p>
+  </div>
+
+  <div class="col-md-4">
+    <label class="small text-muted d-block">Registered At</label>
+    <p>{{ mail.registeredAt ? mail.registeredAt.toFormat('dd LLL yyyy, HH:mm') : '-' }}</p>
+  </div>
+
+  <div class="col-md-4">
+    <label class="small text-muted d-block">Mail Type</label>
+    <span class="badge bg-info text-dark">{{ mail.mailType?.name || 'N/A' }}</span>
+  </div>
+
+  <div class="col-12">
+    <label class="small text-muted d-block">Content Summary</label>
+    <div class="p-2 bg-light border rounded">
+      {{ mail.mailContentSummary || 'No summary provided.' }}
+    </div>
+  </div>
+
+  @if(mail.uploadedMailFileId)
+    <div class="col-12">
+      <div class="d-flex align-items-center p-3 border rounded bg-white">
+        @!component('components/bi_icon', { iconName: 'file-earmark-pdf', style: 'fs-2 me-3 text-danger' })
+        <div class="flex-grow-1">
+          <p class="mb-0 fw-bold">Attached Document</p>
+          <small class="text-muted">Filename: {{ mail.uploadedMailFile?.filename }}</small>
+        </div>
+        @!component('components/button/a', {
+          text: 'View File',
+          href: route('mails.file.show', { mailId: mail.id }),
+          iconName: 'eye',
+          isOutline: true,
+          variant: 'primary',
+          target: '_blank'
+        })
+      </div>
+    </div>
+  @end
+</div>

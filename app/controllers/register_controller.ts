@@ -62,22 +62,33 @@ export default class RegisterController {
     /**
     * Handle form submission for the create action
     */
-    async store({ request, view, response, auth }: HttpContext) {
-      
-      // 1. Validate Input
-      // If this fails, VineJS handles the error automatically
-      const validated = await request.validateUsing(storeRegisterValidator)
-      
-      // 2. Call Business Logic
-      // If this fails, RegisterFailedException handles the error automatically
-      const registeredUser = await User.registerNewUserWithRegisterCode(validated)
+    async store({ request, view, response, auth, session }: HttpContext) {
+      const registerCode = request.input('register_code')
 
-      // 3. Login & Redirect (Happy Path)
-      if (registeredUser) {
-        await auth.use().login(registeredUser)
+      try {
+        // 1. Validate
+        const validated = await request.validateUsing(storeRegisterValidator)
+
+        // 2. Register
+        const registeredUser = await User.registerNewUserWithRegisterCode(validated)
+
+        // 3. Login
+        if (registeredUser) {
+          await auth.use().login(registeredUser)
+        }
+
+        return response.redirect().toRoute('mails.index')
+
+      } catch (error) {
+        // If it's a validation error or your custom exception
+        // Flash the inputs so the form stays filled
+        session.flashAll()
+
+        // Redirect back to the GET route WITH the register_code in the URL
+        return response.redirect().toRoute('auth.register.create', {}, {
+          qs: { register_code: registerCode }
+        })
       }
-
-      return response.redirect().toRoute('mail.index')
     }
     
 }

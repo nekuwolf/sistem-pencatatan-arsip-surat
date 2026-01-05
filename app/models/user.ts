@@ -4,7 +4,7 @@ import type { BelongsTo, HasMany, HasOne, ManyToMany } from '@adonisjs/lucid/typ
 import UploadedFile from '#models/uploaded_file'
 import RegisterInviteLink from './register_invite_link.js'
 import db from '@adonisjs/lucid/services/db'
-import { G_USER_STATUS_TAG } from '#start/globals'
+import { G_USER_ROLE, G_USER_STATUS_TAG } from '#start/globals'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
 import { dd } from '@adonisjs/core/services/dumper'
 import Gender from './gender.js'
@@ -79,7 +79,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare roleId: number
   
   @column()
-  declare profilePictureFileId: number
+  declare profilePictureFileId: number | null
 
   // A user data can has one gender
   @belongsTo(() => Gender, { foreignKey: 'genderId' })
@@ -129,6 +129,31 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @belongsTo(() => UploadedFile, { foreignKey: 'profilePictureFileId' })
   declare profilePictureFile: BelongsTo<typeof UploadedFile>
+
+  get isAdmin() {
+    return this.roleId === G_USER_ROLE.ADMIN.ID
+  }
+
+  /**
+   * Returns true if the user is a standard Employee
+   */
+  get isEmployee() {
+    return this.roleId === G_USER_ROLE.EMPLOYEE.ID
+  }
+
+  /**
+   * Returns true if the user has restricted access
+   */
+  get isRestrictedEmployee() {
+    return this.roleId === G_USER_ROLE.RESTRICTED_EMPLOYEE.ID
+  }
+
+  /**
+   * Helper to check if user belongs to "Staff" (Admin or Employee)
+   */
+  // get isStaff() {
+  //   return [G_USER_ROLE.ADMIN.ID, G_USER_ROLE.EMPLOYEE.ID].includes(this.roleId)
+  // }
 
   public static async allUserInOrganizationIdPreloadEverythingPaginate(organizationId: number, currentPage: number, itemPerPage?: number, client?: TransactionClientContract) {
     return await this.query({ client: client })
@@ -223,7 +248,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
         .where('email', payload.email)
         .orWhere('personalPhoneNumber', payload.personal_phone_number)
         .whereHas('userStatusTag', (query) => {
-          query.where('userStatusTag_id', G_USER_STATUS_TAG.ACTIVE.ID)
+          query.where('user_status_tag_id', G_USER_STATUS_TAG.ACTIVE.ID)
         })
         .first()
       
@@ -282,7 +307,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
         trx
       )
 
-      return await User.find(user.id)
+      return await User.find(user.id, { client: trx })
     })
   }
 

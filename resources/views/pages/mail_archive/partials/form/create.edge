@@ -1,0 +1,83 @@
+<form action="{{ route('mailArchives.store') }}" method="POST">
+  {{ csrfField() }}
+
+  {{-- Total Paper Archived (Number Input) --}}
+  @component('components/input/input', {
+    id: 'totalPaperArchived',
+    name: 'total_paper_archived',
+    labelText: 'Total Paper Archived',
+    labelIcon: 'files',
+    type: 'number',
+    value: old('total_paper_archived'),
+    placeholder: 'Enter amount of paper',
+    isRequired: true,
+    enableFloatingLabel: false,
+    errorMessage: flashMessages.get('errors.total_paper_archived') || ''
+  })
+  @end
+
+  {{-- Mail Selection (Select) --}}
+  @!component('components/input/select', {
+    id: 'mailId',
+    name: 'mail_id',
+    labelText: 'Select Mail',
+    labelIcon: 'envelope-paper',
+    placeholder: "Choose a mail record",
+    isRequired: true,
+    enableFloatingLabel: false,
+    options: mailOptions || [],
+    errorMessage: flashMessages.get('errors.mail_id') || '',
+  })
+
+  {{-- Envelope Selection (Select) --}}
+  @!component('components/input/select', {
+    id: 'envelopeId',
+    name: 'envelope_id',
+    labelText: 'Archive Envelope',
+    labelIcon: 'folder',
+    placeholder: "Choose envelope",
+    isRequired: true,
+    enableFloatingLabel: false,
+    options: envelopeOptions || [],
+    errorMessage: flashMessages.get('errors.envelope_id') || '',
+  })
+
+  {{-- Archive Status (Select) --}}
+  @!component('components/input/select', {
+    id: 'archiveStatusId',
+    name: 'archive_status_id',
+    labelText: 'Archive Status',
+    labelIcon: 'info-circle',
+    placeholder: "Select status",
+    isRequired: true,
+    enableFloatingLabel: false,
+    options: statusOptions || [],
+    errorMessage: flashMessages.get('errors.archive_status_id') || '',
+  })
+
+  {{-- Note (Textarea) --}}
+  @component('components/input/textarea', {
+    id: 'note',
+    name: 'note',
+    labelText: 'Notes / Remarks',
+    labelIcon: 'journal-text',
+    labelIconIsFill: false,
+    type: 'text',
+    value: old('note'),
+    placeholder: 'Add any additional archiving details here...',
+    isRequired: false,
+    enableFloatingLabel: false,
+    cstmAutogrowHeight: true,
+    cstmAutogrowHeightMinPx: 100,
+    errorMessage: flashMessages.get('errors.note') || ''
+  })
+  @end
+
+  {{-- Submit Button --}}
+  @!component('components/button/button', {
+    style: 'mt-4 w-100',
+    type: 'submit',
+    text: 'Save Archive Record',
+    enableLoadingIndicator: true
+  })
+</form>

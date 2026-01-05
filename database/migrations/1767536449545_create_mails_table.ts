@@ -18,6 +18,10 @@ export default class extends BaseSchema {
       table.integer('mail_paper_count')
       table.integer('mail_attachment_paper_count')
       table.text('mail_content_summary')
+      table.string('rack_name')
+      table.string('shelf_name')
+      table.string('box_name')
+      table.string('envelope_name')
       
       // Fixed: Explicit table references
       table.integer('mail_type_id').unsigned().references('id').inTable('mail_type').onDelete('RESTRICT')

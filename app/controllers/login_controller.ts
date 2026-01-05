@@ -32,9 +32,7 @@ export default class LoginController {
 
       await auth.use().login(user)
 
-      dd(user)
-
-      return response.redirect().toRoute('mail.index')
+      return response.redirect().toRoute('mails.index')
       
     } catch (error) {
       // 3. Handle Bad Credentials

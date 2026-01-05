@@ -28,7 +28,7 @@
                   @elseif(mark === 'ACTIONVIEWDETAIL')
                     @!component('components/button/a', {
                       style: 'w-100 py-1 px-2',
-                      text: 'View',
+                      text: 'Detail',
                       href: val,
                       iconName: 'eye',
                       isOutline: true,
@@ -50,6 +50,16 @@
                       href: val,
                       iconName: 'trash',
                       isOutline: true,
+                    })
+                  @elseif(mark === 'ACTIONDOWNLOAD')
+                    @!component('components/button/a', {
+                      style: 'w-100 mt-1 py-1 px-2',
+                      variant: 'primary',
+                      text: 'Unduh',
+                      href: val,
+                      iconName: 'download',
+                      isOutline: true,
+                      target: '_blank'
                     })
                   @elseif(mark === 'PICTURE')
                     <img class="img-fluid profile-pic-size-small" src="{{ val }}">

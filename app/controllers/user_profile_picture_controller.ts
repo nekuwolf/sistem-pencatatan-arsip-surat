@@ -27,9 +27,7 @@ export default class UserProfilePictureController {
     await user.load('profilePictureFile')
     const avatar = user.profilePictureFile
 
-    // ---------------------------------------------------------
     // FALLBACK: If no custom avatar, generate SVG
-    // ---------------------------------------------------------
     if (!avatar) {
       // Use fullName, fallback to email if name is empty
       const nameForAvatar = user.fullName || user.email
@@ -50,9 +48,7 @@ export default class UserProfilePictureController {
         .send(svg)
     }
 
-    // ---------------------------------------------------------
     // EXISTING LOGIC: Custom Avatar exists
-    // ---------------------------------------------------------
 
     const etag = `"${avatar.sha256Checksum}"`
     if (request.header('if-none-match') === etag) {
@@ -86,10 +82,8 @@ export default class UserProfilePictureController {
    * POST /profile/picture
    */
   async update({ request, auth, response }: HttpContext) {
-    // ... (Your existing update logic remains exactly the same) ...
-    // Just ensure you include the update method code here
-    
     const authUser = auth.user!
+
     const avatarFile = request.file('avatar', {
       size: '5mb',
       extnames: ['jpg', 'jpeg', 'png', 'webp', 'avif'],
@@ -99,6 +93,28 @@ export default class UserProfilePictureController {
       return response.badRequest(avatarFile?.errors || { message: 'No file uploaded' })
     }
 
+    // DELETE PREVIOUS AVATAR
+    await authUser.load('profilePictureFile')
+    const oldAvatar = authUser.profilePictureFile
+
+    if (oldAvatar) {
+      const disk = drive.use('localStoragePrivate')
+
+      // 1. Unlink FK FIRST
+      authUser.profilePictureFileId = null
+      await authUser.save()
+
+      // 2. Delete file from disk
+      if (await disk.exists(oldAvatar.fileLocationPath)) {
+        await disk.delete(oldAvatar.fileLocationPath)
+      }
+
+      // 3. Delete DB row
+      await oldAvatar.delete()
+    }
+
+
+    // SAVE NEW AVATAR
     const uploadedAt = DateTime.utc()
     const folderPath = `user/${authUser.id}/profile_pictures`
     const rawName = avatarFile.clientName || `avatar.${avatarFile.extname}`
@@ -126,7 +142,8 @@ export default class UserProfilePictureController {
 
     return response.ok({
       message: 'Profile picture updated successfully',
-      data: { id: uploadedFile.id, path: fullPathKey }
+      data: { id: uploadedFile.id, path: fullPathKey },
     })
   }
+
 }

@@ -7,7 +7,7 @@
 
     <ul class="nav nav-pills flex-column px-2 py-2 sidebar-nav">
         
-        <li class="sidebar-header">
+        {{-- <li class="sidebar-header">
             <span class="sidebar-header-text">Main</span>
         </li>
         
@@ -16,35 +16,82 @@
                 <i class="bi bi-grid-1x2-fill"></i>
                 <span class="nav-link-text">Dashboard</span>
             </a>
-        </li>
+        </li> --}}
         
 
         <li class="sidebar-header">
-            <span class="sidebar-header-text">Data Management</span>
+            <span class="sidebar-header-text">Manajemen Arsip</span>
         </li>
         
-        <li class="nav-item">
+        {{-- <li class="nav-item">
             <a href="{{ route('mails.index') }}" class="nav-link {{ request.url() === route('mails.index') ? 'active' : '' }}" aria-current="page">
                 <i class="bi bi-envelope-fill"></i>
                 <span class="nav-link-text">Mail</span>
             </a>
+        </li> --}}
+
+        @let(mailCategorySubmenuExpand = request.url() === route('mails.index') || request.url() === route('mails.create'))
+        <li class="nav-item mt-2">
+            <a class="nav-link collapsed {{ mailCategorySubmenuExpand ? 'active' : '' }}" data-bs-toggle="collapse" href="#mailCategorySubmenu" role="button" aria-expanded="false" aria-controls="mailCategorySubmenu">
+                <i class="bi bi-envelope-fill"></i>
+                <span class="nav-link-text">Arsip Surat</span>
+            </a>
+            <div class="collapse submenu {{ mailCategorySubmenuExpand ? 'show' : '' }}" id="mailCategorySubmenu">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="{{ route('mails.index') }}" class="nav-link {{ request.url() === route('mails.index') ? 'active' : '' }}">
+                            <i class="bi bi-eye"></i>
+                            <span class="nav-link-text">Lihat Semua</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('mails.create') }}" class="nav-link {{ request.url() === route('mails.create') ? 'active' : '' }}">
+                            <i class="bi bi-envelope-plus"></i>
+                            <span class="nav-link-text">Tambahkan</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </li>
 
-        <li class="nav-item mt-2">
+        {{-- <li class="nav-item mt-2">
             <a href="{{ route('archive.index') }}" class="nav-link {{ request.url() === route('archive.index') ? 'active' : '' }}" aria-current="page">
                 <i class="bi bi-archive-fill"></i>
                 <span class="nav-link-text">Mail Archive</span>
             </a>
-        </li>
+        </li> --}}
+        
+        {{-- @let(mailArchiveCategorySubmenuExpand = request.url() === route('mailArchives.index') || request.url() === route('mailArchives.create'))
+        <li class="nav-item mt-2">
+            <a class="nav-link collapsed {{ mailArchiveCategorySubmenuExpand ? 'active' : '' }}" data-bs-toggle="collapse" href="#mailArchiveCategorySubmenu" role="button" aria-expanded="false" aria-controls="mailArchiveCategorySubmenu">
+                <i class="bi bi-archive-fill"></i>
+                <span class="nav-link-text">Mail Archive</span>
+            </a>
+            <div class="collapse submenu {{ mailArchiveCategorySubmenuExpand ? 'show' : '' }}" id="mailArchiveCategorySubmenu">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="{{ route('mailArchives.index') }}" class="nav-link {{ request.url() === route('mailArchives.index') ? 'active' : '' }}">
+                            <i class="bi bi-eye"></i>
+                            <span class="nav-link-text">View all</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('mailArchives.create') }}" class="nav-link {{ request.url() === route('mailArchives.create') ? 'active' : '' }}">
+                            <i class="bi bi-envelope-plus"></i>
+                            <span class="nav-link-text">Add new</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li> --}}
 
-        @if(auth.user?.role_id === G_USER_ROLE.EMPLOYEE.ID || auth.user?.role_id === G_USER_ROLE.ADMIN.ID)
+        @if(auth.user?.roleId === G_USER_ROLE.EMPLOYEE.ID || auth.user?.roleId === G_USER_ROLE.ADMIN.ID)
             <li class="nav-item mt-2">
                 <a href="{{ route('users.index') }}" class="nav-link {{ request.url() === route('users.index') ? 'active' : '' }}" aria-current="page">
                     <i class="bi bi-people-fill"></i>
-                    <span class="nav-link-text">User</span>
+                    <span class="nav-link-text">Pengguna</span>
                 </a>
             </li>
-
             {{-- <li class="nav-item mt-2">
             <a href="{{ route('registerInviteLink.index') }}" class="nav-link {{ request.url() === route('registerInviteLink.index') ? 'active' : '' }}" aria-current="page">
                 <i class="bi bi-share-fill"></i>
@@ -53,31 +100,7 @@
             </li> --}}
         @end
         
-        {{-- <li class="nav-item">
-            <a class="nav-link collapsed {{ request.urlPath().startsWith('/reports') ? 'active' : '' }}" data-bs-toggle="collapse" href="#reports-submenu" role="button" aria-expanded="false" aria-controls="reports-submenu">
-                <i class="bi bi-bar-chart-fill"></i>
-                <span class="nav-link-text">Reports</span>
-            </a>
-            <div class="collapse submenu {{ request.urlPath().startsWith('/reports') ? 'show' : '' }}" id="reports-submenu">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a href="{{ route('reports.daily') }}" class="nav-link {{ request.url() === route('reports.daily') ? 'active' : '' }}">
-                            <span class="nav-link-text">Daily Reports</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <span class="nav-link-text">Weekly Reports</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <span class="nav-link-text">Analytics</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </li> --}}
+        
 
         {{-- <li class="nav-item">
             <a class="nav-link collapsed {{ request.url() === route('mails.index') ? 'active' : '' }}" data-bs-toggle="collapse" href="#mail-submenu" role="button" aria-expanded="false" aria-controls="mail-submenu">
@@ -118,7 +141,7 @@
       <li class="nav-item">
           <a href="{{ route('account.profile.index') }}" class="nav-link {{ request.url() === route('account.profile.index') ? 'active' : '' }}">
               <i class="bi bi-person-circle"></i>
-              <span class="nav-link-text">Profile</span>
+              <span class="nav-link-text">Profil</span>
           </a>
       </li>
 

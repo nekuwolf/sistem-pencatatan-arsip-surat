@@ -1,27 +1,7 @@
-<form action="{{ route('mails.update', { mailId: mail.id }) }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('mails.store') }}" method="POST" enctype="multipart/form-data">
   {{ csrfField() }}
 
   <div class="row g-3">
-    {{-- Header with Action Buttons --}}
-    <div class="col">
-      <h6 class="fw-bold mb-0">
-        @!component('components/bi_icon', { iconName: 'pencil-square', isFill: true })
-        Update Mail Information
-      </h6>
-    </div>
-    
-    <div class="col-auto">
-      @!component('components/button/a', {
-        text: 'Cancel Edit',
-        href: route('mails.show', { mailId: mail.id }),
-        iconName: 'x-lg',
-        isOutline: true,
-        variant: 'secondary',
-      })
-    </div>
-
-    <hr class="my-2 opacity-10">
-
     {{-- Mail Source --}}
     <div class="col-md-6">
       @component('components/input/input', {
@@ -29,7 +9,7 @@
         name: 'mail_source',
         labelText: 'Surat Dari',
         labelIcon: 'envelope',
-        value: old('mail_source') || mail.mailSource,
+        value: old('mail_source'),
         placeholder: 'Nama Dinas / Perusahaan / Individu',
         isRequired: true,
         enableFloatingLabel: false,
@@ -45,7 +25,7 @@
         name: 'full_mail_code',
         labelText: 'Kode Surat',
         labelIcon: 'hash',
-        value: old('full_mail_code') || mail.fullMailCode,
+        value: old('full_mail_code'),
         placeholder: 'Kode Surat (cth. B/500/1234/DKIS)',
         isRequired: true,
         enableFloatingLabel: false,
@@ -62,7 +42,7 @@
         type: 'number',
         labelText: 'Nomor Agenda',
         labelIcon: 'list-ol',
-        value: old('agenda_number') || mail.agendaNumber,
+        value: old('agenda_number'),
         placeholder: '1234',
         isRequired: true,
         enableFloatingLabel: false,
@@ -79,7 +59,7 @@
         type: 'date',
         labelText: 'Tanggal Surat',
         labelIcon: 'calendar-event',
-        value: old('mail_date') || mail.mailDate?.toISODate(),
+        value: old('mail_date'),
         isRequired: true,
         enableFloatingLabel: false,
         errorMessage: flashMessages.get('errors.mail_date') || ''
@@ -95,7 +75,8 @@
         type: 'datetime-local',
         labelText: 'Tanggal Registrasi',
         labelIcon: 'clock',
-        value: old('registered_at') || mail.registeredAt?.toFormat("yyyy-MM-dd'T'HH:mm"),
+        value: old('registered_at'),
+        applyDateTimeNow: true,
         isRequired: true,
         enableFloatingLabel: false,
         errorMessage: flashMessages.get('errors.registered_at') || ''
@@ -111,9 +92,10 @@
         type: 'number',
         labelText: 'Jumlah Surat',
         labelIcon: 'file-earmark',
-        value: old('mail_paper_count') || mail.mailPaperCount,
+        value: old('mail_paper_count') || '1',
         isRequired: true,
         enableFloatingLabel: false,
+        helpText: 'Jumlah lembar surat beserta lampiran',
         errorMessage: flashMessages.get('errors.mail_paper_count') || ''
       })
       @end
@@ -126,9 +108,10 @@
         type: 'number',
         labelText: 'Jumlah Lembar Lainnya',
         labelIcon: 'paperclip',
-        value: old('mail_attachment_paper_count') || mail.mailAttachmentPaperCount,
+        value: old('mail_attachment_paper_count') || '0',
         isRequired: true,
         enableFloatingLabel: false,
+        helpText: 'Dapat berupa jumlah lembar disposisi, dll.',
         errorMessage: flashMessages.get('errors.mail_attachment_paper_count') || ''
       })
       @end
@@ -145,7 +128,6 @@
         isRequired: true,
         enableFloatingLabel: false,
         options: mailTypeOptions || [],
-        value: old('mail_type_id') || mail.mailTypeId,
         errorMessage: flashMessages.get('errors.mail_type_id') || '',
       })
     </div>
@@ -160,7 +142,6 @@
         isRequired: true,
         enableFloatingLabel: false,
         options: mailPriorityOptions || [],
-        value: old('mail_priority_id') || mail.mailPriorityId,
         errorMessage: flashMessages.get('errors.mail_priority_id') || '',
       })
     </div>
@@ -176,8 +157,13 @@
         enableFloatingLabel: false,
         enableTomSelect: true,
         queryEndpoint: route('mailCode.search'),
+        queryEndpointMethod: 'GET',
+        tomSelectPlugins: 'dropdown_input;',
+        tomSelectOptionValueField: 'value',
+        tomSelectOptionLabelField: 'label',
+        tomSelectOptionSearchField: 'label',
+        tomSelectOptionPreload: 'true',
         options: mailCodeOptions || [],
-        value: old('mail_code_id') || mail.mailCodeId,
         errorMessage: flashMessages.get('errors.mail_code_id') || '',
       })
     </div>
@@ -189,7 +175,8 @@
         name: 'mail_content_summary',
         labelText: 'Isi Singkat Surat',
         labelIcon: 'card-text',
-        value: old('mail_content_summary') || mail.mailContentSummary,
+        value: old('mail_content_summary'),
+        placeholder: 'Deskripsikan secara singkat isi surat...',
         isRequired: true,
         enableFloatingLabel: false,
         cstmAutogrowHeight: true,
@@ -199,69 +186,88 @@
       @end
     </div>
 
-    {{-- File Upload Section --}}
+    {{-- File Upload --}}
     <div class="col-12">
-      <div class="p-3 border rounded bg-light">
-        <label class="fw-bold mb-1"><i class="bi bi-upload me-2"></i>Update Softcopy</label>
-        <p class="small text-muted mb-3">Leave blank if you do not want to change the current file.</p>
-        @component('components/input/input', {
-          id: 'mailFile',
-          name: 'mail_file',
-          type: 'file',
-          labelText: 'Upload New File',
-          enableFloatingLabel: false,
-          errorMessage: flashMessages.get('errors.mail_file') || ''
-        })
-        @end
-      </div>
+      @component('components/input/input', {
+        id: 'mailFile',
+        name: 'mail_file',
+        type: 'file',
+        labelText: 'Unggah Softcopy Surat',
+        labelIcon: 'upload',
+        isRequired: false,
+        enableFloatingLabel: false,
+        errorMessage: flashMessages.get('errors.mail_file') || ''
+      })
+      @end
     </div>
 
-    {{-- Physical Location --}}
-    <div class="col-md-3">
+    <div class="col-md-6">
       @component('components/input/input', {
+        id: 'rackName',
         name: 'rack_name',
         labelText: 'Rak',
-        value: old('rack_name') || mail.rackName,
-        isRequired: true
-      })
-      @end
-    </div>
-    <div class="col-md-3">
-      @component('components/input/input', {
-        name: 'shelf_name',
-        labelText: 'Baris Rak',
-        value: old('shelf_name') || mail.shelfName,
-        isRequired: true
-      })
-      @end
-    </div>
-    <div class="col-md-3">
-      @component('components/input/input', {
-        name: 'box_name',
-        labelText: 'Kotak',
-        value: old('box_name') || mail.boxName,
-        isRequired: true
-      })
-      @end
-    </div>
-    <div class="col-md-3">
-      @component('components/input/input', {
-        name: 'envelope_name',
-        labelText: 'Sampul',
-        value: old('envelope_name') || mail.envelopeName,
-        isRequired: true
+        labelIcon: 'bookshelf',
+        value: old('rack_name'),
+        placeholder: 'I, II, III, IV, ...',
+        isRequired: true,
+        enableFloatingLabel: false,
+        errorMessage: flashMessages.get('errors.rack_name') || ''
       })
       @end
     </div>
 
-    {{-- Submit --}}
+    <div class="col-md-6">
+      @component('components/input/input', {
+        id: 'shelfName',
+        name: 'shelf_name',
+        labelText: 'Baris Rak',
+        labelIcon: 'bookshelf',
+        value: old('shelf_name'),
+        placeholder: '1, 2, 3, 4, ...',
+        isRequired: true,
+        enableFloatingLabel: false,
+        errorMessage: flashMessages.get('errors.shelf_name') || ''
+      })
+      @end
+    </div>
+
+    <div class="col-md-6">
+      @component('components/input/input', {
+        id: 'boxName',
+        name: 'box_name',
+        labelText: 'Kotak',
+        labelIcon: 'box-seam',
+        value: old('box_name'),
+        placeholder: '100, UMUM & KEU / 200, PIKP / BERKAS SELIP GAJI ...',
+        isRequired: true,
+        enableFloatingLabel: false,
+        errorMessage: flashMessages.get('errors.box_name') || ''
+      })
+      @end
+    </div>
+
+    <div class="col-md-6">
+      @component('components/input/input', {
+        id: 'envelopeName',
+        name: 'envelope_name',
+        labelText: 'Sampul',
+        labelIcon: 'file-break',
+        labelIconIsFill: false,
+        value: old('envelope_name'),
+        placeholder: '1, 2, 3, / AMPLOP KEUANGAN',
+        isRequired: true,
+        enableFloatingLabel: false,
+        errorMessage: flashMessages.get('errors.envelope_name') || ''
+      })
+      @end
+    </div>
+
     <div class="col-12">
       @!component('components/button/button', {
         style: 'mt-3 w-100',
         type: 'submit',
-        text: 'Save Changes',
-        enableLoadingIndicator: true,
-        variant: 'primary'
+        text: 'Save Mail Record',
+        enableLoadingIndicator: true
       })
     </div>
   </div>

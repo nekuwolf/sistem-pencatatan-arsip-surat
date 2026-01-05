@@ -22,8 +22,11 @@ import UserProfilePictureController from '#controllers/user_profile_picture_cont
 import UserDataProfilePictureController from '#controllers/user_data_profile_picture_controller'
 import MailDashboardController from '#controllers/mail_dashboard_controller'
 import MailFileController from '#controllers/mail_file_controller'
+import MailArchiveDashboardController from '#controllers/mail_archive_dashboard_controller'
+import MailCode from '#models/mail_code'
+import MailCodesController from '#controllers/mail_code_controller'
 
-router.on('/').render('pages/home')
+router.on('/').redirect('auth.login.store')
 
 router.get('/dashboard', [DashboardController, 'index']).as('dashboard.index').use(middleware.auth({ guards: ['web'] }))
 
@@ -38,7 +41,7 @@ router.get('/login', [LoginController, 'create']).as('auth.login.create').use(mi
 // POST /account/login
 // login form submit
 // body : MUST email, MUST password
-router.post('/login', [LoginController, 'store']).as('auth.login.store').use(middleware.guest())
+router.post('/login', [LoginController, 'store']).as('auth.login.store')
 
 // GET /account/register?register_code=...
 // show register form
@@ -51,7 +54,7 @@ router.get('/register', [RegisterController, 'create']).as('auth.register.create
 // register form submit
 // body : MUST register_code=[user_id], MUST referrer=[user_id]
 // MUST email=[email], MUST password=[password]
-router.post('/register', [RegisterController, 'store']).as('auth.register.store').use(middleware.guest())
+router.post('/register', [RegisterController, 'store']).as('auth.register.store')
 
 // GET /account/register/verify_otp?email=[email]&otp_code=[otp_code]
 // show otp verification form
@@ -133,7 +136,7 @@ router.group(() => {
     router.get('/:userId/picture', [UserDataProfilePictureController, 'show']).as('users.picture.show')
     router.post('/:userId/picture', [UserDataProfilePictureController, 'update']).as('users.picture.update')
 
-  }).prefix('user')
+  }).prefix('user').use(middleware.adminOnly())
 
   // --- Group 2: Mail Management (Admin/Dashboard) ---
   router.group(() => {
@@ -152,9 +155,24 @@ router.group(() => {
 
     // 3. Sub-Resources (Mail Files)
     // Changed :userId -> :mailId to allow fetching the file belonging to this specific mail
-    router.get('/:mailId/file', [MailFileController, 'show']).as('mails.file.show')
-    router.post('/:mailId/file', [MailFileController, 'update']).as('mails.file.update')
+    router.get('/:mailId/file', [MailDashboardController, 'showFile']).as('mails.file.show')
 
   }).prefix('mail')
+
+  router.group(() => {
+    // static
+    router.get('/create', [MailArchiveDashboardController, 'create']).as('mailArchives.create')
+    router.post('/create', [MailArchiveDashboardController, 'store']).as('mailArchives.store')
+
+    // 2. Dynamic Routes (General)
+    router.get('/', [MailArchiveDashboardController, 'index']).as('mailArchives.index')
+    router.get('/:mailArchiveId', [MailArchiveDashboardController, 'show']).as('mailArchives.show')
+    
+    // Update Mail
+    router.post('/:mailArchiveId', [MailArchiveDashboardController, 'update']).as('mailArchives.update')
+
+  }).prefix('mail_archive')
+
+  router.get('/mail_code/search', [MailCodesController, 'index']).as('mailCode.search')
 
 }).use(middleware.auth({ guards: ['web'] }))

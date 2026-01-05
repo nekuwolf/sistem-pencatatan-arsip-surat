@@ -1,0 +1,131 @@
+<div class="card shadow-sm">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+    <h5 class="mb-0 text-primary">Detail Arsip Surat</h5>
+    <a href="{{ route('mails.index') }}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Kembali
+    </a>
+  </div>
+
+  <div class="card-body">
+    <div class="row g-4">
+      
+      {{-- Header Info --}}
+      <div class="col-md-8">
+        <label class="text-muted small fw-bold text-uppercase d-block">Asal Surat</label>
+        <span class="fs-4 fw-semibold text-dark">{{ mail.mailSource }}</span>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <label class="text-muted small fw-bold text-uppercase d-block">Nomor Agenda</label>
+        <span class="badge bg-primary fs-6">#{{ mail.agendaNumber }}</span>
+      </div>
+
+      <hr class="my-0 opacity-10">
+
+      {{-- Mail Metadata --}}
+      <div class="col-md-6">
+        <label class="text-muted small fw-bold text-uppercase d-block">Kode Surat Full</label>
+        <p class="mb-0 fw-medium">{{ mail.fullMailCode }}</p>
+      </div>
+
+      <div class="col-md-3">
+        <label class="text-muted small fw-bold text-uppercase d-block">Tanggal Surat</label>
+        <p class="mb-0">{{ mail.mailDate.toFormat('dd LLL yyyy') }}</p>
+      </div>
+
+      <div class="col-md-3">
+        <label class="text-muted small fw-bold text-uppercase d-block">Registrasi Sistem</label>
+        <p class="mb-0">{{ mail.registeredAt.toFormat('dd/MM/yyyy HH:mm') }}</p>
+      </div>
+
+      <div class="col-md-12">
+        <label class="text-muted small fw-bold text-uppercase d-block">Jumlah Lembar</label>
+        <div class="d-flex align-items-center">
+          <span class="fw-bold fs-5 me-1">{{ mail.mailPaperCount || 0 }}</span>
+          <span class="text-muted small">Lembar surat dan lampiran</span>
+          <span class="mx-2 text-muted">|</span>
+          <span class="fw-bold fs-5 me-1">{{ mail.mailAttachmentPaperCount || 0 }}</span>
+          <span class="text-muted small">Lembar lainnya</span>
+        </div>
+      </div>
+
+      {{-- Classifications --}}
+      <div class="col-md-4">
+        <label class="text-muted small fw-bold text-uppercase d-block">Jenis Surat</label>
+        <span class="badge rounded-pill bg-light text-dark border">{{ mail.mailType.name }}</span>
+      </div>
+
+      <div class="col-md-4">
+        <label class="text-muted small fw-bold text-uppercase d-block">Sifat Surat</label>
+        <span class="badge rounded-pill bg-light text-dark border">{{ mail.mailPriority.name }}</span>
+      </div>
+
+      <div class="col-md-4">
+        <label class="text-muted small fw-bold text-uppercase d-block">Klasifikasi</label>
+        <p class="mb-0">{{ mail.mailCode.shortIndex }} ({{ mail.mailCode.code }})</p>
+      </div>
+
+      {{-- Summary --}}
+      <div class="col-12">
+        <label class="text-muted small fw-bold text-uppercase d-block">Ringkasan Isi</label>
+        <div class="p-3 bg-light rounded mt-1 border-start border-4 border-primary">
+          {{ mail.mailContentSummary }}
+        </div>
+      </div>
+
+      {{-- Archive Location --}}
+      <div class="col-12 mt-4">
+        <div class="p-3 border rounded bg-white">
+          <h6 class="mb-3"><i class="bi bi-archive me-2"></i>Lokasi Penyimpanan Fisik</h6>
+          <div class="row text-center">
+            <div class="col-3 border-end">
+              <small class="text-muted d-block">Rak</small>
+              <span class="fw-bold">{{ mail.rackName }}</span>
+            </div>
+            <div class="col-3 border-end">
+              <small class="text-muted d-block">Baris</small>
+              <span class="fw-bold">{{ mail.shelfName }}</span>
+            </div>
+            <div class="col-3 border-end">
+              <small class="text-muted d-block">Kotak</small>
+              <span class="fw-bold">{{ mail.boxName }}</span>
+            </div>
+            <div class="col-3">
+              <small class="text-muted d-block">Sampul</small>
+              <span class="fw-bold">{{ mail.envelopeName }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{-- Attachment --}}
+      @if(mail.uploadedMailFileId)
+        <div class="col-12">
+          <div class="d-flex align-items-center p-3 border rounded">
+            @!component('components/bi_icon', { iconName: 'file-earmark-fill', style: 'fs-2 me-3 text-primary' })
+            <div class="flex-grow-1">
+              <p class="mb-0 fw-bold">Softcopy Surat</p>
+              <small class="text-muted">Filename: {{ mail.uploadedMailFile?.filename }}</small>
+            </div>
+            @!component('components/button/a', {
+              text: 'Lihat / Unduh',
+              href: route('mails.file.show', { mailId: mail.id }),
+              iconName: 'download',
+              isOutline: true,
+              variant: 'primary',
+              target: '_blank'
+            })
+          </div>
+        </div>
+      @end
+
+    </div>
+  </div>
+  
+  <div class="card-footer bg-white py-3">
+     <div class="d-flex gap-2">
+        <a href="{{ route('mails.show', { mailId: mail.id }, { qs: { edit: 'true' } }) }}" class="btn btn-outline-success flex-grow-1">
+          Edit Data
+        </a>
+     </div>
+  </div>
+</div>
