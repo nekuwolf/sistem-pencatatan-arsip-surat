@@ -1,10 +1,11 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { BaseModel, column, belongsTo, hasOne } from '@adonisjs/lucid/orm'
+import type { BelongsTo, HasOne } from '@adonisjs/lucid/types/relations'
 import User from '#models/user'
+import Mail from './mail.js'
 
 export default class UploadedFile extends BaseModel {
-  public static table = 'uploaded_files'
+  public static table = 'uploaded_file'
 
   @column({ isPrimary: true })
   declare id: number
@@ -13,26 +14,29 @@ export default class UploadedFile extends BaseModel {
   declare filename: string
 
   @column()
-  declare file_size_byte: number
+  declare fileSizeByte: number
 
   @column.dateTime()
-  declare upload_date: DateTime
+  declare uploadDate: DateTime
 
   @column()
-  declare file_location_path: string
+  declare fileLocationPath: string
 
   @column()
-  declare uploaded_by_user_id: number
+  declare uploadedByUserId: number
 
   @column()
-  declare sha256_checksum: string | null
+  declare sha256Checksum: string | null
 
   // A file is uploaded by one user
-  @belongsTo(() => User, { foreignKey: 'uploaded_by_user_id' })
-  declare uploaded_by_user: BelongsTo<typeof User>
+  @belongsTo(() => User, { foreignKey: 'uploadedByUserId' })
+  declare uploadedByUser: BelongsTo<typeof User>
   
-  // TODO: mails_datas.uploaded_file_id
-  // // A file might be used as one user's avatar
-  // @hasOne(() => UserAvatar, { foreignKey: 'uploaded_file_id' })
-  // declare users_avatar: HasOne<typeof UserAvatar>
+  // For avatar profile picture image
+  @hasOne(() => User, { foreignKey: 'profilePictureFileId' })
+  declare profilePictureFile: HasOne<typeof User>
+
+  // For mail file
+  @hasOne(() => Mail, { foreignKey: 'uploadedMailFileId' })
+  declare uploadedMailFile: HasOne<typeof Mail>
 }

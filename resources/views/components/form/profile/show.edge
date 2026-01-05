@@ -1,0 +1,186 @@
+<div class="row g-3 row g-3 align-items-center justify-content-between">
+  {{-- Section 1: Personal Information --}}
+  
+  {{-- Section 1: Personal Information --}}
+  {{-- 'col': Takes up all remaining available space --}}
+  <div class="col">
+    <h6 class="fw-bold mb-0">
+      @!component('components/bi_icon', { iconName: 'person', isFill: true })
+      Personal Information
+    </h6>
+  </div>
+  
+  {{-- 'col-auto': Only takes up as much width as the button needs --}}
+  <div class="col-auto">
+    @!component('components/button/a', {
+      text: 'Edit Profile',
+      href: route('account.profile.index', {}, { qs: { edit: 'true' }}),
+      iconName: 'pencil',
+      isOutline: true,
+    })
+  </div>
+
+  <div class="col-12">
+    @!component('components/input/input', {
+      id: 'fullName',
+      name: 'full_name',
+      labelText: 'Full Name',
+      labelIcon: 'person',
+      labelIconIsFill: false,
+      value: auth.user.full_name || '-',
+      isReadonly: true,
+      isDisabled: true
+    })
+  </div>
+
+  <div class="col-12">
+    @!component('components/input/input', {
+      id: 'gender',
+      name: 'gender_name',
+      labelText: 'Gender',
+      labelIcon: 'gender-ambiguous',
+      labelIconIsFill: false,
+      value: auth.user.gender?.name || '-',
+      isReadonly: true,
+      isDisabled: true
+    })
+  </div>
+
+  <div class="col-12 col-md-6">
+    @!component('components/input/input', {
+      id: 'birthDate',
+      name: 'birth_date',
+      labelText: 'Date of Birth',
+      labelIcon: 'calendar',
+      labelIconIsFill: false,
+      // Formatting Luxon DateTime to human readable string since it's view only
+      value: auth.user.birth_date ? auth.user.birth_date.toFormat('dd/MM/yyyy') : '-',
+      isReadonly: true,
+      isDisabled: true
+    })
+  </div>
+
+  <div class="col-12 col-md-6">
+    @!component('components/input/input', {
+      id: 'birthPlace',
+      name: 'birth_place',
+      labelText: 'Place of Birth',
+      labelIcon: 'geo-alt',
+      labelIconIsFill: false,
+      value: auth.user.birth_place || '-',
+      isReadonly: true,
+      isDisabled: true
+    })
+  </div>
+
+  <div class="col-12">
+    <hr class="text-muted opacity-25">
+  </div>
+
+  {{-- Section 2: Contact Info --}}
+  <h6 class="fw-bold">
+    @!component('components/bi_icon', { iconName: 'geo-alt', isFill: true })
+    Contact Information
+  </h6>
+
+  <div class="col-12 col-md-6">
+    @component('components/input/input', {
+      id: 'email',
+      name: 'email',
+      labelText: 'Email',
+      labelIcon: 'envelope',
+      labelIconIsFill: false,
+      value: auth.user.email || '-',
+      isReadonly: true,
+      isDisabled: true
+    })
+    @end
+  </div>
+
+  <div class="col-12 col-md-6">
+    @!component('components/input/input', {
+      id: 'phone',
+      name: 'personal_phone_number',
+      labelText: 'Phone Number',
+      labelIcon: 'telephone',
+      labelIconIsFill: false,
+      value: auth.user.personal_phone_number || '-',
+      isReadonly: true,
+      isDisabled: true
+    })
+  </div>
+
+  <div class="col-12">
+    @component('components/input/textarea', {
+      id: 'fullHomeAddress',
+      name: 'full_home_address',
+      labelText: 'Home Address',
+      labelIcon: 'house-door',
+      labelIconIsFill: false,
+      value: auth.user.full_home_address || '-',
+      cstmAutogrowHeight: true,
+      cstmAutogrowHeightMinPx: '100',
+      isReadonly: true,
+      isDisabled: true
+    })
+    @end
+  </div>
+
+  <div class="col-12">
+    <hr class="text-muted opacity-25">
+  </div>
+
+  {{-- Section 3: Organization & Role --}}
+  <h6 class="fw-bold">
+    @!component('components/bi_icon', { iconName: 'briefcase', isFill: true })
+    Employment
+  </h6>
+  
+  <div class="col-12">
+    @!component('components/input/input', {
+      id: 'organization',
+      labelText: 'Organization',
+      labelIcon: 'building',
+      labelIconIsFill: false,
+      value: auth.user.organization?.name || '-',
+      isReadonly: true,
+      isDisabled: true
+    })
+  </div>
+
+  <div class="col-12 col-md-4">
+    @!component('components/input/input', {
+      id: 'department',
+      labelText: 'Department',
+      labelIcon: 'briefcase',
+      labelIconIsFill: false,
+      value: auth.user.department?.name || '-',
+      isReadonly: true,
+      isDisabled: true
+    })
+  </div>
+
+  <div class="col-12 col-md-4">
+    @!component('components/input/input', {
+      id: 'jobRole',
+      labelText: 'Job Role / Designation',
+      labelIcon: 'person-gear',
+      labelIconIsFill: false,
+      value: auth.user.job_role?.name || '-',
+      isReadonly: true,
+      isDisabled: true
+    })
+  </div>
+  
+  <div class="col-12 col-md-4">
+    @!component('components/input/input', {
+      id: 'role',
+      labelText: 'Account Role',
+      labelIcon: 'person-gear',
+      labelIconIsFill: false,
+      value: auth.user.role?.name || '-',
+      isReadonly: true,
+      isDisabled: true
+    })
+  </div>
+</div>

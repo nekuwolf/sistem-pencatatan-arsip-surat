@@ -39,3 +39,13 @@ export class InvalidPasswordException extends Exception {
   static status = 400
   static code = 'E_INVALID_PASSWORD'
 }
+
+export class PersonalPhoneNumberRegisteredException extends Exception {
+  static status = 400
+  static code = 'E_PERSONAL_PHONE_NUMBER_ALREADY_REGISTERED'
+}
+
+export class UserDataAlreadyExistException extends Exception {
+  static status = 400
+  static code = 'E_USER_DATA_ALREADY_EXIST'
+}

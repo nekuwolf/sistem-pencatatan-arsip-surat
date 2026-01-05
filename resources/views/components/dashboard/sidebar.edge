@@ -24,7 +24,7 @@
         </li>
         
         <li class="nav-item">
-            <a href="{{ route('mail.index') }}" class="nav-link {{ request.url() === route('mail.index') ? 'active' : '' }}" aria-current="page">
+            <a href="{{ route('mails.index') }}" class="nav-link {{ request.url() === route('mails.index') ? 'active' : '' }}" aria-current="page">
                 <i class="bi bi-envelope-fill"></i>
                 <span class="nav-link-text">Mail</span>
             </a>
@@ -37,21 +37,21 @@
             </a>
         </li>
 
-        {{-- @if(userRole === G_USER_ROLE.EMPLOYEE.ID || userRole === G_USER_ROLE.ADMIN.ID)
-        @end --}}
-        <li class="nav-item mt-2">
-          <a href="{{ route('user.index') }}" class="nav-link {{ request.url() === route('user.index') ? 'active' : '' }}" aria-current="page">
-            <i class="bi bi-people-fill"></i>
-            <span class="nav-link-text">User</span>
-          </a>
-        </li>
+        @if(auth.user?.role_id === G_USER_ROLE.EMPLOYEE.ID || auth.user?.role_id === G_USER_ROLE.ADMIN.ID)
+            <li class="nav-item mt-2">
+                <a href="{{ route('users.index') }}" class="nav-link {{ request.url() === route('users.index') ? 'active' : '' }}" aria-current="page">
+                    <i class="bi bi-people-fill"></i>
+                    <span class="nav-link-text">User</span>
+                </a>
+            </li>
 
-        <li class="nav-item mt-2">
-          <a href="{{ route('registerInviteLink.index') }}" class="nav-link {{ request.url() === route('registerInviteLink.index') ? 'active' : '' }}" aria-current="page">
-            <i class="bi bi-share-fill"></i>
-            <span class="nav-link-text">Invite Link</span>
-          </a>
-        </li>
+            {{-- <li class="nav-item mt-2">
+            <a href="{{ route('registerInviteLink.index') }}" class="nav-link {{ request.url() === route('registerInviteLink.index') ? 'active' : '' }}" aria-current="page">
+                <i class="bi bi-share-fill"></i>
+                <span class="nav-link-text">Invite Link</span>
+            </a>
+            </li> --}}
+        @end
         
         {{-- <li class="nav-item">
             <a class="nav-link collapsed {{ request.urlPath().startsWith('/reports') ? 'active' : '' }}" data-bs-toggle="collapse" href="#reports-submenu" role="button" aria-expanded="false" aria-controls="reports-submenu">
@@ -80,14 +80,14 @@
         </li> --}}
 
         {{-- <li class="nav-item">
-            <a class="nav-link collapsed {{ request.url() === route('mail.index') ? 'active' : '' }}" data-bs-toggle="collapse" href="#mail-submenu" role="button" aria-expanded="false" aria-controls="mail-submenu">
+            <a class="nav-link collapsed {{ request.url() === route('mails.index') ? 'active' : '' }}" data-bs-toggle="collapse" href="#mail-submenu" role="button" aria-expanded="false" aria-controls="mail-submenu">
                 <i class="bi bi-bar-chart-fill"></i>
                 <span class="nav-link-text">Surat</span>
             </a>
             <div class="collapse submenu " id="mail-submenu">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a href="#" class="nav-link {{ request.url() === route('mail.create') ? 'active' : '' }}">
+                        <a href="#" class="nav-link {{ request.url() === route('mails.create') ? 'active' : '' }}">
                             <span class="nav-link-text">Registrasi Surat</span>
                         </a>
                     </li>
@@ -116,7 +116,7 @@
     <ul class="nav nav-pills flex-column px-2 py-2 mt-auto border-top border-secondary-subtle sidebar-nav">
       <!-- Footer nav at the bottom -->
       <li class="nav-item">
-          <a href="{{ route('account.profile') }}" class="nav-link {{ request.url() === route('account.profile') ? 'active' : '' }}">
+          <a href="{{ route('account.profile.index') }}" class="nav-link {{ request.url() === route('account.profile.index') ? 'active' : '' }}">
               <i class="bi bi-person-circle"></i>
               <span class="nav-link-text">Profile</span>
           </a>

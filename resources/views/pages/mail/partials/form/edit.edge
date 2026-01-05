@@ -1,0 +1,100 @@
+<form action="{{ route('mails.store') }}" method="POST">
+  {{ csrfField() }}
+  
+  <div class="row g-3">
+  
+    {{-- Mail Archive Select --}}
+    <div class="col-12 col-md-6">
+      @!component('components/input/select', {
+        id: 'mailArchive',
+        name: 'mail_archive_id',
+        labelText: 'Mail Archive',
+        labelIcon: 'archive',
+        placeholder: "Select an archive",
+        isRequired: true,
+        enableFloatingLabel: false,
+        options: mailArchiveOptions || [], 
+        value: old('mail_archive_id'),
+        errorMessage: flashMessages.get('errors.mail_archive_id') || '',
+      })
+    </div>
+
+    {{-- Envelope Select --}}
+    <div class="col-12 col-md-6">
+      @!component('components/input/select', {
+        id: 'envelope',
+        name: 'envelope_id',
+        labelText: 'Envelope',
+        labelIcon: 'envelope',
+        placeholder: "Select an envelope",
+        isRequired: true,
+        enableFloatingLabel: false,
+        options: envelopeOptions || [],
+        value: old('envelope_id'),
+        errorMessage: flashMessages.get('errors.envelope_id') || '',
+      })
+    </div>
+
+    {{-- Archive Status Select --}}
+    <div class="col-12 col-md-6">
+      @!component('components/input/select', {
+        id: 'archiveStatus',
+        name: 'archive_status_id',
+        labelText: 'Archive Status',
+        labelIcon: 'info-circle', 
+        placeholder: "Select status",
+        isRequired: true,
+        enableFloatingLabel: false,
+        options: statusOptions || [],
+        value: old('archive_status_id'),
+        errorMessage: flashMessages.get('errors.archive_status_id') || '',
+      })
+    </div>
+
+    {{-- Total Paper Archived (Number Input) --}}
+    <div class="col-12 col-md-6">
+      @component('components/input/input', {
+        id: 'totalPaperArchived',
+        name: 'total_paper_archived',
+        labelText: 'Total Papers',
+        labelIcon: 'file-earmark-text',
+        type: 'number',
+        value: old('total_paper_archived'),
+        placeholder: '0',
+        isRequired: true,
+        enableFloatingLabel: false,
+        errorMessage: flashMessages.get('errors.total_paper_archived') || ''
+      })
+      @end
+    </div>
+
+    {{-- Note (Textarea) --}}
+    {{-- Note is marked optional (nullable) in your model, so isRequired is false --}}
+    <div class="col-12">
+      @component('components/input/textarea', {
+        id: 'note',
+        name: 'note',
+        labelText: 'Note',
+        labelIcon: 'sticky', 
+        labelIconIsFill: false,
+        type: 'text',
+        value: old('note'),
+        placeholder: 'Add any additional details here...',
+        isRequired: false, 
+        enableFloatingLabel: false,
+        cstmAutogrowHeight: true,
+        cstmAutogrowHeightMinPx: 100,
+        errorMessage: flashMessages.get('errors.note') || ''
+      })
+      @end
+    </div>
+
+    {{-- Submit Button --}}
+    <div class="col-12 mt-4">
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-save me-1"></i> Save Mail Data
+      </button>
+    </div>
+
+  </div>
+</form>

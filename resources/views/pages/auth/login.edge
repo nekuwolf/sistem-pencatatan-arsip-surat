@@ -38,13 +38,7 @@
           <h1 class="h3 mt-3 mb-0 mt-3">Login</h1>
           <p class="text-muted mt-2 mb-0">Welcome, please login to access the system</p>
 
-          @!component('components/form/login', {
-            loginFormErrorMessage: loginFormErrorMessage,
-            emailValue: emailValue,
-            emailErrorMessage: emailErrorMessage,
-            passwordValue: passwordValue,
-            passwordErrorMessage: passwordErrorMessage
-          })
+          @include('components/form/login')
 
           <p class="mt-4 mb-0 text-body-secondary">
             Didn't have an account? request account creation from an admin or registered employee.

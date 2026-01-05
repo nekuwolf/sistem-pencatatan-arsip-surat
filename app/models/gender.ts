@@ -1,9 +1,9 @@
 import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
-import UserData from '#models/users_data'
+import User from './user.js'
 
 export default class Gender extends BaseModel {
-  public static table = 'genders'
+  public static table = 'gender'
 
   @column({ isPrimary: true })
   declare id: number
@@ -12,6 +12,6 @@ export default class Gender extends BaseModel {
   declare name: string
 
   // A gender can be associated with many users' data records
-  @hasMany(() => UserData, { foreignKey: 'gender_id' })
-  declare user_data: HasMany<typeof UserData>
+  @hasMany(() => User, { foreignKey: 'genderId' })
+  declare user: HasMany<typeof User>
 }

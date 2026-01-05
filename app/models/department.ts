@@ -1,17 +1,19 @@
 import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
-import UserData from '#models/users_data'
+import User from '#models/user'
 import RegisterInviteLink from './register_invite_link.js'
 import Organization from './organization.js'
+import ArchiveBox from './archive_box.js'
+import ArchiveEnvelope from './archive_envelope.js'
 
 export default class Department extends BaseModel {
-  public static table = 'departments'
+  public static table = 'department'
 
   @column({ isPrimary: true })
   declare id: number
 
   @column()
-  declare organization_id: number
+  declare organizationId: number
   
   @column()
   declare name: string
@@ -19,15 +21,23 @@ export default class Department extends BaseModel {
   @column()
   declare description: string | null
 
-  // A department only have one organization
-  @belongsTo(() => Organization, { foreignKey: 'organization_id' })
+  // A department can only be assigned to an organization
+  @belongsTo(() => Organization, { foreignKey: 'organizationId' })
   declare organization: BelongsTo<typeof Organization>
 
-  // A department can be assigned to many users' data records
-  @hasMany(() => UserData, { foreignKey: 'department_id' })
-  declare user_data: HasMany<typeof UserData>
+  // A department has many user
+  @hasMany(() => User, { foreignKey: 'departmentId' })
+  declare userData: HasMany<typeof User>
   
   // A department can be assigned to many register invite link
-  @hasMany(() => RegisterInviteLink, { foreignKey: 'new_user_department_id' })
-  declare register_invite_link: HasMany<typeof RegisterInviteLink>
+  @hasMany(() => RegisterInviteLink, { foreignKey: 'newUserDepartmentId' })
+  declare registerInviteLink: HasMany<typeof RegisterInviteLink>
+
+  // A department has many archive box
+  @hasMany(() => ArchiveBox, { foreignKey: 'organizationId' })
+  declare archiveBox : HasMany<typeof ArchiveBox>
+
+  // A department has many archive box
+  @hasMany(() => ArchiveEnvelope, { foreignKey: 'organizationId' })
+  declare archiveEnvelope : HasMany<typeof ArchiveEnvelope>
 }

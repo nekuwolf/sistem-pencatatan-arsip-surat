@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let cropper = null;
     
     // -- Config --
-    const MAX_FILE_MB = 10;
+    const MAX_FILE_MB = 5;
     const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/avif'];
 
     // -- Helpers --
@@ -56,18 +56,37 @@ document.addEventListener("DOMContentLoaded", async () => {
         errorModal.show();
     };
 
-    // Helper: Check if the active box allows uploading
     const isEditable = () => {
         return activeProfileBox && activeProfileBox.hasAttribute('cstm-data-profile-picture-upload-endpoint');
     };
 
+    // --- NEW LOGIC HELPER ---
+    const generateInitials = (fullName) => {
+        const nameParts = (fullName || '').trim().split(/\s+/).filter(Boolean);
+
+        if (nameParts.length === 0) return ':D';
+        if (nameParts.length === 1) return nameParts[0][0].toUpperCase();
+        if (nameParts.length === 2) return (nameParts[0][0] + nameParts[1][0]).toUpperCase();
+        
+        // Your specific logic for > 2: 2nd word initial + 3rd word initial
+        return (nameParts[1][0] + nameParts[2][0]).toUpperCase();
+    };
+
     // -- Initialization --
     containers.forEach(container => {
-        const char = container.getAttribute('cstm-data-no-img-char') || "??";
+        // --- CHANGED HERE ---
+        // Instead of getting pre-calculated char, we get the name and calculate it
+        const fullName = container.getAttribute('cstm-data-full-name'); 
+        // We store the calculated char in the dataset so we can retrieve it easily in handlers later
+        const char = generateInitials(fullName);
+        container.dataset.calculatedInitials = char; 
+        // --------------------
+
         const img = container.querySelector('img');
 
         // Dynamic BG color
         let hash = 0;
+        // Use the calculated char for the hash so colors remain consistent
         for (let i=0;i<char.length;i++){hash=char.charCodeAt(i)+((hash<<5)-hash);}
         container.dataset.bgColor = `hsl(${Math.abs(hash % 360)}, 65%, 40%)`;
 
@@ -94,9 +113,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             if(!span){
                 span = document.createElement('span');
                 span.className = 'profile-initials';
-                span.innerText = char;
+                span.innerText = char; // Use calculated char
                 container.appendChild(span);
             } else {
+                span.innerText = char; // Ensure text is updated
                 setVisibility(span, true, 'd-flex');
             }
         };
@@ -104,7 +124,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if(img){
             img.onerror = renderPlaceholder;
             img.onload = removeLoader;
-            // Immediate check in case image is cached
             if(img.complete){
                 if(img.naturalWidth > 0) removeLoader(); 
                 else renderPlaceholder();
@@ -117,12 +136,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         container.addEventListener('click', () => {
             activeProfileBox = container;
 
-            // Reset UI
             setVisibility(modalImg, false);
             setVisibility(modalInitials, false);
             setPreviewLoading(false);
 
-            // Determine content
             const isImgVisible = img && !img.classList.contains('d-none') && img.src;
             
             if(isImgVisible){
@@ -131,19 +148,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                 modalContainer.style.backgroundColor = 'transparent';
                 if(!modalImg.complete) setPreviewLoading(true);
             } else {
-                modalInitials.innerText = char;
+                modalInitials.innerText = char; // Use calculated char
                 setVisibility(modalInitials, true, 'd-flex');
                 modalContainer.style.backgroundColor = container.dataset.bgColor;
             }
 
-            // View-Only Logic: Change cursor/title AND toggle class
             if (isEditable()) {
-                modalContainer.classList.remove('view-only'); // <--- Enable Hover
+                modalContainer.classList.remove('view-only');
                 modalContainer.style.cursor = 'pointer';
                 modalContainer.title = "Click or Drop image to upload";
                 setVisibility(modalUploadHint, true);
             } else {
-                modalContainer.classList.add('view-only');    // <--- Disable Hover
+                modalContainer.classList.add('view-only');
                 modalContainer.style.cursor = 'default';
                 modalContainer.title = "";
                 setVisibility(modalUploadHint, false);
@@ -160,14 +176,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         setVisibility(modalImg, false);
         setVisibility(modalInitials, true, 'd-flex');
         if(activeProfileBox){
-            modalInitials.innerText = activeProfileBox.getAttribute('cstm-data-no-img-char');
+            // --- CHANGED HERE ---
+            // Retrieve the calculated char from the dataset we saved earlier
+            modalInitials.innerText = activeProfileBox.dataset.calculatedInitials; 
             modalContainer.style.backgroundColor = activeProfileBox.dataset.bgColor;
         }
     };
 
+    // ... (Rest of your File Selection and Cropper logic remains exactly the same) ...
+
     // -- File Selection Handling --
-    
-    // Drag Events: Only active if isEditable() is true
     ["dragenter","dragover"].forEach(evt => 
         modalContainer.addEventListener(evt, e => {
             e.preventDefault(); 
@@ -189,29 +207,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         if(file) handleNewFile(file);
     });
 
-    // Click Event: Only active if isEditable() is true
     modalContainer.addEventListener("click", () => {
-        if (isEditable()) {
-            fileInput.click();
-        }
+        if (isEditable()) fileInput.click();
     });
 
     fileInput.addEventListener("change", (e) => handleNewFile(e.target.files[0]));
 
     function handleNewFile(file){
         if(!file) return;
-
-        // File Type Validation
         if (!ALLOWED_TYPES.includes(file.type)) {
             showError(`Invalid file type. Please upload a PNG, JPG/JPEG, or WEBP image.`); 
             return;
         }
-
         if(file.size > MAX_FILE_MB*1024*1024){
             showError(`File too large, max ${MAX_FILE_MB} MB`); 
             return;
         }
-        
         setPreviewLoading(true);
         const reader = new FileReader();
         reader.onload = e => {
@@ -225,7 +236,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // -- Cropper Logic --
-
     cropModalEl.addEventListener('shown.bs.modal', () => {
         if (cropper) cropper.destroy();
         cropper = new Cropper(cropperImage, {
@@ -268,27 +278,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         previewModal.show();
     });
 
-    // ----------------------------------------------------
-    // SAVE LOGIC
-    // ----------------------------------------------------
+    // Save Logic
     btnSaveCrop.addEventListener('click', () => {
-        // Double check permissions
         if(!cropper || !activeProfileBox || !isEditable()) return;
 
         const uploadEndpoint = activeProfileBox.getAttribute('cstm-data-profile-picture-upload-endpoint');
-
         const originalBtnText = btnSaveCrop.innerHTML;
         btnSaveCrop.disabled = true;
         btnSaveCrop.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...';
 
-        // 1. Get Canvas
         const canvasHigh = cropper.getCroppedCanvas({ 
             width: 1024, 
             height: 1024, 
             imageSmoothingQuality: 'high'
         });
 
-        // 2. Convert to BLOB
         canvasHigh.toBlob(async (blob) => {
             if(!blob) {
                 showError("Image generation failed.");
@@ -297,18 +301,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            // 3. Prepare FormData
             const formData = new FormData();
             formData.append('avatar', blob, 'avatar.jpg');
-
             const csrfToken = activeProfileBox.getAttribute('cstm-data-csrf-token');
 
             try {    
                 const response = await fetch(uploadEndpoint, {
                     method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken
-                    },
+                    headers: { 'X-CSRF-TOKEN': csrfToken },
                     body: formData
                 });
 
@@ -321,33 +321,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                     throw new Error(errMsg);
                 }
                 
-                // ----------------------------------------------------
-                // REFRESH LOGIC: Force cache bust on all profile images
-                // ----------------------------------------------------
                 const timestamp = new Date().getTime();
                 const allProfileContainers = document.querySelectorAll('[cstmtag-profile-picture]');
 
                 allProfileContainers.forEach(container => {
                     const img = container.querySelector('img');
-                    
                     if(img) {
-                        // Strip old query params and add new timestamp
                         const currentSrc = img.src.split('?')[0];
                         img.src = `${currentSrc}?t=${timestamp}`;
-
-                        // Ensure visibility
                         setVisibility(img, true);
-                        
-                        // Hide initials
                         const boxSpan = container.querySelector('.profile-initials');
                         if(boxSpan) setVisibility(boxSpan, false);
                     }
-                    // Note: If you have elements that start with NO <img> tag at all,
-                    // you would need code here to create it. Assuming standard structure
-                    // where <img> is present but potentially hidden/broken.
                 });
 
-                // Close Modal
                 cropModal.hide();
 
             } catch (err) {
@@ -356,9 +343,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 btnSaveCrop.disabled = false;
                 btnSaveCrop.innerHTML = originalBtnText;
             }
-
         }, 'image/jpeg', 0.9);
     });
 });
 
-console.log('loaded profile_picture.js')
+console.log('loaded profile_picture.js');

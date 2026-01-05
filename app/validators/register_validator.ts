@@ -1,7 +1,6 @@
 import vine from '@vinejs/vine'
 import { registerCodeSchema } from './register_code_validator.js'
 import { G_USER_ACCOUNT_PASSWORD_MIN_LENGTH } from '#start/globals'
-import PersonTitleName from '#models/person_title_name'
 
 /**
  * Reuse the rule from the modular registerCode schema
@@ -16,12 +15,12 @@ export const storeRegisterValidator = vine.compile(
     email: vine.string().email().trim(),
     password: vine.string().minLength(G_USER_ACCOUNT_PASSWORD_MIN_LENGTH).trim(),
     password_confirmation: vine.string().minLength(G_USER_ACCOUNT_PASSWORD_MIN_LENGTH).sameAs('password').trim(),
-    personal_phone_number: vine.string().trim(),
+    personal_phone_number: vine.string().mobile().trim(),
     birth_date: vine.date(),
     birth_place: vine.string().trim(),
     full_home_address: vine.string().trim(),
     gender_id: vine.number(),
-    person_title_name_ids: vine.array(vine.number()),
+    nip: vine.string().trim(),
   })
 )
 
@@ -49,6 +48,5 @@ export const createVerifyRegisterCodeValidator = vine.compile(
 export const storeVerifyRegisterCodeValidator = vine.compile(
   vine.object({
     register_code: registerCodeRule,
-    email: vine.string().email().trim().optional()
   })
 )

@@ -1,0 +1,28 @@
+<form action="{{ route('auth.register.create') }}" method="GET" class="row g-3 mt-1">
+
+  <div class="col-12">
+    @!component('components/input/split', {
+      id: 'registerCode',
+      name: 'register_code',
+      labelText: 'Register Code',
+      labelIcon: 'asterisk',
+      labelIconIsFill: false,
+      placeholder: 'Abc123',
+      isRequired: true,
+      fieldCount: G_REGISTER_CODE_LENGTH,
+      helpText: 'Request an register code/invite link from an admin or registered employee',
+      value: old('register_code'),
+      errorMessage: flashMessages.get('errors.register_code') || '',
+    })
+  </div>
+  
+  <div class="col-12">
+    @!component('components/button/button', {
+      style: 'mt-3 w-100',
+      type: 'submit',
+      text: 'Verify',
+      loadingIndicatorText: 'Verifying...',
+      enableLoadingIndicator: true
+    })
+  </div>
+</form>

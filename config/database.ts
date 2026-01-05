@@ -1,5 +1,6 @@
 import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/lucid'
+import { SingularNamingStrategy } from '../app/strategies/singular_naming_strategy.js'
 
 const dbConfig = defineConfig({
   connection: 'sqlite',

@@ -11,7 +11,6 @@ import router from '@adonisjs/core/services/router'
 import DashboardController from '#controllers/dashboard_controller'
 import LoginController from '#controllers/login_controller'
 import RegisterController from '#controllers/register_controller'
-import BadRequsetController from '#controllers/bad_request_controller'
 import UserProfileController from '#controllers/user_profile_controller'
 import UserDataController from '#controllers/user_data_controller'
 import SandboxesController from '#controllers/sandboxes_controller'
@@ -19,10 +18,14 @@ import GenderController from '#controllers/gender_controller'
 import RegisterInviteLinkController from '#controllers/register_invite_link_controller'
 import LogoutController from '#controllers/logout_controller'
 import { middleware } from '#start/kernel'
-import PersonTitleNameController from '#controllers/person_title_name_controller'
+import UserProfilePictureController from '#controllers/user_profile_picture_controller'
+import UserDataProfilePictureController from '#controllers/user_data_profile_picture_controller'
+import MailDashboardController from '#controllers/mail_dashboard_controller'
+import MailFileController from '#controllers/mail_file_controller'
 
 router.on('/').render('pages/home')
-router.get('/dashboard', [DashboardController, 'index']).as('dashboard.index')
+
+router.get('/dashboard', [DashboardController, 'index']).as('dashboard.index').use(middleware.auth({ guards: ['web'] }))
 
 // TODO: implement later 
 // router.get('/error/bad_request', [BadRequsetController, 'index']).as('dashboard.index')
@@ -30,25 +33,25 @@ router.get('/dashboard', [DashboardController, 'index']).as('dashboard.index')
 // GET /account/login?email=...
 // show login form
 // if email is provided autofill email field
-router.get('/login', [LoginController, 'create']).as('auth.login.create')
+router.get('/login', [LoginController, 'create']).as('auth.login.create').use(middleware.guest())
 
 // POST /account/login
 // login form submit
 // body : MUST email, MUST password
-router.post('/login', [LoginController, 'store']).as('auth.login.store')
+router.post('/login', [LoginController, 'store']).as('auth.login.store').use(middleware.guest())
 
 // GET /account/register?register_code=...
 // show register form
 // MUST register_code is newly created user id
 // MUST referrer is user who created the register_code
 // no/invalid 'MUST' redirect to 404 not found
-router.get('/register', [RegisterController, 'create']).as('auth.register.create')
+router.get('/register', [RegisterController, 'create']).as('auth.register.create').use(middleware.guest())
 
 // POST /account/register
 // register form submit
 // body : MUST register_code=[user_id], MUST referrer=[user_id]
 // MUST email=[email], MUST password=[password]
-router.post('/register', [RegisterController, 'store']).as('auth.register.store') 
+router.post('/register', [RegisterController, 'store']).as('auth.register.store').use(middleware.guest())
 
 // GET /account/register/verify_otp?email=[email]&otp_code=[otp_code]
 // show otp verification form
@@ -81,21 +84,77 @@ router.post('/register', [RegisterController, 'store']).as('auth.register.store'
 // workaround for html GET/POST limitation -> route('dashboard.invite_link.destroy', {}, { qs: { _method: 'DELETE' } })
 // router.delete('/dashboard/invite_link/:id', [RegisterInviteLinkController, 'destroy']).as('dashboard.invite_link.destroy')
 
-router.get('/profile', [UserProfileController, 'create']).as('account.profile').use(middleware.auth({ guards: ['web'] }))
-router.get('/api/v1/profile/:userId/picture', [UserProfileController, 'show']).as('api.account.profile.picture.show')
-router.post('/api/v1/profile/:userId/picture', [UserProfileController, 'store']).as('api.account.profile.picture.store')
+// own profile
+// router.get('/profile', [UserProfileController, 'index']).as('account.profile.index').use(middleware.auth({ guards: ['web'] }))
+// router.post('/profile', [UserProfileController, 'update']).as('account.profile.update').use(middleware.auth({ guards: ['web'] }))
+// router.get('/profile/picture', [UserProfilePictureController, 'index']).as('account.profile.picture.index').use(middleware.auth({ guards: ['web'] }))
+// router.post('/profile/picture', [UserProfilePictureController, 'update']).as('account.profile.picture.store').use(middleware.auth({ guards: ['web'] }))
 
-router.get('/user', [UserDataController, 'index']).as('user.index').use(middleware.auth({ guards: ['web'] }))
+// profile picture api
 
-router.get('/mail', [SandboxesController, 'index']).as('mail.index')
-router.get('/archive', [SandboxesController, 'index']).as('archive.index')
+router.get('/archive', [SandboxesController, 'index']).as('archive.index').use(middleware.auth({ guards: ['web'] }))
 router.get('/register_invite_link', [RegisterInviteLinkController, 'index']).as('registerInviteLink.index')
 
 router.get('/api/v1/gender/search', [GenderController, 'searchApi']).as('api.gender.search')
 
-router.get('/gs', [SandboxesController, 'index']).as('gs')
-
 
 router.get('/logout', [LogoutController, 'store']).as('auth.logout.store').use(middleware.auth({ guards: ['web'] }))
 
-router.get('/api/v1/person_title_name/search', [PersonTitleNameController, 'searchApi']).as('api.personTitleName.search')
+// shows user data dashboard
+// router.get('/user', [UserDataController, 'index']).as('user.index').use(middleware.auth({ guards: ['web'] }))
+// router.get('/user/:userId', [UserDataController, 'show']).as('user.show').use(middleware.auth({ guards: ['web'] }))
+// router.post('/user/:userId', [UserDataController, 'show']).as('user.update').use(middleware.auth({ guards: ['web'] }))
+// router.get('/user/:userId/picture', [UserDataProfilePictureController, 'user.profile.show']).as('api.account.profile.picture.show').use(middleware.auth({ guards: ['web'] }))
+// router.post('/user/:userId/picture', [UserDataProfilePictureController, 'user.profile.update']).as('api.account.profile.picture.show').use(middleware.auth({ guards: ['web'] }))
+
+router.group(() => {
+
+  // --- Group 1: Own Profile (Current User) ---
+  router.group(() => {
+    // Main Profile
+    router.get('/', [UserProfileController, 'index']).as('account.profile.index')
+    router.post('/', [UserProfileController, 'update']).as('account.profile.update')
+
+    // Profile Picture
+    router.get('/picture', [UserProfilePictureController, 'index']).as('account.profile.picture.index')
+    router.post('/picture', [UserProfilePictureController, 'update']).as('account.profile.picture.update')
+  }).prefix('profile')
+
+  // --- Group 2: User Management (Admin/Dashboard) ---
+  router.group(() => {
+    // List & Show
+    router.get('/', [UserDataController, 'index']).as('users.index')
+    router.get('/:userId', [UserDataController, 'show']).as('users.show')
+
+    // Update User
+    router.post('/:userId', [UserDataController, 'update']).as('users.update')
+
+    // User Picture Management
+    router.get('/:userId/picture', [UserDataProfilePictureController, 'show']).as('users.picture.show')
+    router.post('/:userId/picture', [UserDataProfilePictureController, 'update']).as('users.picture.update')
+
+  }).prefix('user')
+
+  // --- Group 2: Mail Management (Admin/Dashboard) ---
+  router.group(() => {
+
+    // 1. Static Routes (MUST COME FIRST)
+    // If these are below /:mailId, the router will think "create" is an ID
+    router.get('/create', [MailDashboardController, 'create']).as('mails.create')
+    router.post('/create', [MailDashboardController, 'store']).as('mails.store')
+
+    // 2. Dynamic Routes (General)
+    router.get('/', [MailDashboardController, 'index']).as('mails.index')
+    router.get('/:mailId', [MailDashboardController, 'show']).as('mails.show')
+    
+    // Update Mail
+    router.post('/:mailId', [MailDashboardController, 'update']).as('mails.update')
+
+    // 3. Sub-Resources (Mail Files)
+    // Changed :userId -> :mailId to allow fetching the file belonging to this specific mail
+    router.get('/:mailId/file', [MailFileController, 'show']).as('mails.file.show')
+    router.post('/:mailId/file', [MailFileController, 'update']).as('mails.file.update')
+
+  }).prefix('mail')
+
+}).use(middleware.auth({ guards: ['web'] }))

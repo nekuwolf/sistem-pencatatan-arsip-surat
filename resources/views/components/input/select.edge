@@ -84,15 +84,33 @@
     })
   }}>
     
+    {{-- 1. Get the old value from flash messages (if it exists) --}}
+    @let(oldValue = flashMessages.get(name))
+
     @if(options)
       @each(option in options)
-        @if(!isThereOptionSelected)
-          @assign(isThereOptionSelected = option.isSelected ? true : false)
+        
+        {{-- 2. Determine if this specific option should be selected --}}
+        @let(isOptionActive = false)
+
+        @if(oldValue !== null && oldValue !== undefined)
+          {{-- If we have an old value (validation failed), compare it. 
+              Using '==' (loose equality) matches '2' (string from form) with 2 (integer from DB) --}}
+          @assign(isOptionActive = option.value == oldValue)
+        @else
+          {{-- Otherwise, fall back to the default 'isSelected' prop --}}
+          @assign(isOptionActive = option.isSelected ? true : false)
         @end
+
+        {{-- Update the tracker to hide the placeholder if something is found --}}
+        @if(isOptionActive)
+          @assign(isThereOptionSelected = true)
+        @end
+
         <option {{
           html.attrs({
             value: option.value,
-            'selected': option.isSelected,
+            'selected': isOptionActive,
           })
         }}>{{ option.label }}</option>
       @endeach

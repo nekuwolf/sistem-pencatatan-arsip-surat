@@ -1,42 +1,56 @@
 <div class="list-group d-md-none {{ style || '' }}">
   @each(row in datas)
-    {{-- 1. Extract columns using single-line expressions --}}
+    {{-- Extraction Logic --}}
     @let(titleCol = columns.find(c => row[c.key]?.mark === 'TITLE'))
     @let(subTitleCol = columns.find(c => row[c.key]?.mark === 'SUBTITLE'))
     @let(contentCol = columns.find(c => row[c.key]?.mark === 'CONTENT'))
     @let(subContentCol = columns.find(c => row[c.key]?.mark === 'SUBCONTENT'))
+    @let(picture = columns.find(c => row[c.key]?.mark === 'PICTURE'))
     
-    {{-- 2. Extract the Action URL (Single line logic) --}}
     @let(actionCol = columns.find(c => Array.isArray(row[c.key]) ? row[c.key].some(i => i.mark === 'ACTIONVIEWDETAIL') : row[c.key]?.mark === 'ACTIONVIEWDETAIL'))
-    
     @let(actionUrl = actionCol ? (Array.isArray(row[actionCol.key]) ? row[actionCol.key].find(i => i.mark === 'ACTIONVIEWDETAIL')?.value : row[actionCol.key]?.value) : '#')
 
-    <a href="{{ actionUrl }}" class="list-group-item list-group-item-action position-relative py-3">
-      <span class="d-block">
+    <a href="{{ actionUrl }}" class="list-group-item list-group-item-action position-relative d-flex gap-3 align-items-start py-3">
+      
+      {{-- Image --}}
+      @if(picture)
+        <div class="flex-shrink-0 profile-pic-size-small profile-box rounded shadow-sm" style="width: 50px; height: 50px;">
+          <img src="{{ row[picture.key].value }}" alt="Picture" class="w-100 h-100 object-fit-cover rounded">
+        </div>
+      @end
+
+      {{-- Text Body --}}
+      <div class="flex-grow-1 min-width-0"> 
         
-        {{-- Header: Title & Subtitle --}}
-        <span class="d-flex justify-content-between align-items-center">
-          @if(titleCol)
-            <p class="mb-0 fw-bold text-body-emphasis text-truncate pe-1">{{ row[titleCol.key].value }}</p>
-          @end
-          
-          @if(subTitleCol)
-            <p class="mb-0 text-nowrap small text-body-secondary">{{ row[subTitleCol.key].value }}</p>
-          @end
-        </span>
+        {{-- HEADER (Title + Subtitle "1") --}}
+        {{-- REMOVED pe-5: This allows the "1" to go to the far right edge, overlapping chevron space --}}
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            @if(titleCol)
+              {{-- Added me-4: Gives the Title some breathing room from the Subtitle/Chevron area --}}
+              <h6 class="mb-0 fw-bold text-body-emphasis text-truncate me-4">{{ row[titleCol.key].value }}</h6>
+            @end
+            
+            @if(subTitleCol)
+              {{-- Subtitle "1": Sits flush right --}}
+              <small class="text-nowrap text-body-secondary">{{ row[subTitleCol.key].value }}</small>
+            @end
+        </div>
 
-        {{-- Contents --}}
+        {{-- CONTENT ("diskominfos...") --}}
+        {{-- ADDED pe-5: Keeps this text away from the chevron --}}
         @if(contentCol)
-          <p class="mt-1 mb-0 pe-4 text-body text-truncate text-wrap line-clamp-1">{{ row[contentCol.key].value }}</p>
+          <p class="mb-0 text-body text-truncate text-wrap line-clamp-1 pe-3">{{ row[contentCol.key].value }}</p>
         @end
 
+        {{-- SUB CONTENT --}}
+        {{-- ADDED pe-5: Keeps this text away from the chevron --}}
         @if(subContentCol)
-          <p class="mt-1 mb-0 pe-4 text-body-secondary text-truncate text-wrap line-clamp-2">{{ row[subContentCol.key].value }}</p>
+          <p class="mt-1 mb-0 text-body-secondary text-truncate text-wrap line-clamp-2 pe-3">{{ row[subContentCol.key].value }}</p>
         @end
 
-
-        {{-- Badges (Looping through columns for marks) --}}
-        <div class="d-flex flex-wrap gap-1 mt-2 pe-4">
+        {{-- BADGES --}}
+        {{-- ADDED pe-5: Keeps badges away from the chevron --}}
+        <div class="d-flex flex-wrap gap-1 mt-2 pe-3">
           @each(col in columns)
             @let(cell = row[col.key])
             @if(cell)
@@ -52,11 +66,18 @@
             @end
           @end
         </div>
-      </span>
+      </div>
 
-      <span class="position-absolute top-50 end-0 translate-middle-y me-3">
-        <i class="bi bi-chevron-right"></i>
+      {{-- CHEVRON --}}
+      {{-- Absolute position, sits on top right --}}
+      <span class="position-absolute top-50 end-0 translate-middle-y me-3 text-body-tertiary">
+         <i class="bi bi-chevron-right"></i>
       </span>
+      
     </a>
   @end
 </div>
+
+<style>
+  .min-width-0 { min-width: 0; }
+</style>

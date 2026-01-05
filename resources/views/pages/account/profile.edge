@@ -1,215 +1,52 @@
-@layout.dashboard({ title: 'Profile Page', bodyAttrs: { 'class': 'd-flex flex-column', 'data-bs-theme': 'light'} })
+@component('components/layout/dashboard', { title: 'Profile Page', pageDescription: 'Profile Page' })
   @slot('head')
     <meta name="description" content="Profile">
     @vite(['resources/js/utils/input_actions.js'])
   @endslot
 
   @slot('main')
-  @!component('components/dashboard/breadcrumb', {
-    items: [
-      { label: 'Home', href: '/', icon: 'bi bi-house', clickable: true },
-      { label: 'Account', clickable: false },
-      { label: 'Profile', href: '/account/profile', clickable: true }
-    ]
-  })
-  <p class="mb-3 fs-4">Account Settings</p>
 
-  <div class="row g-3">
-    <!-- LEFT COLUMN -->
-    <div class="col-12 col-lg-2 position-relative">
-      <div class="sticky-lg-top z-0 p-3 bg-body-tertiary rounded border cstm-top-80-lg cstm-maxh-100vh-100-lg cstm-overflowy-auto-lg">
-        <div class="avatar-wrapper mx-auto">
-          <div class="profile-box rounded-circle shadow-sm" cstmtag-profile-picture cstm-data-profile-picture-upload-endpoint="{{ route('api.account.profile.picture.store', { userId: '1'}) }}" cstm-data-csrf-token="{{ csrfToken }}" cstm-data-no-img-char="AL">
-            <img src="{{ userData.userAvatar.url }}" alt="User">
+    @!component('components/dashboard/breadcrumb', {
+      items: [
+        { label: 'Home', href: '/', icon: 'bi bi-house', clickable: true },
+        { label: 'Account', clickable: false },
+        { label: 'Profile', href: '/account/profile', clickable: true }
+      ]
+    })
+
+    <p class="mb-3 fs-4">Account Settings</p>
+
+    <div class="row g-3">
+      <!-- LEFT COLUMN STICKY TOP UNTIL RIGHT COLUMN END -->
+      <div class="col-12 col-lg-2 position-relative">
+        <div class="sticky-lg-top z-0 p-3 bg-body-tertiary rounded border cstm-top-80-lg cstm-maxh-100vh-100-lg cstm-overflowy-auto-lg">
+          <div class="avatar-wrapper mx-auto">
+            @let(variable = auth.user?.full_name)
+            <div class="profile-box rounded-circle shadow-sm" cstmtag-profile-picture cstm-data-profile-picture-upload-endpoint="{{ route('account.profile.picture.update') }}" cstm-data-csrf-token="{{ csrfToken }}">
+              <img src="{{ route('account.profile.picture.index', { userId: auth.user?.id }) }}" alt="User">
+            </div>
           </div>
+          <p class="text-center text-muted small mt-3 mb-0">Click the image to preview or edit</p>
         </div>
-        <p class="text-center text-muted small mt-3 mb-0">Click the image to preview or edit</p>
+      </div>
+
+      <!-- RIGHT COLUMN (MAIN CONTENT) -->
+      <div class="col-12 col-lg-10 p-3 bg-body-tertiary rounded border">
+        @if(flashMessages.has('profileFormAlertMessage'))
+          <div class="col-12">
+            @!component('components/alert', { 
+              message: flashMessages.get('profileFormAlertMessage') 
+            })
+          </div>
+        @end
+        @if(isEditing)
+          {{-- Include the Form version you created earlier --}}
+          @include('components/form/profile/edit')
+        @else
+          {{-- Include the View Only version --}}
+          @include('components/form/profile/show')
+        @end
       </div>
     </div>
-
-    <!-- RIGHT COLUMN (Main Content) -->
-    <div class="col-12 col-lg-10">
-      <div class="p-3 bg-body-tertiary rounded border">
-        <h6 class="mb-3 fw-bold"><i class="bi bi-person-fill me-2"></i>Personal Information</h6>
-            <div class="row g-3 mb-4">
-              <div class="col-md-12">
-                @component('components/input/input', {
-                  id: 'fullName',
-                  name: 'full_name',
-                  labelText: 'Full Name',
-                  labelIcon: 'person',
-                  labelIconIsFill: false,
-                  type: '',
-                  value: userData.fullName,
-                  placeholder: 'John Doe',
-                  required: true,
-                  enableFloatingLabel: false,
-                  style: '',
-                  helpText: ''
-                })
-                @end
-              </div>
-
-              <div class="col-md-6">
-                {{-- Mapping Gender Options --}}
-                @!component('components/input/select', {
-                  id: 'gender',
-                  name: 'gender',
-                  labelText: 'Gender',
-                  labelIcon: 'person-vcard',
-                  labelIconIsFill: false,
-                  type: 'text',
-                  placeholder: "Select gender",
-                  options: genders,
-                  enableTomSelect: true,
-                  tomSelectOnlySearchLocally: true,
-                  queryEndpoint: route('api.gender.search'),
-                  queryEndpointMethod: 'GET',
-                  tomSelectOptionValueField: 'value',
-                  tomSelectOptionLabelField: 'label',
-                  tomSelectOptionSearchField: 'label',
-                  tomSelectOptionPreload: 'true'
-                })
-              </div>
-
-              <div class="col-md-6">
-                @!component('components/input/input', {
-                  id: 'birthDate',
-                  name: 'birth_date',
-                  labelText: 'Date of Birth',
-                  labelIcon: 'calendar',
-                  labelIconIsFill: false,
-                  type: 'date',
-                  value: userData.birthDate ? userData.birthDate.toFormat('yyyy-MM-dd') : ''
-                })
-              </div>
-
-              <div class="col-md-12">
-                @component('components/input/textarea', {
-                  id: 'birthPlace',
-                  name: 'birth_place',
-                  labelText: 'Place of Birth',
-                  labelIcon: 'geo-alt',
-                  labelIconIsFill: false,
-                  type: 'text',
-                  value: userData.birthPlace,
-                  placeholder: 'City, Country',
-                  required: true,
-                  enableFloatingLabel: false,
-                  cstmAutogrowHeight: true,
-                  cstmAutogrowHeightMinPx: '64',
-                })
-                @end
-              </div>
-            </div>
-
-            <hr class="my-4 text-muted opacity-25">
-
-            {{-- Section 2: Contact Info --}}
-            <h6 class="mb-3 fw-bold"><i class="bi bi-geo-alt-fill me-2"></i>Contact Information</h6>
-            <div class="row g-3 mb-4">
-              <div class="col-md-6">
-                @!component('components/input/input', {
-                  id: 'email',
-                  name: 'email',
-                  labelText: 'Email Address',
-                  labelIcon: 'envelope',
-                  labelIconIsFill: false,
-                  type: 'email',
-                  value: userData.email,
-                  readonly: true,
-                  helpText: 'Contact admin to change email'
-                })
-              </div>
-
-              <div class="col-md-6">
-                @!component('components/input/input', {
-                  id: 'phone',
-                  name: 'personal_phone_number',
-                  labelText: 'Phone Number',
-                  labelIcon: 'telephone',
-                  labelIconIsFill: false,
-                  type: 'number',
-                  inputStyle: 'number-input-no-arrow',
-                  value: userData.personalPhoneNumber,
-                  placeholder: '12345678900'
-                })
-              </div>
-
-              <div class="col-12">
-                @component('components/input/textarea', {
-                  id: 'homeAddress',
-                  name: 'full_home_address',
-                  labelText: 'Home Address',
-                  labelIcon: 'house-door',
-                  labelIconIsFill: false,
-                  type: 'text',
-                  value: userData.fullHomeAddress,
-                  placeholder: 'Street, City, Country',
-                  required: true,
-                  enableFloatingLabel: false,
-                  cstmAutogrowHeight: true,
-                  cstmAutogrowHeightMinPx: '100'
-                })
-                @end
-              </div>
-            </div>
-
-            <hr class="my-4 text-muted opacity-25">
-
-            {{-- Section 3: Organization & Role --}}
-            <h6 class="mb-3 fw-bold"><i class="bi bi-briefcase-fill me-2"></i>Employment</h6>
-            <div class="row g-3">
-              <div class="col-md-6">
-                @!component('components/input/select', {
-                  id: 'organization',
-                  name: 'organization_id',
-                  labelText: 'Organization',
-                  labelIcon: 'building',
-                  labelIconIsFill: false,
-                  type: 'text',
-                  value: userData.organizationId,
-                  placeholder: "Select organization",
-                  options: organizations
-                })
-              </div>
-
-              <div class="col-md-6">
-                @!component('components/input/select', {
-                  id: 'department',
-                  name: 'department_id',
-                  labelText: 'Department',
-                  labelIcon: 'briefcase',
-                  labelIconIsFill: false,
-                  type: 'text',
-                  value: userData.departmentId,
-                  placeholder: "Select department",
-                  options: departments
-                })
-              </div>
-
-              <div class="col-md-12">
-                 @!component('components/input/select', {
-                  id: 'jobRole',
-                  name: 'job_role_id',
-                  labelText: 'Job Role / Designation',
-                  labelIcon: 'person-gear',
-                  labelIconIsFill: false,
-                  type: 'text',
-                  value: userData.jobRoleId,
-                  placeholder: "Select job role",
-                  options: jobRoles
-                })
-              </div>
-            </div>
-
-            {{-- Form Actions --}}
-            <div class="mt-5 d-flex justify-content-end gap-2">
-              <button type="button" class="btn btn-light border">Cancel</button>
-              <button type="submit" class="btn btn-primary px-4">Save Changes</button>
-            </div>
-      </div>
-    </div>
-  </div> <!-- End of Row -->
   @endslot
 @end

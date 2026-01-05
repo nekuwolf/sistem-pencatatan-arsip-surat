@@ -1,0 +1,551 @@
+@if(isHtmx)
+  @if(form?.values?.register_code && isRegisterCodeValid)
+    <form hx-post="{{ route('auth.register.store') }}" hx-target="this" hx-swap="outerHTML" class="row g-3 mt-1">
+      {{ csrfField() }}
+
+      <div class="col-12">
+        @!component('components/input/split', {
+          id: 'registerCode',
+          name: 'register_code',
+          labelText: 'Register Code',
+          labelIcon: 'asterisk',
+          labelIconIsFill: false,
+          placeholder: 'Abc123',
+          isRequired: true,
+          isReadOnly: isRegisterCodeValid ? true : false,
+          fieldCount: G_REGISTER_CODE_LENGTH,
+          helpText: 'This register code can only be used once (invalid after successful registration)',
+          value: form?.values?.register_code || '',
+          errorMessage: form?.errors?.register_code || '',
+        })
+      </div>
+      
+      <div class="col-12">
+        @component('components/input/input', {
+          id: 'fullName',
+          name: 'full_name',
+          labelText: 'Full Name',
+          labelIcon: 'person',
+          value: form?.values?.full_name || '',
+          placeholder: 'First middle last name',
+          isRequired: true,
+          enableFloatingLabel: false,
+          errorMessage: form?.errors?.full_name || ''
+        })
+        @end
+      </div>
+
+      <div class="col-12">
+        @!component('components/input/select', {
+          id: 'personTitleName',
+          name: 'person_title_name_ids[]',
+          labelText: 'Academic Title',
+          labelIcon: 'mortarboard',
+          placeholder: "Select academic titles",
+          isRequired: true,
+          enableFloatingLabel: false,
+          enableTomSelect: true,
+          options: personTitleNameOptions || [],
+          queryEndpoint: route('api.personTitleName.search'),
+          queryEndpointMethod: 'GET',
+          tomSelectPlugins: 'dropdown_input;remove_button;',
+          tomSelectOptionValueField: 'value',
+          tomSelectOptionLabelField: 'label',
+          tomSelectOptionSearchField: 'label',
+          tomSelectOptionPreload: 'true',
+          tomSelectOptionMaxItems: 10,
+          helpText: 'Able to select more than one academic title',
+          errorMessage: form?.errors?.person_title_name_ids || ''
+        })
+      </div>
+
+      <div class="col-12">
+        @!component('components/input/select', {
+          id: 'gender',
+          name: 'gender_id',
+          labelText: 'Gender',
+          labelIcon: 'gender-ambiguous',
+          placeholder: "Select gender",
+          isRequired: true,
+          enableFloatingLabel: false,
+          enableTomSelect: true,
+          options: genderOptions || [],
+          queryEndpoint: route('api.gender.search'),
+          queryEndpointMethod: 'GET',
+          tomSelectOptionValueField: 'value',
+          tomSelectOptionLabelField: 'label',
+          tomSelectOptionSearchField: 'label',
+          tomSelectOptionPreload: 'true',
+          errorMessage: form?.errors?.gender || '',
+        })
+      </div>
+
+      <div class="col-12 col-md-6">
+        @!component('components/input/input', {
+          id: 'birthDate',
+          name: 'birth_date',
+          labelText: 'Date of Birth',
+          labelIcon: 'calendar',
+          labelIconIsFill: false,
+          type: 'date',
+          isRequired: true,
+          value: form?.values?.birth_date || '',
+          placeholder: '12/31/2004',
+          enableFloatingLabel: false,
+          errorMessage: form?.errors?.birth_date || ''
+        })
+      </div>
+
+      <div class="col-12 col-md-6">
+        @component('components/input/input', {
+          id: 'birthPlace',
+          name: 'birth_place',
+          labelText: 'Place of Birth',
+          labelIcon: 'geo-alt',
+          labelIconIsFill: false,
+          value: form?.values?.birth_place || '',
+          placeholder: 'Region or province or city',
+          isRequired: true,
+          enableFloatingLabel: false,
+          errorMessage: form?.errors?.birth_place || ''
+        })
+        @end
+      </div>
+
+      <div class="col-12">
+        @component('components/input/textarea', {
+          id: 'fullHomeAddress',
+          name: 'full_home_address',
+          labelText: 'Home Address',
+          labelIcon: 'house-door',
+          labelIconIsFill: false,
+          type: 'text',
+          value: form?.values?.full_home_address || '',
+          placeholder: 'Street Name House No., RT/RW, Administrative Village, District, City/Regency, Province, Postal Code',
+          isRequired: true,
+          enableFloatingLabel: false,
+          cstmAutogrowHeight: true,
+          cstmAutogrowHeightMinPx: 100,
+          errorMessage: form?.errors?.full_home_address || ''
+        })
+        @end
+      </div>
+
+      <div class="col-12 col-md-6">
+        @!component('components/input/input', {
+          id: 'phone',
+          name: 'personal_phone_number',
+          labelText: 'Phone Number',
+          labelIcon: 'telephone',
+          labelIconIsFill: false,
+          type: 'number',
+          isRequired: true,
+          inputStyle: 'number-input-no-arrow',
+          value: form?.values?.personal_phone_number || '',
+          placeholder: '012345678910',
+          errorMessage: form?.errors?.personal_phone_number || ''
+        })
+      </div>
+        
+      <div class="col-12 col-md-6">
+        @component('components/input/input', {
+          id: 'email',
+          name: 'email',
+          labelText: 'Email',
+          labelIcon: 'envelope',
+          labelIconIsFill: false,
+          type: 'email',
+          value: form?.values?.email || '',
+          placeholder: 'email@example.com',
+          isRequired: true,
+          enableFloatingLabel: false,
+          autocomplete: 'email',
+          helpText: 'This email will be used as login credential',
+          errorMessage: form?.errors?.email || ''
+        })
+        @end
+      </div>
+      
+      <div class="col-12 col-md-6">
+        @component('components/input/input', {
+          type: 'password',
+          id: 'passwordInput',
+          name: 'password',
+          labelText: 'Password',
+          labelIcon: 'key',
+          labelIconIsFill: false,
+          value: form?.values?.password || '',
+          isRequired: true,
+          autocomplete: 'new-password',
+          enableFloatingLabel: false,
+          placeholder: 'Password',
+          cstmDataTogglePassword: 'password',
+          helpText: 'Password must consist of minimum 8 character',
+          errorMessage: form?.errors?.password || ''
+        })
+          @slot('suffix')
+            @!component('components/button/button', {
+              style: 'input-group-text',
+              variant: 'secondary',
+              isOutline: true,
+              type: 'button',
+              text: 'Show',
+              iconName: 'eye',
+              textAlt: 'Hide',
+              iconNameAlt: 'eye-slash',
+              cstmDataTogglePasswordBtn: 'password'
+            })
+          @end
+        @end
+      </div>
+      
+      <div class="col-12 col-md-6">
+        @component('components/input/input', {
+          type: 'password',
+          id: 'confirmPasswordInput',
+          name: 'password_confirmation',
+          labelText: 'Confirm Password',
+          labelIcon: 'key',
+          labelIconIsFill: false,
+          value: form?.values?.password || '',
+          isRequired: true,
+          autocomplete: 'new-password',
+          enableFloatingLabel: false,
+          placeholder: 'Password',
+          cstmDataTogglePassword: 'confirmPasswordInput',
+          helpText: 'Password confirmation must match "Password" input',
+          errorMessage: form?.errors?.password_confirmation || ''
+        })
+          @slot('suffix')
+            @!component('components/button/button', {
+              style: 'input-group-text',
+              variant: 'secondary',
+              isOutline: true,
+              type: 'button',
+              text: 'Show',
+              iconName: 'eye',
+              textAlt: 'Hide',
+              iconNameAlt: 'eye-slash',
+              cstmDataTogglePasswordBtn: 'confirmPasswordInput'
+            })
+          @end
+        @end
+      </div>
+      
+      <div class="col-12">
+        @!component('components/button/button', {
+          style: 'mt-3 w-100',
+          type: 'submit',
+          text: 'Register',
+          enableLoadingIndicator: true
+        })
+      </div>
+    </form>
+  @else
+    <form hx-get="{{ route('auth.register.create') }}" hx-target="this" hx-swap="outerHTML" class="row g-3 mt-1">
+
+      <div class="col-12">
+        @!component('components/input/split', {
+          id: 'registerCode',
+          name: 'register_code',
+          labelText: 'Register Code',
+          labelIcon: 'asterisk',
+          labelIconIsFill: false,
+          placeholder: 'Abc123',
+          isRequired: true,
+          fieldCount: G_REGISTER_CODE_LENGTH,
+          helpText: 'Request an register code/invite link from an admin or registered employee',
+          value: form?.values?.register_code || '',
+          errorMessage: form?.errors?.register_code || '',
+        })
+      </div>
+      
+      <div class="col-12">
+        @!component('components/button/button', {
+          style: 'mt-3 w-100',
+          type: 'submit',
+          text: 'Verify',
+          loadingIndicatorText: 'Verifying...',
+          enableLoadingIndicator: true
+        })
+      </div>
+    </form>
+  @endif
+@end
+
+@component('pages/auth/register3', {  })
+  @slot('main')
+    @if(form?.values?.register_code && isRegisterCodeValid)
+      <form hx-post="{{ route('auth.register.store') }}" hx-target="this" hx-swap="outerHTML" class="row g-3 mt-1">
+        {{ csrfField() }}
+
+        <div class="col-12">
+          @!component('components/input/split', {
+            id: 'registerCode',
+            name: 'register_code',
+            labelText: 'Register Code',
+            labelIcon: 'asterisk',
+            labelIconIsFill: false,
+            placeholder: 'Abc123',
+            isRequired: true,
+            isReadOnly: isRegisterCodeValid ? true : false,
+            fieldCount: G_REGISTER_CODE_LENGTH,
+            helpText: 'This register code can only be used once (invalid after successful registration)',
+            value: form?.values?.register_code || '',
+            errorMessage: form?.errors?.register_code || '',
+          })
+        </div>
+        
+        <div class="col-12">
+          @component('components/input/input', {
+            id: 'fullName',
+            name: 'full_name',
+            labelText: 'Full Name',
+            labelIcon: 'person',
+            value: form?.values?.full_name || '',
+            placeholder: 'First middle last name',
+            isRequired: true,
+            enableFloatingLabel: false,
+            errorMessage: form?.errors?.full_name || ''
+          })
+          @end
+        </div>
+
+        <div class="col-12">
+          @!component('components/input/select', {
+            id: 'personTitleName',
+            name: 'person_title_name_ids[]',
+            labelText: 'Academic Title',
+            labelIcon: 'mortarboard',
+            placeholder: "Select academic titles",
+            isRequired: true,
+            enableFloatingLabel: false,
+            enableTomSelect: true,
+            options: personTitleNameOptions || [],
+            queryEndpoint: route('api.personTitleName.search'),
+            queryEndpointMethod: 'GET',
+            tomSelectPlugins: 'dropdown_input;remove_button;',
+            tomSelectOptionValueField: 'value',
+            tomSelectOptionLabelField: 'label',
+            tomSelectOptionSearchField: 'label',
+            tomSelectOptionPreload: 'true',
+            tomSelectOptionMaxItems: 10,
+            helpText: 'Able to select more than one academic title',
+            errorMessage: form?.errors?.person_title_name_ids || ''
+          })
+        </div>
+
+        <div class="col-12">
+          @!component('components/input/select', {
+            id: 'gender',
+            name: 'gender_id',
+            labelText: 'Gender',
+            labelIcon: 'gender-ambiguous',
+            placeholder: "Select gender",
+            isRequired: true,
+            enableFloatingLabel: false,
+            enableTomSelect: true,
+            options: genderOptions || [],
+            queryEndpoint: route('api.gender.search'),
+            queryEndpointMethod: 'GET',
+            tomSelectOptionValueField: 'value',
+            tomSelectOptionLabelField: 'label',
+            tomSelectOptionSearchField: 'label',
+            tomSelectOptionPreload: 'true',
+            errorMessage: form?.errors?.gender || '',
+          })
+        </div>
+
+        <div class="col-12 col-md-6">
+          @!component('components/input/input', {
+            id: 'birthDate',
+            name: 'birth_date',
+            labelText: 'Date of Birth',
+            labelIcon: 'calendar',
+            labelIconIsFill: false,
+            type: 'date',
+            isRequired: true,
+            value: form?.values?.birth_date || '',
+            placeholder: '12/31/2004',
+            enableFloatingLabel: false,
+            errorMessage: form?.errors?.birth_date || ''
+          })
+        </div>
+
+        <div class="col-12 col-md-6">
+          @component('components/input/input', {
+            id: 'birthPlace',
+            name: 'birth_place',
+            labelText: 'Place of Birth',
+            labelIcon: 'geo-alt',
+            labelIconIsFill: false,
+            value: form?.values?.birth_place || '',
+            placeholder: 'Region or province or city',
+            isRequired: true,
+            enableFloatingLabel: false,
+            errorMessage: form?.errors?.birth_place || ''
+          })
+          @end
+        </div>
+
+        <div class="col-12">
+          @component('components/input/textarea', {
+            id: 'fullHomeAddress',
+            name: 'full_home_address',
+            labelText: 'Home Address',
+            labelIcon: 'house-door',
+            labelIconIsFill: false,
+            type: 'text',
+            value: form?.values?.full_home_address || '',
+            placeholder: 'Street Name House No., RT/RW, Administrative Village, District, City/Regency, Province, Postal Code',
+            isRequired: true,
+            enableFloatingLabel: false,
+            cstmAutogrowHeight: true,
+            cstmAutogrowHeightMinPx: 100,
+            errorMessage: form?.errors?.full_home_address || ''
+          })
+          @end
+        </div>
+
+        <div class="col-12 col-md-6">
+          @!component('components/input/input', {
+            id: 'phone',
+            name: 'personal_phone_number',
+            labelText: 'Phone Number',
+            labelIcon: 'telephone',
+            labelIconIsFill: false,
+            type: 'number',
+            isRequired: true,
+            inputStyle: 'number-input-no-arrow',
+            value: form?.values?.personal_phone_number || '',
+            placeholder: '012345678910',
+            errorMessage: form?.errors?.personal_phone_number || ''
+          })
+        </div>
+          
+        <div class="col-12 col-md-6">
+          @component('components/input/input', {
+            id: 'email',
+            name: 'email',
+            labelText: 'Email',
+            labelIcon: 'envelope',
+            labelIconIsFill: false,
+            type: 'email',
+            value: form?.values?.email || '',
+            placeholder: 'email@example.com',
+            isRequired: true,
+            enableFloatingLabel: false,
+            autocomplete: 'email',
+            helpText: 'This email will be used as login credential',
+            errorMessage: form?.errors?.email || ''
+          })
+          @end
+        </div>
+        
+        <div class="col-12 col-md-6">
+          @component('components/input/input', {
+            type: 'password',
+            id: 'passwordInput',
+            name: 'password',
+            labelText: 'Password',
+            labelIcon: 'key',
+            labelIconIsFill: false,
+            value: form?.values?.password || '',
+            isRequired: true,
+            autocomplete: 'new-password',
+            enableFloatingLabel: false,
+            placeholder: 'Password',
+            cstmDataTogglePassword: 'password',
+            helpText: 'Password must consist of minimum 8 character',
+            errorMessage: form?.errors?.password || ''
+          })
+            @slot('suffix')
+              @!component('components/button/button', {
+                style: 'input-group-text',
+                variant: 'secondary',
+                isOutline: true,
+                type: 'button',
+                text: 'Show',
+                iconName: 'eye',
+                textAlt: 'Hide',
+                iconNameAlt: 'eye-slash',
+                cstmDataTogglePasswordBtn: 'password'
+              })
+            @end
+          @end
+        </div>
+        
+        <div class="col-12 col-md-6">
+          @component('components/input/input', {
+            type: 'password',
+            id: 'confirmPasswordInput',
+            name: 'password_confirmation',
+            labelText: 'Confirm Password',
+            labelIcon: 'key',
+            labelIconIsFill: false,
+            value: form?.values?.password || '',
+            isRequired: true,
+            autocomplete: 'new-password',
+            enableFloatingLabel: false,
+            placeholder: 'Password',
+            cstmDataTogglePassword: 'confirmPasswordInput',
+            helpText: 'Password confirmation must match "Password" input',
+            errorMessage: form?.errors?.password_confirmation || ''
+          })
+            @slot('suffix')
+              @!component('components/button/button', {
+                style: 'input-group-text',
+                variant: 'secondary',
+                isOutline: true,
+                type: 'button',
+                text: 'Show',
+                iconName: 'eye',
+                textAlt: 'Hide',
+                iconNameAlt: 'eye-slash',
+                cstmDataTogglePasswordBtn: 'confirmPasswordInput'
+              })
+            @end
+          @end
+        </div>
+        
+        <div class="col-12">
+          @!component('components/button/button', {
+            style: 'mt-3 w-100',
+            type: 'submit',
+            text: 'Register',
+            enableLoadingIndicator: true
+          })
+        </div>
+      </form>
+    @else
+      <form hx-get="{{ route('auth.register.create') }}" hx-target="this" hx-swap="outerHTML" class="row g-3 mt-1">
+
+        <div class="col-12">
+          @!component('components/input/split', {
+            id: 'registerCode',
+            name: 'register_code',
+            labelText: 'Register Code',
+            labelIcon: 'asterisk',
+            labelIconIsFill: false,
+            placeholder: 'Abc123',
+            isRequired: true,
+            fieldCount: G_REGISTER_CODE_LENGTH,
+            helpText: 'Request an register code/invite link from an admin or registered employee',
+            value: form?.values?.register_code || '',
+            errorMessage: form?.errors?.register_code || '',
+          })
+        </div>
+        
+        <div class="col-12">
+          @!component('components/button/button', {
+            style: 'mt-3 w-100',
+            type: 'submit',
+            text: 'Verify',
+            loadingIndicatorText: 'Verifying...',
+            enableLoadingIndicator: true
+          })
+        </div>
+      </form>
+    @endif
+  @end
+@end

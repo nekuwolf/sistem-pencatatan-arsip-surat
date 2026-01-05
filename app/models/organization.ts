@@ -1,10 +1,11 @@
 import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
-import UserData from '#models/users_data'
 import RegisterInviteLink from './register_invite_link.js'
+import ArchiveRackShelfOrder from './archive_rack_shelf_order.js'
+import User from './user.js'
 
 export default class Organization extends BaseModel {
-  public static table = 'organizations'
+  public static table = 'organization'
 
   @column({ isPrimary: true })
   declare id: number
@@ -13,19 +14,23 @@ export default class Organization extends BaseModel {
   declare name: string
   
   @column()
-  declare short_name: string | null
+  declare shortName: string | null
   
   @column()
   declare description: string | null
 
   @column()
-  declare location_address: string | null
+  declare locationAddress: string | null
 
   // An organization can have many users' data records
-  @hasMany(() => UserData, { foreignKey: 'organization_id' })
-  declare user_data: HasMany<typeof UserData>
+  @hasMany(() => User, { foreignKey: 'organizationId' })
+  declare user: HasMany<typeof User>
   
   // An organization can have many register invite link
-  @hasMany(() => RegisterInviteLink, { foreignKey: 'new_user_organization_id' })
-  declare register_invite_link: HasMany<typeof RegisterInviteLink>
+  @hasMany(() => RegisterInviteLink, { foreignKey: 'newUserOrganizationId' })
+  declare registerInviteLink: HasMany<typeof RegisterInviteLink>
+  
+  // An organization can have many rack shelf order
+  @hasMany(() => ArchiveRackShelfOrder, { foreignKey: 'organizationId' })
+  declare archiveRackShelfOrder: HasMany<typeof ArchiveRackShelfOrder>
 }

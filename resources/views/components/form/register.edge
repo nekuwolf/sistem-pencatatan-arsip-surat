@@ -1,4 +1,8 @@
-<form hx-post="{{ route('auth.register.store') }}" hx-target="this" hx-swap="outerHTML" class="row g-3 mt-1">
+<form action="{{ route('auth.register.store') }}" method="POST" class="row g-3 mt-1">
+  @if(registerFormAlertMessage)
+    @!component('components/alert', { variant: 'info', message: registerFormAlertMessage })
+  @end
+
   {{ csrfField() }}
 
   <div class="col-12">
@@ -10,10 +14,11 @@
       labelIconIsFill: false,
       placeholder: 'Abc123',
       isRequired: true,
+      isReadOnly: isRegisterCodeValid ? true : false,
       fieldCount: G_REGISTER_CODE_LENGTH,
       helpText: 'This register code can only be used once (invalid after successful registration)',
-      value: registerCodeValue || '',
-      errorMessage: registerCodeErrorMessage || '',
+      value: old('register_code') || register_code,
+      errorMessage: registerCodeError || flashMessages.get('errors.register_code') || '',
     })
   </div>
   
@@ -23,36 +28,31 @@
       name: 'full_name',
       labelText: 'Full Name',
       labelIcon: 'person',
-      value: fullNameValue,
+      value: old('full_name'),
       placeholder: 'First middle last name',
       isRequired: true,
       enableFloatingLabel: false,
-      errorMessage: fullNameErrorMessage || ''
+      errorMessage: flashMessages.get('errors.full_name') || ''
     })
     @end
   </div>
 
-  <div class="col-12">
-    @!component('components/input/select', {
-      id: 'personTitleName',
-      name: 'person_title_name_ids',
-      labelText: 'Academic Title',
-      labelIcon: 'mortarboard',
-      placeholder: "Select academic titles",
-      isRequired: true,
-      enableFloatingLabel: false,
-      enableTomSelect: true,
-      queryEndpoint: route('api.personTitleName.search'),
-      queryEndpointMethod: 'GET',
-      tomSelectPlugins: 'dropdown_input;remove_button;',
-      tomSelectOptionValueField: 'value',
-      tomSelectOptionLabelField: 'label',
-      tomSelectOptionSearchField: 'label',
-      tomSelectOptionPreload: 'true',
-      tomSelectOptionMaxItems: 10,
-      errorMessage: personTitleNameIdsErrorMessage || ''
-    })
-  </div>
+  @if(showNipField)
+    <div class="col-12">
+      @component('components/input/input', {
+        id: 'nip',
+        name: 'nip',
+        labelText: 'NIP',
+        labelIcon: 'card-heading',
+        value: old('nip'),
+        placeholder: 'Employee ID / NIP',
+        isRequired: true,
+        enableFloatingLabel: false,
+        errorMessage: flashMessages.get('errors.nip') || ''
+      })
+      @end
+    </div>
+  @end
 
   <div class="col-12">
     @!component('components/input/select', {
@@ -63,14 +63,8 @@
       placeholder: "Select gender",
       isRequired: true,
       enableFloatingLabel: false,
-      enableTomSelect: true,
-      queryEndpoint: route('api.gender.search'),
-      queryEndpointMethod: 'GET',
-      tomSelectOptionValueField: 'value',
-      tomSelectOptionLabelField: 'label',
-      tomSelectOptionSearchField: 'label',
-      tomSelectOptionPreload: 'true',
-      errorMessage: genderErrorMessage || '',
+      options: genderOptions || [],
+      errorMessage: flashMessages.get('errors.gender_id') || '',
     })
   </div>
 
@@ -83,10 +77,10 @@
       labelIconIsFill: false,
       type: 'date',
       isRequired: true,
-      value: birthDateValue || '',
+      value: old('birth_date'),
       placeholder: '12/31/2004',
       enableFloatingLabel: false,
-      errorMessage: birthDateErrorMessage || ''
+      errorMessage: flashMessages.get('errors.birth_date') || ''
     })
   </div>
 
@@ -97,11 +91,11 @@
       labelText: 'Place of Birth',
       labelIcon: 'geo-alt',
       labelIconIsFill: false,
-      value: birthPlaceValue,
+      value: old('birth_place'),
       placeholder: 'Region or province or city',
       isRequired: true,
       enableFloatingLabel: false,
-      errorMessage: birthPlaceErrorMessage || ''
+      errorMessage: flashMessages.get('errors.birth_place') || ''
     })
     @end
   </div>
@@ -114,13 +108,13 @@
       labelIcon: 'house-door',
       labelIconIsFill: false,
       type: 'text',
-      value: fullHomeAddressValue,
-      placeholder: 'Street, City, Country',
+      value: old('full_home_address'),
+      placeholder: 'Street Name House No., RT/RW, Administrative Village, District, City/Regency, Province, Postal Code',
       isRequired: true,
       enableFloatingLabel: false,
       cstmAutogrowHeight: true,
       cstmAutogrowHeightMinPx: 100,
-      errorMessage: fullHomeAddressErrorMessage || ''
+      errorMessage: flashMessages.get('errors.full_home_address') || ''
     })
     @end
   </div>
@@ -135,9 +129,9 @@
       type: 'number',
       isRequired: true,
       inputStyle: 'number-input-no-arrow',
-      value: personalPhoneNumberValue,
+      value: old('personal_phone_number'),
       placeholder: '012345678910',
-      errorMessage: personalPhoneNumberErrorMessage || ''
+      errorMessage: flashMessages.get('errors.personal_phone_number') || ''
     })
   </div>
     
@@ -149,12 +143,13 @@
       labelIcon: 'envelope',
       labelIconIsFill: false,
       type: 'email',
-      value: emailValue || '',
+      value: old('email'),
       placeholder: 'email@example.com',
       isRequired: true,
       enableFloatingLabel: false,
       autocomplete: 'email',
-      errorMessage: emailErrorMessage || ''
+      helpText: 'This email will be used as login credential',
+      errorMessage: flashMessages.get('errors.email') || ''
     })
     @end
   </div>
@@ -167,13 +162,14 @@
       labelText: 'Password',
       labelIcon: 'key',
       labelIconIsFill: false,
-      value: passwordValue || '',
+      value: old('password'),
       isRequired: true,
       autocomplete: 'new-password',
       enableFloatingLabel: false,
       placeholder: 'Password',
       cstmDataTogglePassword: 'password',
-      errorMessage: passwordErrorMessage || ''
+      helpText: 'Password must consist of minimum 8 character',
+      errorMessage: flashMessages.get('errors.password') || ''
     })
       @slot('suffix')
         @!component('components/button/button', {
@@ -199,13 +195,14 @@
       labelText: 'Confirm Password',
       labelIcon: 'key',
       labelIconIsFill: false,
-      value: passwordValue || '',
+      value: old('password_confirmation'),
       isRequired: true,
       autocomplete: 'new-password',
       enableFloatingLabel: false,
       placeholder: 'Password',
       cstmDataTogglePassword: 'confirmPasswordInput',
-      errorMessage: passwordConfirmationErrorMessage || ''
+      helpText: 'Password confirmation must match "Password" input',
+      errorMessage: flashMessages.get('errors.password_confirmation') || ''
     })
       @slot('suffix')
         @!component('components/button/button', {

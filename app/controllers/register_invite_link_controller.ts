@@ -5,7 +5,8 @@ export default class RegisterInviteLinkController {
    * Display a list of resource
    */
   async index({ view }: HttpContext) {
-    return view.render('pages/dashboard/register_invite_link/index')
+    return view.render('partials/hello_world')
+    // return view.render('pages/dashboard/register_invite_link/index')
   }
 
   /**

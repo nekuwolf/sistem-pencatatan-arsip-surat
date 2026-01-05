@@ -1,0 +1,219 @@
+{{-- 
+  ASSUMPTION: 
+  1. You have the 'auth.user' object available in the view (standard in Adonis).
+  2. You have preloaded relationships (organization, department, etc.) or they are available on the user object.
+--}}
+
+{{-- START FORM --}}
+<form action="{{ route('account.profile.update') }}" method="POST" class="row g-3 align-items-center justify-content-between">
+  {{ csrfField() }}
+  
+  {{-- Section 1: Personal Information --}}
+  {{-- 'col': Takes up all remaining available space --}}
+  <div class="col">
+    <h6 class="fw-bold mb-0">
+      @!component('components/bi_icon', { iconName: 'person', isFill: true })
+      Personal Information
+    </h6>
+  </div>
+  
+  {{-- 'col-auto': Only takes up as much width as the button needs --}}
+  <div class="col-auto">
+    @!component('components/button/a', {
+      text: 'Cancel Edit',
+      href: route('account.profile.index'),
+      iconName: 'x-lg',
+      isOutline: true,
+      variant: 'secondary',
+      size: 'sm' // Optional: 'sm' usually looks better for header actions
+    })
+  </div>
+
+  {{-- Full Name: EDITABLE --}}
+  <div class="col-12">
+    @!component('components/input/input', {
+      id: 'fullName',
+      name: 'full_name',
+      labelText: 'Full Name',
+      labelIcon: 'person',
+      labelIconIsFill: false,
+      // Logic: Try old input first, then DB value, then empty string
+      value: old('full_name') || auth.user.full_name || '', 
+      isReadonly: false, 
+      isDisabled: false
+    })
+  </div>
+
+  <div class="col-12">
+    @!component('components/input/select', {
+      id: 'gender',
+      name: 'gender_id',
+      labelText: 'Gender',
+      labelIcon: 'gender-ambiguous',
+      placeholder: "Select gender",
+      isRequired: true,
+      enableFloatingLabel: false,
+      options: genderOptions || [],
+      errorMessage: flashMessages.get('errors.gender_id') || '',
+    })
+  </div>
+
+  {{-- Birth Date: EDITABLE --}}
+  <div class="col-12 col-md-6">
+    @!component('components/input/input', {
+      id: 'birthDate',
+      name: 'birth_date',
+      type: 'date', // Ensure browser shows date picker
+      labelText: 'Date of Birth',
+      labelIcon: 'calendar',
+      labelIconIsFill: false,
+      // .toISODate() is needed for input type="date" if using Luxon DateTime
+      value: old('birth_date') || (auth.user.birth_date ? auth.user.birth_date.toISODate() : '') || '',
+      isReadonly: false,
+      isDisabled: false
+    })
+  </div>
+
+  {{-- Birth Place: EDITABLE --}}
+  <div class="col-12 col-md-6">
+    @!component('components/input/input', {
+      id: 'birthPlace',
+      name: 'birth_place',
+      labelText: 'Place of Birth',
+      labelIcon: 'geo-alt',
+      labelIconIsFill: false,
+      value: old('birth_place') || auth.user.birth_place || '',
+      isReadonly: false,
+      isDisabled: false
+    })
+  </div>
+
+  <div class="col-12">
+    <hr class="text-muted opacity-25">
+  </div>
+
+  {{-- Section 2: Contact Info --}}
+  <div class="col-12">
+    <h6 class="fw-bold mb-0">
+      @!component('components/bi_icon', { iconName: 'geo-alt', isFill: true })
+      Contact Information
+    </h6>
+  </div>
+
+  {{-- Email: READ ONLY (Usually requires separate verification flow to change) --}}
+  <div class="col-12 col-md-6">
+    @component('components/input/input', {
+      id: 'email',
+      name: 'email',
+      labelText: 'Email',
+      labelIcon: 'envelope',
+      labelIconIsFill: false,
+      value: old('email') || auth.user.email || '',
+      isReadonly: true, 
+      isDisabled: true
+    })
+    @end
+  </div>
+
+  {{-- Phone: EDITABLE --}}
+  <div class="col-12 col-md-6">
+    @!component('components/input/input', {
+      id: 'phone',
+      name: 'personal_phone_number',
+      labelText: 'Phone Number',
+      labelIcon: 'telephone',
+      labelIconIsFill: false,
+      value: old('personal_phone_number') || auth.user.personal_phone_number || '',
+      isReadonly: false,
+      isDisabled: false
+    })
+  </div>
+
+  {{-- Address: EDITABLE --}}
+  <div class="col-12">
+    @component('components/input/textarea', {
+      id: 'fullHomeAddress',
+      name: 'full_home_address',
+      labelText: 'Home Address',
+      labelIcon: 'house-door',
+      labelIconIsFill: false,
+      value: old('full_home_address') || auth.user.full_home_address || '',
+      cstmAutogrowHeight: true,
+      cstmAutogrowHeightMinPx: '100',
+      isReadonly: false,
+      isDisabled: false
+    })
+    @end
+  </div>
+
+  <div class="col-12">
+    <hr class="text-muted opacity-25">
+  </div>
+
+  {{-- Section 3: Organization & Role (Usually System Controlled - READ ONLY) --}}
+  <div class="col-12">
+    <h6 class="fw-bold mb-0">
+      @!component('components/bi_icon', { iconName: 'briefcase', isFill: true })
+      Employment
+    </h6>
+  </div>
+  
+  <div class="col-12">
+    @!component('components/input/input', {
+      id: 'organization',
+      labelText: 'Organization',
+      labelIcon: 'building',
+      labelIconIsFill: false,
+      // Using Safe Navigation ?. in case relationship is missing
+      value: auth.user.organization?.name || '',
+      isReadonly: true,
+      isDisabled: true
+    })
+  </div>
+
+  <div class="col-12 col-md-4">
+    @!component('components/input/input', {
+      id: 'department',
+      labelText: 'Department',
+      labelIcon: 'briefcase',
+      labelIconIsFill: false,
+      value: auth.user.department?.name || '',
+      isReadonly: true,
+      isDisabled: true
+    })
+  </div>
+
+  <div class="col-12 col-md-4">
+    @!component('components/input/input', {
+      id: 'jobRole',
+      labelText: 'Job Role / Designation',
+      labelIcon: 'person-gear',
+      labelIconIsFill: false,
+      value: auth.user.job_role?.name || '',
+      isReadonly: true,
+      isDisabled: true
+    })
+  </div>
+  
+  <div class="col-12 col-md-4">
+    @!component('components/input/input', {
+      id: 'role',
+      labelText: 'Account Role',
+      labelIcon: 'person-gear',
+      labelIconIsFill: false,
+      value: auth.user.role?.name || '',
+      isReadonly: true,
+      isDisabled: true
+    })
+  </div>
+
+  {{-- Submit Button --}}
+  <div class="col-12 col-md-auto ms-auto">
+    @!component('components/button/button', {
+      style: 'mt-3 w-100',
+      type: 'submit',
+      text: 'Save Changes',  // Changed from "Register" since this is a profile edit
+      enableLoadingIndicator: true
+    })
+  </div>
+</form>

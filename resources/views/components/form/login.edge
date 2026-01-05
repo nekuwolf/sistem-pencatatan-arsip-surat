@@ -1,12 +1,17 @@
 <form method="POST" action="{{ route('auth.login.store') }}" class="row g-3 mt-1">
   {{ csrfField() }}
   
-  @if(loginFormErrorMessage)
+  {{-- 1. Handle General Error (Invalid Credentials) --}}
+  @if(flashMessages.has('loginFormErrorMessage'))
     <div class="col-12">
-      @!component('components/alert', { variant: 'warning', message: loginFormErrorMessage, style: 'mb-0' })
+      @!component('components/alert', { 
+        variant: 'warning', 
+        message: flashMessages.get('loginFormErrorMessage') 
+      })
     </div>
   @end
   
+  {{-- 2. Email Input --}}
   <div class="col-12">
     @component('components/input/input', {
       id: 'email',
@@ -15,16 +20,19 @@
       labelIcon: 'envelope',
       labelIconIsFill: false,
       type: 'email',
-      value: emailValue || '',
+      // 'old' retrieves the value from the previous request 
+      value: old('email') || '', 
       placeholder: 'example@company.com',
       isRequired: true,
       enableFloatingLabel: true,
       autocomplete: 'email',
-      errorMessage: emailErrorMessage || ''
+      // 'flashMessages.get' retrieves validation errors for specific field
+      errorMessage: flashMessages.get('errors.email') || ''
     })
     @end
   </div>
 
+  {{-- 3. Password Input --}}
   <div class="col-12">
     @component('components/input/input', {
       type: 'password',
@@ -33,13 +41,14 @@
       labelText: 'Password',
       labelIcon: 'key',
       labelIconIsFill: false,
-      value: passwordValue || '',
+      // Best Practice: Do not use old() for passwords (security risk)
+      value: '', 
       isRequired: true,
       autocomplete: 'current-password',
       enableFloatingLabel: true,
       placeholder: 'supersecurepassword',
       cstmDataTogglePassword: 'password',
-      errorMessage: passwordErrorMessage || ''
+      errorMessage: flashMessages.get('errors.password') || ''
     })
       @slot('suffix')
         @!component('components/button/button', {

@@ -1,211 +1,288 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, computed, hasMany, hasOne } from '@adonisjs/lucid/orm'
-import type { HasMany, HasOne } from '@adonisjs/lucid/types/relations'
-import UserData from '#models/users_data'
+import { BaseModel, belongsTo, column, hasMany, hasOne, manyToMany } from '@adonisjs/lucid/orm'
+import type { BelongsTo, HasMany, HasOne, ManyToMany } from '@adonisjs/lucid/types/relations'
 import UploadedFile from '#models/uploaded_file'
-import UserOtp from '#models/users_otp'
-import UserSession from '#models/users_session'
 import RegisterInviteLink from './register_invite_link.js'
 import db from '@adonisjs/lucid/services/db'
-import hash from '@adonisjs/core/services/hash'
-import { EmailAlreadyRegisteredException, InvalidEmailException, InvalidOrExpiredRegisterCodeException, InvalidPasswordException, InvalidRegisterCodeException } from '../helpers/custom_exceptions.js'
 import { G_USER_STATUS_TAG } from '#start/globals'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
+import { dd } from '@adonisjs/core/services/dumper'
+import Gender from './gender.js'
+import UsersRole from '#models/users_role'
+import Organization from './organization.js'
+import UserJobRole from './users_job_role.js'
+import Department from './department.js'
+import UserStatusTag from './users_status_tags.js'
+import Mail from './mail.js'
+import { Infer } from '@vinejs/vine/types'
+import { storeRegisterValidator } from '#validators/register_validator'
+import RegisterFailedException from '#exceptions/register_failed_exception'
+import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
+import hash from '@adonisjs/core/services/hash'
+import { compose } from '@adonisjs/core/helpers'
 
-export default class User extends BaseModel {
-  public static table = 'users'
+// this hooks into create/save and hashes password
+const AuthFinder = withAuthFinder(() => hash.use(), {
+  uids: ['email'],
+  passwordColumnName: 'password',
+})
+
+export default class User extends compose(BaseModel, AuthFinder) {
+  public static table = 'user'
 
   @column({ isPrimary: true })
   declare id: number
 
   @column.dateTime({ autoCreate: true })
-  declare created_at: DateTime
+  declare createdAt: DateTime
 
-  // A user can have many datas (trackable "profile")
-  @hasMany(() => UserData, { foreignKey: 'user_id' })
-  declare user_data: HasMany<typeof UserData>
+  @column.dateTime({ autoCreate: true })
+  declare updatedAt: DateTime
 
-  // A user can have many OTPs
-  @hasMany(() => UserOtp, { foreignKey: 'created_by_user_id' })
-  declare user_otp: HasMany<typeof UserOtp>
+  @column()
+  declare nip: string
 
-  // A user can have many sessions
-  @hasMany(() => UserSession, { foreignKey: 'user_id' })
-  declare user_session: HasMany<typeof UserSession>
+  @column()
+  declare fullName: string
+
+  @column()
+  declare email: string
+
+  @column({ serializeAs: null })
+  declare password: string
+
+  @column()
+  declare personalPhoneNumber: string
+
+  @column.date()
+  declare birthDate: DateTime
+
+  @column()
+  declare birthPlace: string
+
+  @column()
+  declare fullHomeAddress: string
+
+  @column()
+  declare genderId: number
+  
+  @column()
+  declare organizationId: number
+
+  @column()
+  declare departmentId: number
+  
+  @column()
+  declare jobRoleId: number
+  
+  @column()
+  declare roleId: number
+  
+  @column()
+  declare profilePictureFileId: number
+
+  // A user data can has one gender
+  @belongsTo(() => Gender, { foreignKey: 'genderId' })
+  declare gender: BelongsTo<typeof Gender>
+
+  // A user data can has one user role
+  @belongsTo(() => UsersRole, { foreignKey: 'roleId' })
+  declare role: BelongsTo<typeof UsersRole>
+
+  // A user data can has one organization
+  @belongsTo(() => Organization, { foreignKey: 'organizationId' })
+  declare organization: BelongsTo<typeof Organization>
+
+  // A user data can has one job role
+  @belongsTo(() => UserJobRole, { foreignKey: 'jobRoleId' })
+  declare jobRole: BelongsTo<typeof UserJobRole>
+
+  // A user data can has one department
+  @belongsTo(() => Department, { foreignKey: 'departmentId' })
+  declare department: BelongsTo<typeof Department>
 
   // A user can upload many files
-  @hasMany(() => UploadedFile, { foreignKey: 'uploaded_by_user_id' })
-  declare uploaded_file: HasMany<typeof UploadedFile>
+  @hasMany(() => UploadedFile, { foreignKey: 'uploadedByUserId' })
+  declare uploadedFile: HasMany<typeof UploadedFile>
   
   // A user can have many invite links
-  @hasMany(() => RegisterInviteLink, { foreignKey: 'created_by_user_id' })
-  declare created_invite_link: HasMany<typeof RegisterInviteLink>
+  @hasMany(() => RegisterInviteLink, { foreignKey: 'createdByUserId' })
+  declare createdInviteLink: HasMany<typeof RegisterInviteLink>
   
   // An user can be attached to one invite link (register using invite link) 
-  @hasOne(() => RegisterInviteLink, { foreignKey: 'created_user_id' })
-  declare created_user_by_invite_link: HasOne<typeof RegisterInviteLink>
+  @hasOne(() => RegisterInviteLink, { foreignKey: 'createdUserId' })
+  declare inviteLinkIdUsed: HasOne<typeof RegisterInviteLink>
+  
+  @hasMany(() => Mail, { foreignKey: 'createdByUserId' })
+  declare createdMail: HasMany<typeof Mail>
 
-  public static async findByIdPreloadUserData(userId: number, client?: TransactionClientContract) {
+  // A user data can have many user statuses using pivot table users_datas_statuses
+  @manyToMany(() => UserStatusTag, {
+    localKey: 'id',
+    pivotForeignKey: 'user_id',
+    relatedKey: 'id',
+    pivotRelatedForeignKey: 'user_status_tag_id',
+    pivotTimestamps: false,
+    pivotTable: 'user_status'
+  })
+  declare userStatusTag: ManyToMany<typeof UserStatusTag>
+
+  @belongsTo(() => UploadedFile, { foreignKey: 'profilePictureFileId' })
+  declare profilePictureFile: BelongsTo<typeof UploadedFile>
+
+  public static async allUserInOrganizationIdPreloadEverythingPaginate(organizationId: number, currentPage: number, itemPerPage?: number, client?: TransactionClientContract) {
     return await this.query({ client: client })
-      .where('id', userId)
-      .preload('user_data', (query) => {
-        query.orderBy('created_at', 'desc')
-        .preload('gender')
-        .preload('role')
-        .preload('organization')
-        .preload('job_role')
-        .preload('department')
-        .preload('person_title_name')
-        .preload('user_status_tag')
-        .preload('user_avatar')
-      })
-      .firstOrFail()
+      .where('organization_id', organizationId)  
+      .preload('gender')
+      .preload('organization')
+      .preload('department')
+      .preload('jobRole')
+      .preload('role')
+      .preload('userStatusTag')
+      .preload('profilePictureFile')
+      .preload('inviteLinkIdUsed')
+      .preload('createdMail')
+      .preload('uploadedFile')
+      .preload('createdInviteLink')
+      .paginate(currentPage, itemPerPage || 10)
+  }
+    
+  public static async allUserInDepartmentIdInOrganizationIdPreloadEverythingPaginate(departmentId: number, organizationId: number, currentPage: number, itemPerPage?: number, client?: TransactionClientContract) {
+    return await this.query({ client: client })
+      .where('organization_id', organizationId)  
+      .andWhere('department_id', departmentId)  
+      .preload('gender')
+      .preload('organization')
+      .preload('department')
+      .preload('jobRole')
+      .preload('role')
+      .preload('userStatusTag')
+      .preload('profilePictureFile')
+      .preload('inviteLinkIdUsed')
+      .preload('createdMail')
+      .preload('uploadedFile')
+      .preload('createdInviteLink')
+      .paginate(currentPage, itemPerPage || 10)
+  }  
+
+  public static async allPreloadEverythingPaginate(currentPage: number, itemPerPage?: number, client?: TransactionClientContract) {
+    return await this.query({ client: client })
+      .preload('gender')
+      .preload('organization')
+      .preload('department')
+      .preload('jobRole')
+      .preload('role')
+      .preload('userStatusTag')
+      .preload('profilePictureFile')
+      .preload('inviteLinkIdUsed')
+      .preload('createdMail')
+      .preload('uploadedFile')
+      .preload('createdInviteLink')
+      .paginate(currentPage, itemPerPage || 10)
   }
 
-  public static async findOrFailByEmailPreloadUserData(email: string, client?: TransactionClientContract) {
+  public static async findByKeyValueWithLimitPreloadEverything(key: string, value: string, limit?: number, client?: TransactionClientContract) {
     return await this.query({ client: client })
-      .whereHas('user_data', (query) => {
-        query.where('email', email)
-      })
-      .preload('user_data', (query) => {
-        query.orderBy('created_at', 'desc')
-        .preload('gender')
-        .preload('role')
-        .preload('organization')
-        .preload('job_role')
-        .preload('department')
-        .preload('person_title_name')
-        .preload('user_status_tag')
-        .preload('user_avatar')
-      })
-      .firstOrFail()
-  }
-
-  public static async findByEmailPreloadUserData(email: string) {
-    return await this.query()
-      .whereHas('user_data', (query) => {
-        query.where('email', email)
-      })
-      .preload('user_data', (query) => {
-        query.orderBy('created_at', 'desc')
-        .preload('gender')
-        .preload('role')
-        .preload('organization')
-        .preload('job_role')
-        .preload('department')
-        .preload('person_title_name')
-        .preload('user_status_tag')
-        .preload('user_avatar')
-      })
-      .first()
+      .where(key, value)
+      .preload('gender')
+      .preload('organization')
+      .preload('department')
+      .preload('jobRole')
+      .preload('role')
+      .preload('userStatusTag')
+      .preload('profilePictureFile')
+      .preload('inviteLinkIdUsed')
+      .preload('createdMail')
+      .preload('uploadedFile')
+      .preload('createdInviteLink')
+      .limit(limit || 1)
   }
   
-  public static async selectAllByOrganizationIdPreloadUserData(organizationId: number) {
-    return await this.query()
-      .whereHas('user_data', (query) => {
-        query.where('organization_id', organizationId)
-      })
-      .preload('user_data', (query) => {
-        query.orderBy('created_at', 'desc').first()
-      })
-  }
-
-  @computed()
-  get latest_user_data(): UserData | null {
-    return this.user_data?.[0] ?? null
-  }
-
-  public static async allPreloadUserData() {
-    return await this.query()
-      .preload('user_data', (query) => {
-        query.orderBy('created_at', 'desc')
-        .preload('gender')
-        .preload('role')
-        .preload('organization')
-        .preload('job_role')
-        .preload('department')
-        .preload('person_title_name')
-        .preload('user_status_tag')
-        .preload('user_avatar')
-      })
+  public static async findByKeyValueWithLimitloadEssential(key: string, value: string, limit?: number, client?: TransactionClientContract) {
+    return await this.query({ client: client })
+      .where(key, value)
+      .preload('gender')
+      .preload('organization')
+      .preload('department')
+      .preload('jobRole')
+      .preload('role')
+      .preload('userStatusTag')
+      .preload('profilePictureFile')
+      .limit(limit || 1)
   }
 
   /**
    * Register a new user using email and password, atomically
    */
-  static async registerNewUserWithRegisterCode(
-    registerCode: string,
-    fullName: string,
-    email: string,
-    password: string,
-    personalPhoneNumber: string,
-    birthDate: DateTime,
-    birthPlace: string,
-    fullHomeAddress: string,
-    genderId: number,
-    personTitleNameIds: number[],
-    // extraData: Partial<Omit<UserData, 'id' | 'user_id' | 'created_at' | 'password' | 'email'>> = {}
-  ) {
+  static async registerNewUserWithRegisterCode(payload: Infer<typeof storeRegisterValidator>) {
     return db.transaction(async (trx) => {
-
-      // 0. Check if email already exists (USE trx)
-      const existingUserData = await UserData
+      
+      // 1. Check for duplicates
+      const existingUser = await User
         .query({ client: trx })
-        .where('email', email)
-        .orderBy('created_at', 'desc')
-        .preload('user_status_tag', (query) => {
-          query.where('user_status_tag_id', G_USER_STATUS_TAG.ACTIVE.ID)
+        .where('email', payload.email)
+        .orWhere('personalPhoneNumber', payload.personal_phone_number)
+        .whereHas('userStatusTag', (query) => {
+          query.where('userStatusTag_id', G_USER_STATUS_TAG.ACTIVE.ID)
         })
         .first()
+      
+      const errors: Record<string, string> = {}
+      let hasError = false
 
-      if (existingUserData) {
-        throw new EmailAlreadyRegisteredException()
+      if (existingUser?.email === payload.email) {
+        errors.email = 'This email is already registered'
+        hasError = true
       }
 
-      // 00. Check register code validity (MUST accept trx)
-      const validRegisterCode =
-        await RegisterInviteLink.findValidRegisterCodeByCode(registerCode, trx)
-
-      if (!validRegisterCode) {
-        throw new InvalidOrExpiredRegisterCodeException()
+      if (existingUser?.personalPhoneNumber === payload.personal_phone_number) {
+        errors.personalPhoneNumber = 'This phone number is already registered'
+        hasError = true
       }
 
-      // 1. Create user (USE trx)
-      const user = await this.create({}, { client: trx })
+      // 2. Check register code
+      const validRegisterCode = await RegisterInviteLink.findValidRegisterCodeByCode(
+        payload.register_code, 
+        trx
+      )
 
-      // 2. Create user data (USE trx)
-      const userData = await UserData.create({
-        user_id: user.id,
-        full_name: fullName,
-        email,
-        password,
-        personal_phone_number: personalPhoneNumber,
-        birth_date: birthDate,
-        birth_place: birthPlace,
-        full_home_address: fullHomeAddress,
-        gender_id: genderId,
-        role_id: validRegisterCode.new_user_role_id,
-        organization_id: validRegisterCode.new_user_organization_id,
-        job_role_id: validRegisterCode.new_user_job_role_id,
-        department_id: validRegisterCode.new_user_department_id,
-        // ...extraData,
+      if (!validRegisterCode?.key) {
+        errors.register_code = 'Invalid or expired register code'
+        hasError = true
+      }
+
+      // 3. Throw Exception if errors exist
+      if (hasError) {
+        throw new RegisterFailedException(errors)
+      }
+
+      // 4. Create User (Convert JS Date -> Luxon DateTime here)
+      const user = await User.create({
+        fullName: payload.full_name,
+        email: payload.email,
+        password: payload.password,
+        personalPhoneNumber: payload.personal_phone_number,
+        birthDate: DateTime.fromJSDate(payload.birth_date), 
+        birthPlace: payload.birth_place,
+        fullHomeAddress: payload.full_home_address,
+        genderId: payload.gender_id,
+        roleId: validRegisterCode!.newUserRoleId,
+        organizationId: validRegisterCode!.newUserOrganizationId,
+        jobRoleId: validRegisterCode!.newUserJobRoleId,
+        departmentId: validRegisterCode!.newUserDepartmentId,
       }, { client: trx })
 
-      // 3. Attach relations (trx already bound)
-      await userData.useTransaction(trx).related('person_title_name').attach(personTitleNameIds ?? [])
-      await userData.useTransaction(trx).related('user_status_tag').attach([G_USER_STATUS_TAG.ACTIVE.ID])
+      // 5. Attach Status
+      await user.useTransaction(trx).related('userStatusTag').attach([G_USER_STATUS_TAG.ACTIVE.ID])
 
-      // 4. Use the register code
+      // 6. Use the code
       await RegisterInviteLink.useRegisterCode(
-        registerCode,
+        payload.register_code,
         user.id,
         trx
       )
 
-      // 5. Final user created user
-      const userFinal = await this.findByIdPreloadUserData(user.id, trx)
-
-      return userFinal
+      return await User.find(user.id)
     })
   }
 

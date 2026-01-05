@@ -5,65 +5,65 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { G_REGISTER_CODE_EXPIRY_TIME_MINUTE, G_REGISTER_CODE_LENGTH } from '#start/globals'
 import { generateRandomAlphanumeric } from '#utils/generate_random_string'
 import Department from './department.js'
-import { InvalidOrExpiredRegisterCodeException, InvalidRegisterCodeException, RegisterCodeCreationFailedException } from '../helpers/custom_exceptions.js'
+import { InvalidOrExpiredRegisterCodeException, RegisterCodeCreationFailedException } from '../helpers/custom_exceptions.js'
 import UserRole from './users_role.js'
 import UserJobRole from './users_job_role.js'
 import Organization from './organization.js'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
 
 export default class RegisterInviteLink extends BaseModel {
-  public static table = 'register_invite_links'
+  public static table = 'register_invite_link'
     
   @column({ isPrimary: true })
   declare id: number
 
   @column()
-  declare created_by_user_id: number
+  declare createdByUserId: number
 
   @column.dateTime({ autoCreate: true })
-  declare created_at: DateTime
+  declare createdAt: DateTime
 
   @column.dateTime()
-  declare expire_at: DateTime
+  declare expireAt: DateTime
 
   @column()
   declare key: string
 
   @column.dateTime()
-  declare used_at?: DateTime | null
+  declare usedAt?: DateTime | null
   
   @column()
-  declare created_user_id?: number | null
+  declare createdUserId?: number | null
   
   @column()
-  declare new_user_department_id: number
+  declare newUserDepartmentId: number
   
   @column()
-  declare new_user_role_id: number
+  declare newUserRoleId: number
   
   @column()
-  declare new_user_job_role_id: number
+  declare newUserJobRoleId: number
   
   @column()
-  declare new_user_organization_id: number
+  declare newUserOrganizationId: number
 
-  @belongsTo(() => User, { foreignKey: 'created_by_user_id' })
-  declare created_by_user: BelongsTo<typeof User>
+  @belongsTo(() => User, { foreignKey: 'createdByUserId' })
+  declare createdByUser: BelongsTo<typeof User>
 
-  @belongsTo(() => User, { foreignKey: 'created_user_id' })
-  declare created_user: BelongsTo<typeof User>
+  @belongsTo(() => User, { foreignKey: 'createdUserId' })
+  declare createdUser: BelongsTo<typeof User>
   
-  @belongsTo(() => Department, { foreignKey: 'new_user_department_id' })
-  declare new_user_department: BelongsTo<typeof Department>
+  @belongsTo(() => Department, { foreignKey: 'newUserDepartmentId' })
+  declare newUserDepartment: BelongsTo<typeof Department>
   
-  @belongsTo(() => UserRole, { foreignKey: 'new_user_role_id' })
-  declare new_user_role: BelongsTo<typeof UserRole>
+  @belongsTo(() => UserRole, { foreignKey: 'newUserRoleId' })
+  declare newUserRole: BelongsTo<typeof UserRole>
   
-  @belongsTo(() => UserJobRole, { foreignKey: 'new_user_job_role_id' })
-  declare new_user_job_role: BelongsTo<typeof UserJobRole>
+  @belongsTo(() => UserJobRole, { foreignKey: 'newUserJobRoleId' })
+  declare newUserJobRole: BelongsTo<typeof UserJobRole>
 
-  @belongsTo(() => Organization, { foreignKey: 'new_user_organization_id' })
-  declare new_user_organization: BelongsTo<typeof Organization>
+  @belongsTo(() => Organization, { foreignKey: 'newUserOrganizationId' })
+  declare newUserOrganization: BelongsTo<typeof Organization>
 
   // look for specified key that is active/unused
   public static async findValidRegisterCodeByCode(code: string, client?: TransactionClientContract,): Promise<RegisterInviteLink | null> {
@@ -72,7 +72,20 @@ export default class RegisterInviteLink extends BaseModel {
       .whereNull('used_at')
       .whereNull('created_user_id')
       .where('expire_at', '>', DateTime.utc().toSQL())
+      .preload('newUserOrganization')
+      .preload('newUserDepartment')
+      .preload('newUserJobRole')
+      .preload('newUserRole')
       .first()
+  }
+
+  public static async findOrFailValidRegisterCodeByCode(code: string, client?: TransactionClientContract,): Promise<RegisterInviteLink> {
+    return this.query({ client: client })
+      .where('key', code)
+      .whereNull('used_at')
+      .whereNull('created_user_id')
+      .where('expire_at', '>', DateTime.utc().toSQL())
+      .firstOrFail()
   }
   
   public static async createNewRegisterCode(
@@ -91,14 +104,14 @@ export default class RegisterInviteLink extends BaseModel {
   
       if (!existingCode) {
         return this.create({
-          created_by_user_id: createdByUserId,
+          createdByUserId: createdByUserId,
           key: generatedCode,
-          new_user_department_id: newUserDepartmentId,
-          new_user_role_id: newUserRoleId,
-          new_user_job_role_id: newUserJobRoleId,
-          new_user_organization_id: newUserOrganizationId,
-          expire_at: DateTime.utc().plus({ minutes: G_REGISTER_CODE_EXPIRY_TIME_MINUTE })
-        })
+          newUserDepartmentId: newUserDepartmentId,
+          newUserRoleId: newUserRoleId,
+          newUserJobRoleId: newUserJobRoleId,
+          newUserOrganizationId: newUserOrganizationId,
+          expireAt: DateTime.utc().plus({ minutes: G_REGISTER_CODE_EXPIRY_TIME_MINUTE })
+        }, { client: client })
       }
     }
     
@@ -113,11 +126,12 @@ export default class RegisterInviteLink extends BaseModel {
       throw new InvalidOrExpiredRegisterCodeException()
     }
     
-    existingCode.used_at = DateTime.utc()
-    existingCode.created_user_id = createdUserId
+    existingCode.usedAt = DateTime.utc()
+    existingCode.createdUserId = createdUserId
     
     await existingCode.save()
 
     return existingCode
   }
+  
 }

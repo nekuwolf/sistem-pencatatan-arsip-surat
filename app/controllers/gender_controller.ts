@@ -70,7 +70,7 @@ export default class GenderController {
     if (genders) {
       return response.json(
         genders.map((gender: Gender) => ({
-          value: gender.name,
+          value: gender.id,
           label: gender.name
         })
       ))

@@ -1,0 +1,36 @@
+@if(paginator.hasPages)
+  <nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+      
+      {{-- Previous Button --}}
+      <li class="page-item {{ paginator.currentPage <= 1 ? 'disabled' : '' }}">
+        <a class="page-link" href="{{ paginator.getUrl(paginator.currentPage - 1) }}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+
+      {{-- Page Numbers --}}
+      {{-- Uses a sliding window to show only nearby pages --}}
+      @each(anchor in paginator.getUrlsForRange(1, paginator.lastPage))
+        <li class="page-item {{ anchor.isActive ? 'active' : '' }}">
+          <a class="page-link" href="{{ anchor.url }}">
+            {{ anchor.page }}
+          </a>
+        </li>
+      @endeach
+
+      {{-- Next Button --}}
+      <li class="page-item {{ !paginator.hasMorePages ? 'disabled' : '' }}">
+        <a class="page-link" href="{{ paginator.getUrl(paginator.currentPage + 1) }}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+    {{-- Optional: Showing "Page x of y" text --}}
+    <div class="text-center text-muted small mt-1">
+      Page {{ paginator.currentPage }} of {{ paginator.lastPage }}
+    </div>
+  </nav>
+@endif

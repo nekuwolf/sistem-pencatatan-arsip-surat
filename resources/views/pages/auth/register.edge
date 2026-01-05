@@ -1,0 +1,44 @@
+@component('components/layout/index', { title: 'Register Account', pageDescription: 'Register Account', bodyStyle: 'd-flex flex-column vh-100 overflow-hidden'})
+  @slot('head')
+    @vite(['resources/css/pages/register.scss', 'resources/js/utils/input_actions.js'])
+  @endslot
+
+  @slot('main')
+    <div class="row g-0 flex-grow-1 overflow-hidden">
+      
+      <div class="col-12 col-lg-4 d-none d-lg-flex h-100">
+        <img 
+          src="{{ asset('public/images/gedung_graha_sewaka_dharma_lumintang.jpg') }}" 
+          alt="Login Cover" 
+          class="img-fluid h-100 w-100"
+          style="object-fit: cover;"
+        />
+      </div>
+
+      <div class="col-12 col-lg-8 d-flex flex-column h-100 overflow-y-auto">
+        <div class="p-4 p-md-5 container-xxl my-auto">
+          <img
+            class="img-fluid logo-pic-size-large"
+            src="{{ asset('public/images/logo_diskominfos_denpasar_small.png') }}"
+            alt="App Logo"
+            style="object-fit: cover;"
+          />
+          <h1 class="h3 mt-3 mb-0 mt-3">Register</h1>
+          <p class="text-muted mt-2 mb-0">Let's make an account for you</p>
+
+          @if(showRegisterForm)
+            @include('components/form/register')
+          @else
+            @include('components/form/register_code')
+          @endif
+
+          <p class="mt-4 mb-0 text-body-secondary">
+            Already have an account? <a href="{{ route('auth.login.create') }}" class="link-primary">Login here</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    @!footer({})
+  @endslot
+@end

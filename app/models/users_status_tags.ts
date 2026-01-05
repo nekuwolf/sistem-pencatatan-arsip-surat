@@ -1,7 +1,7 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 
-export default class UserStatusTag extends BaseModel {
-  public static table = 'users_status_tags'
+export default class UsersStatusTag extends BaseModel {
+  public static table = 'user_status_tag'
 
   @column({ isPrimary: true })
   declare id: number

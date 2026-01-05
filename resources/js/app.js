@@ -1,2 +1,5 @@
 // import * as bootstrap from 'bootstrap'
 import 'htmx.org'
+import './tomselect_select'
+import './split_input'
+import './autogrow_textarea'
