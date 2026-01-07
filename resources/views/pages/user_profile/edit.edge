@@ -92,7 +92,7 @@
         <div class="col-12">
           @!component('components/input/input', {
             id: 'fullName', name: 'full_name', labelText: 'Full Name', labelIcon: 'person',
-            value: old('full_name') || auth.user.fullName || ''
+            value: old('full_name') || auth.user.fullName || '', isRequired: true
           })
         </div>
 
@@ -107,14 +107,14 @@
         <div class="col-md-6">
           @!component('components/input/input', {
             id: 'birthDate', name: 'birth_date', type: 'date', labelText: 'Date of Birth', labelIcon: 'calendar',
-            value: old('birth_date') || (auth.user.birthDate ? auth.user.birthDate.toISODate() : '') || ''
+            value: old('birth_date') || (auth.user.birthDate ? auth.user.birthDate.toISODate() : '') || '', isRequired: true
           })
         </div>
 
         <div class="col-md-6">
           @!component('components/input/input', {
             id: 'birthPlace', name: 'birth_place', labelText: 'Place of Birth', labelIcon: 'geo-alt',
-            value: old('birth_place') || auth.user.birthPlace || ''
+            value: old('birth_place') || auth.user.birthPlace || '', isRequired: true
           })
         </div>
 
@@ -134,14 +134,14 @@
         <div class="col-md-6">
           @!component('components/input/input', {
             id: 'phone', name: 'personal_phone_number', labelText: 'Phone Number', labelIcon: 'telephone',
-            value: old('personal_phone_number') || auth.user.personalPhoneNumber || ''
+            value: old('personal_phone_number') || auth.user.personalPhoneNumber || '', isReadonly: true, isDisabled: true
           })
         </div>
 
         <div class="col-12">
           @!component('components/input/textarea', {
             id: 'fullHomeAddress', name: 'full_home_address', labelText: 'Home Address', labelIcon: 'house-door',
-            value: old('full_home_address') || auth.user.fullHomeAddress || '', cstmAutogrowHeight: true
+            value: old('full_home_address') || auth.user.fullHomeAddress || '', cstmAutogrowHeight: true, isRequired: true
           })
         </div>
 
@@ -151,6 +151,15 @@
           <hr class="mt-2 mb-0 opacity-25">
         </div>
         
+        @if(showNipField)
+          <div class="col-12">
+            @!component('components/input/input', {
+              id: 'nip', labelText: 'NIP', labelIcon: 'person-badge',
+              value: auth.user.nip || '-', isReadonly: true, isDisabled: true
+            })
+          </div>
+        @end
+
         <div class="col-12">
           @!component('components/input/input', {
             id: 'organization', labelText: 'Organization', labelIcon: 'building',

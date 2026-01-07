@@ -26,9 +26,9 @@ import MailArchiveDashboardController from '#controllers/mail_archive_dashboard_
 import MailCode from '#models/mail_code'
 import MailCodesController from '#controllers/mail_code_controller'
 
-router.on('/').redirect('auth.login.store')
+router.on('/').redirect('mails.index')
 
-router.get('/dashboard', [DashboardController, 'index']).as('dashboard.index')
+// router.get('/dashboard', [DashboardController, 'index']).as('dashboard.index')
 
 // TODO: implement later 
 // router.get('/error/bad_request', [BadRequsetController, 'index']).as('dashboard.index')

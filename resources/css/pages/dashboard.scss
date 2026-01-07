@@ -10,19 +10,21 @@ body {
   --topnav-height: 60px;
 }
 
-/* --- Sidebar --- */
 .sidebar {
   width: var(--sidebar-width);
-  height: 100vh;
+  
+  /* CHANGE THIS: */
+  height: 100vh;       /* Fallback for older browsers */
+  height: 100dvh;      /* New: Dynamic height respects mobile URL bars */
+  
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1050;
 
-  /* Dynamic light/dark theme */
+  /* ... rest of your styles ... */
   background-color: var(--bs-secondary-bg);
   color: var(--bs-body-color);
-
   transition: all 0.3s ease-in-out;
   overflow-y: auto;
   overflow-x: hidden;

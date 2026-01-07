@@ -37,6 +37,11 @@ export default class UserProfileController {
       }))
     }
 
+    let showNipField = false
+    if (user.isAdmin || user.isEmployee) {
+      showNipField = true
+    }
+    
     let template = 'pages/user_profile/index'
     if (isEditing) {
       template = 'pages/user_profile/edit'
@@ -44,6 +49,7 @@ export default class UserProfileController {
 
     return view.render(template, {
       genderOptions,
+      showNipField
     })
   }
 

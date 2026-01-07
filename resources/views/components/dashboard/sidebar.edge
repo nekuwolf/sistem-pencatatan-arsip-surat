@@ -1,35 +1,11 @@
 <aside class="sidebar d-flex flex-column flex-shrink-0">
-    <a href="{{ route('dashboard.index') }}" class="sidebar-brand">
+    <a href="#" class="sidebar-brand">
         {{-- <i class="bi bi-bootstrap-fill sidebar-brand-icon"></i> --}}
-        <img src="{{ asset('public/images/valve_source_engine_missing_content_512_512.png') }}" alt="{{ G_APP_SHORT_NAME }}" class="sidebar-brand-img">
+        <img src="{{ asset('public/images/logo_diskominfos_denpasar_small.png') }}" alt="{{ G_APP_SHORT_NAME }}" class="sidebar-brand-img">
         <span class="sidebar-brand-text">{{ G_APP_SHORT_NAME }}</span>
     </a>
 
     <ul class="nav nav-pills flex-column px-2 py-2 sidebar-nav">
-        
-        {{-- <li class="sidebar-header">
-            <span class="sidebar-header-text">Main</span>
-        </li>
-        
-        <li class="nav-item">
-            <a href="{{ route('dashboard.index') }}" class="nav-link {{ request.url() === route('dashboard.index') ? 'active' : '' }}" aria-current="page">
-                <i class="bi bi-grid-1x2-fill"></i>
-                <span class="nav-link-text">Dashboard</span>
-            </a>
-        </li> --}}
-        
-
-        <li class="sidebar-header">
-            <span class="sidebar-header-text">Manajemen Arsip</span>
-        </li>
-        
-        {{-- <li class="nav-item">
-            <a href="{{ route('mails.index') }}" class="nav-link {{ request.url() === route('mails.index') ? 'active' : '' }}" aria-current="page">
-                <i class="bi bi-envelope-fill"></i>
-                <span class="nav-link-text">Mail</span>
-            </a>
-        </li> --}}
-
         @let(mailCategorySubmenuExpand = request.url() === route('mails.index') || request.url() === route('mails.create'))
         <li class="nav-item mt-2">
             <a class="nav-link collapsed {{ mailCategorySubmenuExpand ? 'active' : '' }}" data-bs-toggle="collapse" href="#mailCategorySubmenu" role="button" aria-expanded="false" aria-controls="mailCategorySubmenu">
@@ -92,12 +68,6 @@
                     <span class="nav-link-text">Pengguna</span>
                 </a>
             </li>
-            {{-- <li class="nav-item mt-2">
-            <a href="{{ route('registerInviteLink.index') }}" class="nav-link {{ request.url() === route('registerInviteLink.index') ? 'active' : '' }}" aria-current="page">
-                <i class="bi bi-share-fill"></i>
-                <span class="nav-link-text">Invite Link</span>
-            </a>
-            </li> --}}
             @let(registerInviteLinkCategoryExpand = request.url() === route('registerInviteLinks.index') || request.url() === route('registerInviteLinks.create'))
             <li class="nav-item mt-2">
                 <a class="nav-link collapsed {{ registerInviteLinkCategoryExpand ? 'active' : '' }}" data-bs-toggle="collapse" href="#registerInviteLinkCategory" role="button" aria-expanded="false" aria-controls="registerInviteLinkCategory">
@@ -122,34 +92,6 @@
                 </div>
             </li>
         @end
-        
-        
-
-        {{-- <li class="nav-item">
-            <a class="nav-link collapsed {{ request.url() === route('mails.index') ? 'active' : '' }}" data-bs-toggle="collapse" href="#mail-submenu" role="button" aria-expanded="false" aria-controls="mail-submenu">
-                <i class="bi bi-bar-chart-fill"></i>
-                <span class="nav-link-text">Surat</span>
-            </a>
-            <div class="collapse submenu " id="mail-submenu">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a href="#" class="nav-link {{ request.url() === route('mails.create') ? 'active' : '' }}">
-                            <span class="nav-link-text">Registrasi Surat</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <span class="nav-link-text">Weekly Reports</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <span class="nav-link-text">Analytics</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </li> --}}
         
         {{-- <li class="nav-item">
             <a href="#" class="nav-link">
