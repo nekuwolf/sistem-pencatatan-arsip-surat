@@ -35,7 +35,7 @@ export default class RegisterController {
 
       // 3. Logic: Set the Alert Message based on the role name
       // e.g., "You are registering as a Admin"
-      const formAlertMessage = `Anda akan mendaftar sebagai ${inviteLink.newUserRole.name}, ${inviteLink.newUserDepartment.name}, ${inviteLink.newUserOrganization.name}`
+      const formAlertMessage = `Anda akan mendaftar sebagai ${inviteLink.newUserJobRole.name}, ${inviteLink.newUserDepartment.name}, ${inviteLink.newUserOrganization.name}`
 
       // Fetch options for the form
       const genderOptions = await Gender.all()

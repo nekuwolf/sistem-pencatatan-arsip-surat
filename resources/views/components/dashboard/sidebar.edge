@@ -98,6 +98,29 @@
                 <span class="nav-link-text">Invite Link</span>
             </a>
             </li> --}}
+            @let(registerInviteLinkCategoryExpand = request.url() === route('registerInviteLinks.index') || request.url() === route('registerInviteLinks.create'))
+            <li class="nav-item mt-2">
+                <a class="nav-link collapsed {{ registerInviteLinkCategoryExpand ? 'active' : '' }}" data-bs-toggle="collapse" href="#registerInviteLinkCategory" role="button" aria-expanded="false" aria-controls="registerInviteLinkCategory">
+                    <i class="bi bi-share-fill"></i>
+                    <span class="nav-link-text">Link Invitasi</span>
+                </a>
+                <div class="collapse submenu {{ registerInviteLinkCategoryExpand ? 'show' : '' }}" id="registerInviteLinkCategory">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a href="{{ route('registerInviteLinks.index') }}" class="nav-link {{ request.url() === route('registerInviteLinks.index') ? 'active' : '' }}">
+                                <i class="bi bi-eye"></i>
+                                <span class="nav-link-text">Lihat Semua</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('registerInviteLinks.create') }}" class="nav-link {{ request.url() === route('registerInviteLinks.create') ? 'active' : '' }}">
+                                <i class="bi bi-plus-square"></i>
+                                <span class="nav-link-text">Tambahkan</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
         @end
         
         

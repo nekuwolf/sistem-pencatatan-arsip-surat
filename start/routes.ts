@@ -28,7 +28,7 @@ import MailCodesController from '#controllers/mail_code_controller'
 
 router.on('/').redirect('auth.login.store')
 
-router.get('/dashboard', [DashboardController, 'index']).as('dashboard.index').use(middleware.auth({ guards: ['web'] }))
+router.get('/dashboard', [DashboardController, 'index']).as('dashboard.index')
 
 // TODO: implement later 
 // router.get('/error/bad_request', [BadRequsetController, 'index']).as('dashboard.index')
@@ -36,12 +36,10 @@ router.get('/dashboard', [DashboardController, 'index']).as('dashboard.index').u
 // GET /account/login?email=...
 // show login form
 // if email is provided autofill email field
-router.get('/login', [LoginController, 'create']).as('auth.login.create').use(middleware.guest())
 
 // POST /account/login
 // login form submit
 // body : MUST email, MUST password
-router.post('/login', [LoginController, 'store']).as('auth.login.store')
 
 // GET /account/register?register_code=...
 // show register form
@@ -56,12 +54,31 @@ router.post('/login', [LoginController, 'store']).as('auth.login.store')
 // MUST email=[email], MUST password=[password]
 // router.post('/register', [RegisterController, 'store']).as('auth.register.store')
 
+// router.group(() => {
+//   router.get('/register', [RegisterController, 'create']).as('register.create')
+//   router.post('/register/verify', [RegisterController, 'verify']).as('register.verify')
+//   router.post('/register', [RegisterController, 'store']).as('register.store')
+  
+//   router.get('/login', [LoginController, 'create']).as('auth.login.create')
+//   router.post('/login', [LoginController, 'store']).as('auth.login.store')
+// }).as('auth')
+
 // start/routes.ts
 router.group(() => {
-  router.get('/register', [RegisterController, 'create']).as('register.create')
-  router.post('/register/verify', [RegisterController, 'verify']).as('register.verify')
-  router.post('/register', [RegisterController, 'store']).as('register.store')
+  // Register
+  router.group(() => {
+    router.get('/', [RegisterController, 'create']).as('create')
+    router.post('/verify', [RegisterController, 'verify']).as('verify')
+    router.post('/', [RegisterController, 'store']).as('store')
+  }).prefix('/register').as('register')
+  // Login
+  router.group(() => {
+    router.get('/', [LoginController, 'create']).as('create')
+    router.post('/', [LoginController, 'store']).as('store')
+  }).prefix('/login').as('login')
 }).as('auth')
+
+
 
 // GET /account/register/verify_otp?email=[email]&otp_code=[otp_code]
 // show otp verification form
@@ -103,7 +120,7 @@ router.group(() => {
 // profile picture api
 
 router.get('/archive', [SandboxesController, 'index']).as('archive.index').use(middleware.auth({ guards: ['web'] }))
-router.get('/register_invite_link', [RegisterInviteLinkController, 'index']).as('registerInviteLink.index')
+// router.get('/register_invite_link', [RegisterInviteLinkController, 'index']).as('registerInviteLink.index')
 
 router.get('/api/v1/gender/search', [GenderController, 'searchApi']).as('api.gender.search')
 
@@ -175,6 +192,20 @@ router.group(() => {
     router.post('/:mailArchiveId', [MailArchiveDashboardController, 'update']).as('mailArchives.update')
 
   }).prefix('mail_archive')
+
+  router.group(() => {
+    // 1. Static Routes (Create & Store)
+    router.get('/create', [RegisterInviteLinkController, 'create']).as('registerInviteLinks.create')
+    router.post('/create', [RegisterInviteLinkController, 'store']).as('registerInviteLinks.store')
+    // 2. Dynamic Routes (General)
+    router.get('/', [RegisterInviteLinkController, 'index']).as('registerInviteLinks.index')
+    // Show Detail
+    router.get('/:id', [RegisterInviteLinkController, 'show']).as('registerInviteLinks.show')
+    // Edit Form
+    router.get('/:id/edit', [RegisterInviteLinkController, 'edit']).as('registerInviteLinks.edit')
+    // Update (Using POST as per your example structure)
+    router.post('/:id', [RegisterInviteLinkController, 'update']).as('registerInviteLinks.update')
+  }).prefix('register_invite_link').use(middleware.adminOnly())
 
   router.get('/mail_code/search', [MailCodesController, 'index']).as('mailCode.search')
 

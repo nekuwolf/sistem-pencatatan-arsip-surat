@@ -1,0 +1,117 @@
+@component('components/layout/dashboard', { title: 'Buat Link Undangan', pageDescription: 'Generate Invite Link' })
+  @slot('main')
+
+    @!component('components/dashboard/breadcrumb', {
+      items: [
+        { label: 'Link Undangan', iconName: 'link-45deg', href: route('registerInviteLinks.index') },
+        { label: 'Buat Baru', iconName: 'plus-circle' }
+      ]
+    })
+
+    {{-- Header --}}
+    <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mt-4 mb-4">
+        <div>
+            <h4 class="mb-0 fs-4">Generate Link Undangan</h4>
+            <div class="text-muted small mt-1">
+                <i class="bi bi-person-plus me-1"></i> Atur posisi untuk pengguna baru
+            </div>
+        </div>
+        <div>
+            <a href="{{ route('registerInviteLinks.index') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+        </div>
+    </div>
+
+    {{-- Form --}}
+    <form action="{{ route('registerInviteLinks.store') }}" method="POST">
+      {{ csrfField() }}
+
+      <div class="row g-3">
+        
+        {{-- SECTION: Target Posisi User --}}
+        <div class="col-12">
+            <h6 class="fw-bold text-primary mb-0"><i class="bi bi-person-badge me-2"></i>Konfigurasi Pengguna Baru</h6>
+            <hr class="mt-2 mb-0 opacity-25">
+            <p class="text-muted small">Tentukan Organisasi, Departemen, dan Peran yang akan otomatis diberikan kepada pengguna yang mendaftar menggunakan link ini.</p>
+        </div>
+
+        {{-- Organization --}}
+        {{-- <div class="col-md-6">
+          @!component('components/input/select', {
+            id: 'newUserOrganizationId',
+            name: 'new_user_organization_id',
+            labelText: 'Organisasi',
+            labelIcon: 'building',
+            placeholder: "Pilih Organisasi",
+            isRequired: true,
+            enableFloatingLabel: false,
+            options: organizationOptions || [],
+            value: old('new_user_organization_id'),
+            errorMessage: flashMessages.get('errors.new_user_organization_id') || '',
+          })
+        </div> --}}
+
+        {{-- Department --}}
+        {{-- <div class="col-md-6">
+          @!component('components/input/select', {
+            id: 'newUserDepartmentId',
+            name: 'new_user_department_id',
+            labelText: 'Departemen',
+            labelIcon: 'diagram-3',
+            placeholder: "Pilih Departemen",
+            isRequired: true,
+            enableFloatingLabel: false,
+            options: departmentOptions || [],
+            value: old('new_user_department_id'),
+            errorMessage: flashMessages.get('errors.new_user_department_id') || '',
+          })
+        </div> --}}
+
+        {{-- Role --}}
+        <div class="col-md-6">
+          @!component('components/input/select', {
+            id: 'newUserRoleId',
+            name: 'new_user_role_id',
+            labelText: 'Role Sistem',
+            labelIcon: 'shield-lock',
+            placeholder: "Pilih Role",
+            isRequired: true,
+            enableFloatingLabel: false,
+            options: roleOptions || [],
+            value: old('new_user_role_id'),
+            errorMessage: flashMessages.get('errors.new_user_role_id') || '',
+          })
+        </div>
+
+        {{-- Job Role --}}
+        <div class="col-md-6">
+          @!component('components/input/select', {
+            id: 'newUserJobRoleId',
+            name: 'new_user_job_role_id',
+            labelText: 'Jabatan / Posisi',
+            labelIcon: 'briefcase',
+            placeholder: "Pilih Jabatan",
+            isRequired: true,
+            enableFloatingLabel: false,
+            options: jobRoleOptions || [],
+            value: old('new_user_job_role_id'),
+            errorMessage: flashMessages.get('errors.new_user_job_role_id') || '',
+          })
+        </div>
+
+        {{-- Submit Button --}}
+        <div class="col-12 mt-4 mb-5">
+          @!component('components/button/button', {
+            style: 'w-100',
+            type: 'submit',
+            text: 'Generate Link',
+            iconName: 'magic',
+            enableLoadingIndicator: true,
+            variant: 'primary'
+          })
+        </div>
+      </div>
+    </form>
+  @endslot
+@end

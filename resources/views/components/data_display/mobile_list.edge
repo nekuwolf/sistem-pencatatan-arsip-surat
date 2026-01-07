@@ -39,13 +39,13 @@
         {{-- CONTENT ("diskominfos...") --}}
         {{-- ADDED pe-5: Keeps this text away from the chevron --}}
         @if(contentCol)
-          <p class="mb-0 text-body text-truncate text-wrap line-clamp-1 pe-3">{{ row[contentCol.key].value }}</p>
+          <p class="mb-0 text-body text-truncate text-wrap line-clamp-2 pe-3">{{ row[contentCol.key].value }}</p>
         @end
 
         {{-- SUB CONTENT --}}
         {{-- ADDED pe-5: Keeps this text away from the chevron --}}
         @if(subContentCol)
-          <p class="mt-1 mb-0 text-body-secondary text-truncate text-wrap line-clamp-2 pe-3">{{ row[subContentCol.key].value }}</p>
+          <p class="mt-1 mb-0 text-body-secondary text-truncate text-wrap line-clamp-1 pe-3">{{ row[subContentCol.key].value }}</p>
         @end
 
         {{-- BADGES --}}

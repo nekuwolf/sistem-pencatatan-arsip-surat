@@ -17,7 +17,7 @@ export function mapMailsDatasToDesktopTableMobileListEdgeView(
       { key: 'mailYear', label: 'Tahun Surat' },
       { key: 'mailContentSumarry', label: 'Isi Singkat' },
       { key: 'paper', label: 'Jumlah Diarsipkan' },
-      { key: 'rackShelf', label: 'Rak' },
+      { key: 'archiveLocation', label: 'Tempat Arsip' },
       { key: 'boxName', label: 'Nama Kotak' },
       { key: 'envelopeName', label: 'Sampul' },
       { key: 'status', label: 'Status' },
@@ -42,7 +42,6 @@ export function mapMailsDatasToDesktopTableMobileListEdgeView(
 
         mailCode: {
           value: `${mail.mailCode.code} - ${mail.mailCode.shortIndex}` || '-',
-          mark: 'CONTENT',
         },
 
         mailYear: {
@@ -51,12 +50,18 @@ export function mapMailsDatasToDesktopTableMobileListEdgeView(
 
         mailContentSumarry: {
           value: mail.mailContentSummary || '-',
-          mark: 'SUBCONTENT',
+          mark: 'CONTENT',
         },
 
-        rackShelf: {
-          value: `${mail.rackName}.${mail.shelfName}` || '-',
-          mark: 'CONTENT',
+        archiveLocation: {
+          value: [
+            mail.rackName && mail.shelfName ? `${mail.rackName}.${mail.shelfName}` : mail.rackName || mail.shelfName || null,
+            [mail.boxName, mail.envelopeName].filter(Boolean).join(' | ')
+          ]
+            .filter(Boolean)
+            .join(' | ')
+            || '-',
+          mark: 'SUBCONTENT',
         },
 
         boxName: {

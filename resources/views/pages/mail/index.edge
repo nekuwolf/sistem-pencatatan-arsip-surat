@@ -1,8 +1,5 @@
 @component('components/layout/dashboard', { title: 'Mail Dashboard Page', pageDescription: 'Mail Dashboard Page' })
-  @slot('head')
-    <meta name="description" content="Profile">
-    @vite(['resources/js/utils/input_actions.js'])
-  @endslot
+  {{-- ... header slot ... --}}
 
   @slot('main')
 
@@ -12,11 +9,68 @@
       ]
     })
 
-    <h4 class="mt-3 fs-4">Data Arsip Surat</h4>
+    <div class="d-flex flex-column flex-md-row justify-content-between mt-3">
+      <h4 class="fs-4 mb-3 mb-md-0">Data Arsip Surat</h4>
 
-    {{-- Check if we have data AND if that data array is not empty --}}
+      {{-- Search Form --}}
+      <form method="GET" action="{{ request.url() }}" class="d-flex gap-2">
+        
+        {{-- 
+          Use the block syntax @component (without '!') to enable slots.
+          The input.edge component detects these slots and automatically 
+          wraps everything in <div class="input-group">.
+        --}}
+        @component('components/input/input', {
+          name: 'search_q',
+          value: request.input('search_q', ''),
+          placeholder: 'Cari...',
+          inputGroupStyle: 'flex-nowrap'
+        })
+
+          {{-- 1. Prefix Slot: The "Search By" Select Dropdown --}}
+          @slot('prefix')
+            @!component('components/input/select', {
+              id: 'searchBy',
+              name: 'search_by',
+              options: searchOptions || [],
+              inputInlineStyle: 'max-width: 150px; border-top-right-radius: 0; border-bottom-right-radius: 0;',
+              errorMessage: flashMessages.get('errors.search_by') || '',
+              value: request.input('search_by')
+            })
+          @end
+
+          {{-- 2. Suffix Slot: The Search Button --}}
+          @slot('suffix')
+            @!component('components/button/button', {
+              type: 'submit',
+              iconName: 'search',
+              text: 'Cari',
+              enableLoadingIndicator: true,
+              loadingIndicatorText: '...',
+              class: 'btn-primary',
+              style: 'border-top-left-radius: 0; border-bottom-left-radius: 0;'
+            })
+          @end
+
+        @end
+        
+        {{-- Reset Button (Outside the input group, same as before) --}}
+        @if(request.input('search_q'))
+          @!component('components/button/a', {
+            variant: 'secondary',
+            isOutline: true,
+            iconName: 'x-lg',
+            enableLoadingIndicator: true,
+            href: request.url()
+          })
+        @endif
+
+      </form>
+    </div>
+
+    {{-- Rest of your existing code --}}
     @if(mailTableDatas && mailTableDatas.datas.length > 0)
-      {{-- 1. Render Desktop Table --}}
+       {{-- 1. Render Desktop Table --}}
       @!component('components/data_display/table_desktop', { 
         columns: mailTableDatas.columns, 
         datas: mailTableDatas.datas, 
@@ -33,15 +87,18 @@
         @!component('components/pagination', { paginator: paginator })
       </div>
     @else
-      {{-- 4. Empty State --}}
+      {{-- ... Empty State ... --}}
+      {{-- Update Empty State text to reflect search --}}
       <div class="alert alert-light text-center mt-3 p-5 shadow-sm" role="alert">
-        @!component('components/bi_icon', { 
-          style: 'text-muted fs-1',
-          iconName: 'inbox',
-          isFill: false,
-        })
-        <h4 class="mt-3 text-muted">Kosong ?</h4>
-        <p class="text-secondary mb-0">Tidak ada data yang dapat ditampilkan untuk saat ini</p>
+          @if(request.input('search_q'))
+            @!component('components/bi_icon', { style: 'text-muted fs-1', iconName: 'search', isFill: false })
+            <h4 class="mt-3 text-muted">Data Tidak Ditemukan</h4>
+            <p class="text-secondary mb-0">Tidak ada hasil untuk pencarian "{{ request.input('search_q') }}" dalam kategori "{{ request.input('search_by') }}"</p>
+          @else
+            @!component('components/bi_icon', { style: 'text-muted fs-1', iconName: 'dropbox', isFill: false })
+            <h4 class="mt-3 text-muted">Kosong ?</h4>
+            <p class="text-secondary mb-0">Belum ada data surat yang diarsipkan.</p>
+          @endif
       </div>
     @end
 

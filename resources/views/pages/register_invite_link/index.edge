@@ -1,0 +1,85 @@
+@component('components/layout/dashboard', { title: 'Manajemen Link Undangan', pageDescription: 'Kelola Link Registrasi' })
+  @slot('main')
+
+    @!component('components/dashboard/breadcrumb', {
+      items: [
+        { label: 'Link Undangan', iconName: 'link-45deg' }
+      ]
+    })
+
+    <div class="d-flex flex-column flex-md-row justify-content-between mt-3">
+      <h4 class="fs-4 mb-3 mb-md-0">Data Link Undangan</h4>
+
+      {{-- Search Form --}}
+      <form method="GET" action="{{ request.url() }}" class="d-flex gap-2">
+        @component('components/input/input', {
+          name: 'search_q',
+          value: request.input('search_q', ''),
+          placeholder: 'Cari kode...',
+          inputGroupStyle: 'flex-nowrap'
+        })
+
+          {{-- Search Button --}}
+          @slot('suffix')
+            @!component('components/button/button', {
+              type: 'submit',
+              iconName: 'search',
+              text: 'Cari',
+              enableLoadingIndicator: true,
+              class: 'btn-primary',
+              style: 'border-top-left-radius: 0; border-bottom-left-radius: 0;'
+            })
+          @end
+
+        @end
+        
+        {{-- Reset Button --}}
+        @if(request.input('search_q'))
+          @!component('components/button/a', {
+            variant: 'secondary',
+            isOutline: true,
+            iconName: 'x-lg',
+            enableLoadingIndicator: true,
+            href: request.url()
+          })
+        @endif
+      </form>
+    </div>
+
+    @if(inviteLinks && inviteLinks.length > 0)
+       {{-- 1. Render Desktop Table --}}
+       {{-- Note: Ensure your controller formats 'datas' to include a friendly status or columns --}}
+      @!component('components/data_display/table_desktop', { 
+        columns: registerInvteLinkTableDatas.columns, 
+        datas: registerInvteLinkTableDatas.datas, 
+        style: 'mt-3' 
+      })
+
+      {{-- 2. Render Mobile List --}}
+      @!component('components/data_display/mobile_list', { 
+        columns: registerInvteLinkTableDatas.columns, 
+        datas: registerInvteLinkTableDatas.datas, 
+        style: 'mt-3' 
+      })
+
+      {{-- 3. Render Pagination --}}
+      <div class="d-flex justify-content-center mt-4">
+        @!component('components/pagination', { paginator: inviteLinks })
+      </div>
+    @else
+      {{-- Empty State --}}
+      <div class="alert alert-light text-center mt-3 p-5 shadow-sm" role="alert">
+          @if(request.input('search_q'))
+            @!component('components/bi_icon', { style: 'text-muted fs-1', iconName: 'search', isFill: false })
+            <h4 class="mt-3 text-muted">Data Tidak Ditemukan</h4>
+            <p class="text-secondary mb-0">Tidak ada hasil untuk pencarian "{{ request.input('search_q') }}"</p>
+          @else
+            @!component('components/bi_icon', { style: 'text-muted fs-1', iconName: 'link-45deg', isFill: false })
+            <h4 class="mt-3 text-muted">Belum Ada Link</h4>
+            <p class="text-secondary mb-0">Belum ada link undangan registrasi yang dibuat.</p>
+          @endif
+      </div>
+    @end
+
+  @endslot
+@end

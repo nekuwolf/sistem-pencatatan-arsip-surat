@@ -1,0 +1,156 @@
+@component('components/layout/dashboard', { title: 'Detail Link Undangan', pageDescription: 'Detail Invite Link' })
+  @slot('main')
+
+    @!component('components/dashboard/breadcrumb', {
+      items: [
+        { label: 'Link Undangan', iconName: 'link-45deg', href: route('registerInviteLinks.index') },
+        { label: 'Detail', iconName: 'info-circle' }
+      ]
+    })
+
+    {{-- Header --}}
+    <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mt-4 mb-4">
+        <div>
+            <h4 class="mb-0 fs-4">Detail Link Undangan</h4>
+            <div class="text-muted small mt-1">
+              Data Kode Undangan Registrasi - {{ inviteLink.id }}
+            </div>
+        </div>
+        <div>
+            <a href="{{ route('registerInviteLinks.index') }}" class="btn btn-sm btn-outline-secondary me-1">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+            {{-- Only show Edit if not used yet --}}
+            @if(!inviteLink.usedAt)
+              <a href="{{ route('registerInviteLinks.edit', { id: inviteLink.id }) }}" class="btn btn-sm btn-primary">
+                <i class="bi bi-pencil-square"></i> Edit Data
+              </a>
+            @endif
+        </div>
+    </div>
+
+    <div class="row g-3">
+      
+      {{-- SECTION: KODE & STATUS --}}
+      <div class="col-12">
+        <h6 class="fw-bold text-primary mb-0"><i class="bi bi-upc-scan me-2"></i>Kode & Status</h6>
+        <hr class="mt-2 mb-0 opacity-25">
+      </div>
+
+      {{-- The Invite Link --}}
+      <div class="col-12 col-md-8">
+        <label class="text-muted small fw-bold text-uppercase d-block">Kode Registrasi</label>
+        
+        <div class="p-3 bg-body-tertiary rounded border border-2 border-primary d-flex align-items-center justify-content-between">
+            {{-- 1. TARGET: The Code --}}
+            {{-- We add the attribute here so the script can find this text --}}
+            <span cstm-data-copy="code-{{ inviteLink.id }}" class="fs-4 fw-bold font-monospace text-primary tracking-wide">
+                {{ inviteLink.key }}
+            </span>
+            
+            {{-- Generate URL --}}
+            @let(registerUrl = route('auth.register.create', {}, { qs: { register_code: inviteLink.key } }))
+            
+            {{-- 2. TARGET: The Full Link --}}
+            {{-- Since the full link isn't visible text, we put it in a hidden input for the script to read --}}
+            {{-- We construct the full URL server-side using request.protocol and host --}}
+            <input type="hidden" 
+                  cstm-data-copy="link-{{ inviteLink.id }}" 
+                  value="{{ request.protocol() }}://{{ request.host() }}{{ registerUrl }}">
+
+            <div class="d-flex gap-2">
+                {{-- TRIGGER 1: Copy Code --}}
+                {{-- Removed onclick, added cstm-data-copy-btn matching the span above --}}
+                <button class="btn btn-sm btn-outline-secondary" 
+                        cstm-data-copy-btn="code-{{ inviteLink.id }}" 
+                        title="Salin Kode">
+                  <i class="bi bi-clipboard"></i> Salin Kode
+                </button>
+
+                {{-- TRIGGER 2: Copy Full Link --}}
+                {{-- Removed onclick, added cstm-data-copy-btn matching the hidden input above --}}
+                <button class="btn btn-sm btn-primary" 
+                        cstm-data-copy-btn="link-{{ inviteLink.id }}" 
+                        title="Salin Link">
+                  <i class="bi bi-link-45deg"></i> Salin Link
+                </button>
+            </div>
+        </div>
+      </div>
+
+      {{-- Status Badge --}}
+      <div class="col-12 col-md-4">
+        <label class="text-muted small fw-bold text-uppercase d-block">Status</label>
+        <div class="mt-2">
+            @if(inviteLink.usedAt)
+                <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i>SUDAH DIPAKAI</span>
+            @elseif(inviteLink.expireAt < new Date())
+                <span class="badge bg-danger fs-6"><i class="bi bi-x-circle me-1"></i>KADALUARSA</span>
+            @else
+                <span class="badge bg-primary fs-6"><i class="bi bi-hourglass-split me-1"></i>AKTIF / MENUNGGU</span>
+            @endif
+        </div>
+      </div>
+
+      {{-- SECTION: KONFIGURASI PENGGUNA BARU --}}
+      <div class="col-12 mt-4">
+        <h6 class="fw-bold text-primary mb-0"><i class="bi bi-person-gear me-2"></i>Target Pengguna Baru</h6>
+        <hr class="mt-2 mb-0 opacity-25">
+      </div>
+
+      <div class="col-md-6">
+        <label class="text-muted small fw-bold text-uppercase d-block">Organisasi</label>
+        <span class="fs-6">{{ inviteLink.newUserOrganization?.name || '-' }}</span>
+      </div>
+
+      <div class="col-md-6">
+        <label class="text-muted small fw-bold text-uppercase d-block">Departemen</label>
+        <span class="fs-6">{{ inviteLink.newUserDepartment?.name || '-' }}</span>
+      </div>
+
+      <div class="col-md-6">
+          <label class="text-muted small fw-bold text-uppercase d-block">Role Sistem</label>
+          <span class="badge text-bg-light border">{{ inviteLink.newUserRole?.name || '-' }}</span>
+      </div>
+
+      <div class="col-md-6">
+        <label class="text-muted fw-bold text-uppercase d-block">Jabatan</label>
+        <span class="badge text-bg-success text-white">{{ inviteLink.newUserJobRole?.name || '-' }}</span>
+      </div>
+
+      {{-- SECTION: RIWAYAT & INFO --}}
+      <div class="col-12 mt-4">
+        <h6 class="fw-bold text-primary mb-0"><i class="bi bi-clock-history me-2"></i>Riwayat & Metadata</h6>
+        <hr class="mt-2 mb-0 opacity-25">
+      </div>
+
+      <div class="col-md-4">
+          <div class="p-2 border rounded bg-body-tertiary">
+            <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Dibuat Oleh</small>
+            <span class="fw-bold">{{ inviteLink.createdByUser?.fullName || 'System' }}</span>
+            <div class="small text-muted">{{ inviteLink.createdAt.toFormat('dd LLL yyyy HH:mm') }}</div>
+          </div>
+      </div>
+      
+      <div class="col-md-4">
+          <div class="p-2 border rounded bg-body-tertiary">
+            <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Kadaluarsa Pada</small>
+            <span class="fw-bold">{{ inviteLink.expireAt.toFormat('dd LLL yyyy HH:mm') }}</span>
+          </div>
+      </div>
+
+      <div class="col-md-4">
+          <div class="p-2 border rounded bg-body-tertiary">
+            <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Digunakan Oleh</small>
+            @if(inviteLink.usedAt)
+                <span class="fw-bold text-success">{{ inviteLink.createdUser?.fullName || 'User ID: ' + inviteLink.createdUserId }}</span>
+                <div class="small text-muted">{{ inviteLink.usedAt.toFormat('dd LLL yyyy HH:mm') }}</div>
+            @else
+                <span class="fst-italic text-muted">- Belum digunakan -</span>
+            @endif
+          </div>
+      </div>
+
+    </div>
+  @endslot
+@end

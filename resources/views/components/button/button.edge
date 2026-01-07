@@ -35,17 +35,21 @@
     @end
   </span>
   @if(enableLoadingIndicator)
-  <span class="cstmtag-loading-indicator d-none" hidden>
-    <span {{
-      html.attrs({
-        'aria-hidden': 'true',
-        class: [
-          'spinner-border',
-          'spinner-border-sm',
-        ]
-      })
-    }}></span>
-    <span role="status">{{loadingIndicatorText || 'Loading...'}}</span>
-  </span>
+    <span class="cstmtag-loading-indicator d-none" hidden>
+      <span {{
+        html.attrs({
+          'aria-hidden': 'true',
+          class: [
+            'spinner-border',
+            'spinner-border-sm',
+          ]
+        })
+      }}></span>
+      <span role="status">
+        @if(text && loadingIndicatorText)
+          {{ loadingIndicatorText || 'Loading...' }}
+        @end
+      </span>
+    </span>
   @end
 </button>

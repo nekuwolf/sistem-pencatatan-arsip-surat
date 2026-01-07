@@ -21,30 +21,46 @@ export default class MailDashboardController {
   async index({ view, request, auth }: HttpContext) {
     const user = auth.user!
     const page = request.input('page', 1)
+    
+    // 1. Get Search Params
+    const searchQ = request.input('search_q', '')
+    const searchBy = request.input('search_by', 'all')
 
     let paginatorResult
 
-    if (user.isAdmin || user.isEmployee) {
+    if (user.isAdmin || user.isEmployee || user.isNotEmployee) {
       paginatorResult = await Mail.allMailInDepartmentIdPreloadEverythingPaginate(
         user.organizationId,
-        page
+        page,
+        searchQ,  // Pass param
+        searchBy  // Pass param
       )
     } else {
       paginatorResult = await Mail.allMailByUserIdPreloadEverythingPaginate(
         user.id,
-        page
+        page,
+        searchQ, // Pass param
+        searchBy // Pass param
       )
     }
 
+    // 2. Persist query string (Keep search active on pagination links)
     paginatorResult.baseUrl(request.url())
+    paginatorResult.queryString(request.qs())
 
     const mailTableDatas = mapMailsDatasToDesktopTableMobileListEdgeView(
       paginatorResult.all()
     )
 
+    const searchOptions = [
+      { value: 'all', label: 'Semua' },
+      ...Mail.searchConfig 
+    ]
+
     return view.render('pages/mail/index', {
       mailTableDatas,
-      paginator: paginatorResult, 
+      paginator: paginatorResult,
+      searchOptions, // Pass the combined list
     })
   }
 
