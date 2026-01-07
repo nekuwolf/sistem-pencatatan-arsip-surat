@@ -18,9 +18,9 @@ export default class UserRoleSeeder extends BaseSeeder {
         description: 'This user is an Employee and has limited system privileges'
       },
       { 
-        id: G_USER_ROLE.RESTRICTED_EMPLOYEE.ID, 
-        name: G_USER_ROLE.RESTRICTED_EMPLOYEE.NAME, 
-        description: 'This user is an Restricted Employee and has very limited system privileges'
+        id: G_USER_ROLE.NOT_EMPLOYEE.ID, 
+        name: G_USER_ROLE.NOT_EMPLOYEE.NAME, 
+        description: 'This user is NOT an Employee and has very limited system privileges'
       },
     ])
 

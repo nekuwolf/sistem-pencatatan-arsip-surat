@@ -1,5 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import { createLoginValidator, storeLoginValidator } from '#validators/login_validators'
+import { createLoginValidator, storeLoginValidator } from '#validators/login_validator'
 import { mapVineJSValidationErrorMessages } from '../helpers/map_vinejs_validation_error_messages.js'
 import router from '@adonisjs/core/services/router'
 import User from '#models/user'

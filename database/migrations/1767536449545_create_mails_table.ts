@@ -29,6 +29,7 @@ export default class extends BaseSchema {
       table.integer('mail_code_id').unsigned().references('id').inTable('mail_code').onDelete('RESTRICT')
       table.integer('uploaded_mail_file_id').unsigned().references('id').inTable('uploaded_file').onDelete('RESTRICT')
       table.integer('created_by_user_id').unsigned().references('id').inTable('user').onDelete('RESTRICT')
+      table.integer('belong_to_department_id').unsigned().references('id').inTable('department').onDelete('RESTRICT')
     })
   }
 

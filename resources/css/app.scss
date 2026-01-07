@@ -134,3 +134,17 @@
   background-color: rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity)) !important;
   backdrop-filter: blur(10px);
 }
+
+
+/* Ensure the cropper stays within the modal boundaries */
+.cropper-container {
+  width: 100%;
+  overflow: hidden;
+  background-color: #000; /* Better contrast for transparent images */
+}
+
+/* Fix potential z-index issues with Bootstrap modal footer */
+.modal-footer {
+  z-index: 10;
+  background: var(--bs-modal-bg);
+}

@@ -7,6 +7,7 @@ import MailCode from '#models/mail_code'
 import User from '#models/user' 
 import UploadedFile from './uploaded_file.js'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
+import Department from './department.js'
 // import UploadedFile from '#models/uploaded_file' // Uncomment if you have this model
 
 export default class Mail extends BaseModel {
@@ -65,6 +66,9 @@ export default class Mail extends BaseModel {
 
   @column()
   declare createdByUserId: number
+  
+  @column()
+  declare belongToDepartmentId: number
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -86,23 +90,26 @@ export default class Mail extends BaseModel {
   @belongsTo(() => MailCode, { foreignKey: 'mailCodeId' })
   declare mailCode: BelongsTo<typeof MailCode>
 
-  // An mail is created by an user, an user can have multiple mail
+  // An mail is created by an user, an user can register multiple mail
   @belongsTo(() => User, { foreignKey: 'createdByUserId' })
   declare createdByUser: BelongsTo<typeof User>
+  
+  // An mail belong to an department, an department can have multiple mail
+  @belongsTo(() => Department, { foreignKey: 'belongToDepartmentId' })
+  declare belongToDepartment: BelongsTo<typeof Department>
 
   // An mail is created by an user, an user can have multiple mail
   @belongsTo(() => UploadedFile, { foreignKey: 'uploadedMailFileId' })
   declare uploadedMailFile: BelongsTo<typeof UploadedFile>
 
-  public static async allMailInOrganizationIdPreloadEverythingPaginate(
-    organizationId: number,
+  public static async allMailInDepartmentIdPreloadEverythingPaginate(
+    departmentId: number,
     currentPage: number,
     itemPerPage?: number,
     client?: TransactionClientContract
   ) {
     return await this.query({ client })
-      .join('user', 'mail.created_by_user_id', 'user.id')
-      .where('user.organization_id', organizationId)
+      .where('belong_to_department_id', departmentId)
       .preload('mailType')
       .preload('mailPriority')
       .preload('uploadedMailFile')

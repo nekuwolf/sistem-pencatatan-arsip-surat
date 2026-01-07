@@ -1,0 +1,133 @@
+@component('components/layout/dashboard', { title: 'Profile Page', pageDescription: 'Account details and settings' })
+  @slot('main')
+    @!component('components/dashboard/breadcrumb', {
+      items: [{label: 'Profile', iconName: 'person' }]
+    })
+
+    {{-- Header Section (Matches create.edge style) --}}
+    <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mt-4 mb-4">
+        <div>
+            <h4 class="mb-0 fs-4">Account Settings</h4>
+            <div class="text-muted small mt-1">
+                <i class="bi bi-person-badge me-1"></i> Personal Profile Details
+            </div>
+        </div>
+        <div>
+            @!component('components/button/a', {
+              text: 'Edit Profile',
+              href: route('account.profile.index', {}, { qs: { edit: 'true' }}),
+              iconName: 'pencil',
+              isOutline: true,
+              variant: 'secondary'
+            })
+        </div>
+    </div>
+
+    @if(flashMessages.has('profileFormAlertMessage'))
+      <div class="mb-3">
+        @!component('components/alert', { message: flashMessages.get('profileFormAlertMessage') })
+      </div>
+    @end
+
+    {{-- Content Wrapper --}}
+    <div class="row g-3">
+
+      {{-- SECTION 1: PERSONAL INFORMATION --}}
+      <div class="col-12">
+          <h6 class="fw-bold text-primary mb-0"><i class="bi bi-person me-2"></i>Personal Information</h6>
+          <hr class="mt-2 mb-0 opacity-25">
+      </div>
+
+      <div class="col-12">
+        @!component('components/input/input', {
+          id: 'fullName', name: 'full_name', labelText: 'Full Name', labelIcon: 'person',
+          value: auth.user.fullName || '-', isReadonly: true, isDisabled: true
+        })
+      </div>
+
+      <div class="col-12">
+        @!component('components/input/input', {
+          id: 'gender', name: 'gender_name', labelText: 'Gender', labelIcon: 'gender-ambiguous',
+          value: auth.user.gender?.name || '-', isReadonly: true, isDisabled: true
+        })
+      </div>
+
+      <div class="col-md-6">
+        @!component('components/input/input', {
+          id: 'birthDate', name: 'birth_date', labelText: 'Date of Birth', labelIcon: 'calendar',
+          value: auth.user.birthDate ? auth.user.birthDate.toFormat('dd/MM/yyyy') : '-',
+          isReadonly: true, isDisabled: true
+        })
+      </div>
+
+      <div class="col-md-6">
+        @!component('components/input/input', {
+          id: 'birthPlace', name: 'birth_place', labelText: 'Place of Birth', labelIcon: 'geo-alt',
+          value: auth.user.birthPlace || '-', isReadonly: true, isDisabled: true
+        })
+      </div>
+
+      {{-- SECTION 2: CONTACT INFORMATION --}}
+      <div class="col-12 mt-4">
+          <h6 class="fw-bold text-primary mb-0"><i class="bi bi-envelope me-2"></i>Contact Information</h6>
+          <hr class="mt-2 mb-0 opacity-25">
+      </div>
+
+      <div class="col-md-6">
+        @!component('components/input/input', {
+          id: 'email', name: 'email', labelText: 'Email', labelIcon: 'envelope',
+          value: auth.user.email || '-', isReadonly: true, isDisabled: true
+        })
+      </div>
+
+      <div class="col-md-6">
+        @!component('components/input/input', {
+          id: 'phone', name: 'personal_phone_number', labelText: 'Phone Number', labelIcon: 'telephone',
+          value: auth.user.personalPhoneNumber || '-', isReadonly: true, isDisabled: true
+        })
+      </div>
+
+      <div class="col-12">
+        @!component('components/input/textarea', {
+          id: 'fullHomeAddress', name: 'full_home_address', labelText: 'Home Address', labelIcon: 'house-door',
+          value: auth.user.fullHomeAddress || '-', cstmAutogrowHeight: true, 
+          cstmAutogrowHeightMinPx: '100', isReadonly: true, isDisabled: true
+        })
+      </div>
+
+      {{-- SECTION 3: EMPLOYMENT --}}
+      <div class="col-12 mt-4">
+          <h6 class="fw-bold text-primary mb-0"><i class="bi bi-briefcase me-2"></i>Employment</h6>
+          <hr class="mt-2 mb-0 opacity-25">
+      </div>
+      
+      <div class="col-12">
+        @!component('components/input/input', {
+          id: 'organization', labelText: 'Organization', labelIcon: 'building',
+          value: auth.user.organization?.name || '-', isReadonly: true, isDisabled: true
+        })
+      </div>
+
+      <div class="col-md-4">
+        @!component('components/input/input', {
+          id: 'department', labelText: 'Department', labelIcon: 'briefcase',
+          value: auth.user.department?.name || '-', isReadonly: true, isDisabled: true
+        })
+      </div>
+
+      <div class="col-md-4">
+        @!component('components/input/input', {
+          id: 'jobRole', labelText: 'Job Role / Designation', labelIcon: 'person-gear',
+          value: auth.user.jobRole?.name || '-', isReadonly: true, isDisabled: true
+        })
+      </div>
+      
+      <div class="col-md-4">
+        @!component('components/input/input', {
+          id: 'role', labelText: 'Account Role', labelIcon: 'person-gear',
+          value: auth.user.role?.name || '-', isReadonly: true, isDisabled: true
+        })
+      </div>
+    </div>
+  @endslot
+@end

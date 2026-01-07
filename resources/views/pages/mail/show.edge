@@ -1,0 +1,181 @@
+@component('components/layout/dashboard', { title: 'Mail Dashboard Page', pageDescription: 'Mail Dashboard Page' })
+  @slot('head')
+    <meta name="description" content="Profile">
+    @vite(['resources/js/utils/input_actions.js'])
+  @endslot
+
+  @slot('main')
+
+    @!component('components/dashboard/breadcrumb', {
+      items: [
+        { label: 'Data Arsip Surat', iconName: 'envelope', href: route('mails.index') },
+        { label: 'Detail', iconName: 'info-circle' }
+      ]
+    })
+
+    {{-- Header Section (Previously Card Header) --}}
+    <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mt-4 mb-4">
+        <div>
+            <h4 class="mb-0 fs-4">Detail Arsip Surat</h4>
+            <div class="text-muted small mt-1">
+                <i class="bi bi-file-earmark-text me-1"></i> Data Surat - {{ mail.id }}
+            </div>
+        </div>
+        <div>
+            <a href="{{ route('mails.index') }}" class="btn btn-sm btn-outline-secondary me-1">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+            <a href="{{ route('mails.show', { mailId: mail?.id }, { qs: { edit: 'true' } }) }}" class="btn btn-sm btn-primary">
+                <i class="bi bi-pencil-square"></i> Edit Data
+            </a>
+        </div>
+    </div>
+
+    {{-- Content Body (Previously Card Body) --}}
+    <div class="row g-3">
+      
+      {{-- SECTION 1: INFORMASI SURAT --}}
+      <div class="col-12">
+        <h6 class="fw-bold text-primary mb-0"><i class="bi bi-info-circle me-2"></i>Informasi Surat</h6>
+        <hr class="mt-2 mb-0 opacity-25">
+      </div>
+
+      {{-- Mail Source --}}
+      <div class="col-12">
+        <label class="text-muted small fw-bold text-uppercase d-block">Kode Surat</label>
+        <div class="p-2 bg-body-tertiary rounded border-start border-4 border-primary">
+            <span class="fs-5 fw-semibold">{{ mail?.fullMailCode }}</span>
+        </div>
+      </div>
+
+      {{-- Full Mail Code --}}
+      <div class="col-12">
+        <label class="text-muted small fw-bold text-uppercase d-block">Surat Dari</label>
+        <span class="fs-5 fw-medium font-monospace">{{ mail?.mailSource }}</span>
+      </div>
+
+      {{-- Mail Date --}}
+      <div class="col-md-4">
+        <label class="text-muted small fw-bold text-uppercase d-block">Tanggal Surat</label>
+        <span class="fs-6">{{ mail?.mailDate ? mail?.mailDate.toFormat('dd LLL yyyy') : '-' }}</span>
+      </div>
+
+      {{-- Page Counts --}}
+      <div class="col-md-4">
+        <label class="text-muted small fw-bold text-uppercase d-block">Jumlah Surat</label>
+        <span class="fs-6 fw-bold">{{ mail?.mailPaperCount || 0 }}</span> <span class="text-muted small">Lembar</span>
+      </div>
+
+      <div class="col-md-4">
+        <label class="text-muted small fw-bold text-uppercase d-block">Jumlah Lembar Lainnya</label>
+        <span class="fs-6 fw-bold">{{ mail?.mailAttachmentPaperCount || 0 }}</span> <span class="text-muted small">Lembar</span>
+      </div>
+
+      {{-- Summary --}}
+      <div class="col-12">
+        <label class="text-muted small fw-bold text-uppercase d-block">Ringkasan Isi</label>
+        <p class="mb-0 text-break">{{ mail?.mailContentSummary }}</p>
+      </div>
+
+      {{-- File Download --}}
+      <div class="col-12">
+        <small class="text-muted fw-bold text-uppercase d-block mb-2">Softcopy Surat</small>
+        @if(mail?.uploadedMailFileId)
+          <div class="d-flex align-items-center p-3 border rounded bg-body-tertiary">
+            {{-- 1. flex-shrink-0: Prevents icon from getting squashed --}}
+            <i class="bi bi-file-earmark-fill fs-2 me-3 text-primary flex-shrink-0"></i>
+
+            {{-- 2. overflow-hidden: Crucial for flex children to allow inner text truncation --}}
+            <div class="flex-grow-1 lh-1 overflow-hidden me-3">
+              <span class="fw-bold d-block">File Tersedia</span>
+              
+              {{-- 3. text-truncate + d-block: Cuts the text with "..." --}}
+              {{-- Added 'title' so users can hover to see full name --}}
+              <small class="text-muted d-block text-truncate" title="{{ mail?.uploadedMailFile?.filename }}">
+                {{ mail?.uploadedMailFile?.filename }}
+              </small>
+            </div>
+
+            {{-- 4. flex-shrink-0: Prevents button from getting squashed --}}
+            <a href="{{ route('mails.file.show', { mailId: mail?.id }) }}" target="_blank" class="btn btn-sm btn-outline-primary flex-shrink-0">
+                <i class="bi bi-download me-1"></i> Unduh
+            </a>
+          </div>
+        @else
+          <span class="text-muted fst-italic"><i class="bi bi-x-circle me-1"></i>Tidak ada file.</span>
+        @endif
+      </div>
+
+      {{-- SECTION 2: KLASIFIKASI & RELASI --}}
+      <div class="col-12 mt-4">
+        <h6 class="fw-bold text-primary mb-0"><i class="bi bi-tags me-2"></i>Klasifikasi & Relasi</h6>
+        <hr class="mt-2 mb-0 opacity-25">
+      </div>
+
+      <div class="col-md-3">
+        <label class="text-muted small fw-bold text-uppercase d-block">Jenis Surat</label>
+        <span class="badge text-bg-light border">{{ mail?.mailType?.name || '-' }}</span>
+      </div>
+
+      <div class="col-md-3">
+        <label class="text-muted small fw-bold text-uppercase d-block">Sifat Surat</label>
+        <span class="badge text-bg-light border">{{ mail?.mailPriority?.name || '-' }}</span>
+      </div>
+
+      <div class="col-md-3">
+          <label class="text-muted small fw-bold text-uppercase d-block">Nomor Agenda</label>
+          <span class="badge text-bg-primary fs-6">#{{ mail?.agendaNumber }}</span>
+      </div>
+
+      <div class="col-md-3">
+        <label class="text-muted fw-bold text-uppercase d-block">Kode Klasifikasi</label>
+        <span class="badge text-bg-success">{{ mail?.mailCode?.code }}</span>
+        <small class="text-muted mt-1">{{ mail?.mailCode?.shortIndex }}</small>
+      </div>
+
+      {{-- SECTION 3: LOKASI PENYIMPANAN FISIK --}}
+      <div class="col-12 mt-4">
+        <h6 class="fw-bold text-primary mb-0"><i class="bi bi-archive me-2"></i>Lokasi Penyimpanan Fisik</h6>
+        <hr class="mt-2 mb-0 opacity-25">
+      </div>
+
+      <div class="col-3">
+          <div class="p-2 border rounded text-center bg-body-tertiary">
+            <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Rak</small>
+            <span class="fw-bold">{{ mail?.rackName || '-' }}</span>
+          </div>
+      </div>
+      <div class="col-3">
+          <div class="p-2 border rounded text-center bg-body-tertiary">
+            <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Baris</small>
+            <span class="fw-bold">{{ mail?.shelfName || '-' }}</span>
+          </div>
+      </div>
+      <div class="col-3">
+          <div class="p-2 border rounded text-center bg-body-tertiary">
+            <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Kotak</small>
+            <span class="fw-bold">{{ mail?.boxName || '-' }}</span>
+          </div>
+      </div>
+      <div class="col-3">
+          <div class="p-2 border rounded text-center bg-body-tertiary">
+            <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Sampul</small>
+            <span class="fw-bold">{{ mail?.envelopeName || '-' }}</span>
+          </div>
+      </div>
+
+      {{-- SECTION 4: LAINNYA --}}
+      <div class="col-12 mt-4">
+        <h6 class="fw-bold text-primary mb-0"><i class="bi bi-file-text me-2"></i>Lainnya</h6>
+        <hr class="mt-2 mb-0 opacity-25">
+      </div>
+
+      <div class="col-12">
+        <label class="text-muted small fw-bold text-uppercase d-block">Waktu Registrasi Sistem</label>
+        <span>{{ mail?.registeredAt ? mail?.registeredAt.toFormat('dd/MM/yyyy HH:mm') : '-' }}</span>
+        <span class="text-muted small fst-italic ms-2">(Dibuat oleh: {{ mail?.createdByUser?.fullName || 'System' }})</span>
+      </div>
+
+    </div>
+  @endslot
+@end

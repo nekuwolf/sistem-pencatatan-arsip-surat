@@ -5,6 +5,7 @@ import RegisterInviteLink from './register_invite_link.js'
 import Organization from './organization.js'
 import ArchiveBox from './archive_box.js'
 import ArchiveEnvelope from './archive_envelope.js'
+import Mail from './mail.js'
 
 export default class Department extends BaseModel {
   public static table = 'department'
@@ -40,4 +41,8 @@ export default class Department extends BaseModel {
   // A department has many archive box
   @hasMany(() => ArchiveEnvelope, { foreignKey: 'organizationId' })
   declare archiveEnvelope : HasMany<typeof ArchiveEnvelope>
+
+  // A department has many mail
+  @hasMany(() => Mail, { foreignKey: 'belongToDepartmentId' })
+  declare createdMail: HasMany<typeof Mail>
 }

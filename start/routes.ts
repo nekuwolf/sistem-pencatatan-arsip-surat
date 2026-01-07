@@ -48,13 +48,20 @@ router.post('/login', [LoginController, 'store']).as('auth.login.store')
 // MUST register_code is newly created user id
 // MUST referrer is user who created the register_code
 // no/invalid 'MUST' redirect to 404 not found
-router.get('/register', [RegisterController, 'create']).as('auth.register.create').use(middleware.guest())
+// router.get('/register', [RegisterController, 'create']).as('auth.register.create').use(middleware.guest())
 
 // POST /account/register
 // register form submit
 // body : MUST register_code=[user_id], MUST referrer=[user_id]
 // MUST email=[email], MUST password=[password]
-router.post('/register', [RegisterController, 'store']).as('auth.register.store')
+// router.post('/register', [RegisterController, 'store']).as('auth.register.store')
+
+// start/routes.ts
+router.group(() => {
+  router.get('/register', [RegisterController, 'create']).as('register.create')
+  router.post('/register/verify', [RegisterController, 'verify']).as('register.verify')
+  router.post('/register', [RegisterController, 'store']).as('register.store')
+}).as('auth')
 
 // GET /account/register/verify_otp?email=[email]&otp_code=[otp_code]
 // show otp verification form
@@ -90,7 +97,7 @@ router.post('/register', [RegisterController, 'store']).as('auth.register.store'
 // own profile
 // router.get('/profile', [UserProfileController, 'index']).as('account.profile.index').use(middleware.auth({ guards: ['web'] }))
 // router.post('/profile', [UserProfileController, 'update']).as('account.profile.update').use(middleware.auth({ guards: ['web'] }))
-// router.get('/profile/picture', [UserProfilePictureController, 'index']).as('account.profile.picture.index').use(middleware.auth({ guards: ['web'] }))
+// router.get('/profile/picture', [UserProfilePictureController, 'index']).as('account.profile.picture.show').use(middleware.auth({ guards: ['web'] }))
 // router.post('/profile/picture', [UserProfilePictureController, 'update']).as('account.profile.picture.store').use(middleware.auth({ guards: ['web'] }))
 
 // profile picture api
@@ -114,28 +121,24 @@ router.group(() => {
 
   // --- Group 1: Own Profile (Current User) ---
   router.group(() => {
-    // Main Profile
+    // Main Profile View & Update
     router.get('/', [UserProfileController, 'index']).as('account.profile.index')
+    // This single POST now handles both text and the avatar upload
     router.post('/', [UserProfileController, 'update']).as('account.profile.update')
-
-    // Profile Picture
-    router.get('/picture', [UserProfilePictureController, 'index']).as('account.profile.picture.index')
-    router.post('/picture', [UserProfilePictureController, 'update']).as('account.profile.picture.update')
+    // The GET route remains necessary to stream the image to the <img> tag
+    router.get('/picture', [UserProfileController, 'showAvatar']).as('account.profile.picture.show')
   }).prefix('profile')
 
   // --- Group 2: User Management (Admin/Dashboard) ---
   router.group(() => {
-    // List & Show
+    // List & Show User Data
     router.get('/', [UserDataController, 'index']).as('users.index')
-    router.get('/:userId', [UserDataController, 'show']).as('users.show')
-
-    // Update User
-    router.post('/:userId', [UserDataController, 'update']).as('users.update')
-
-    // User Picture Management
-    router.get('/:userId/picture', [UserDataProfilePictureController, 'show']).as('users.picture.show')
-    router.post('/:userId/picture', [UserDataProfilePictureController, 'update']).as('users.picture.update')
-
+    // router.get('/:userId', [UserDataController, 'show']).as('users.show')
+    // Update User General Info
+    // router.post('/:userId', [UserDataController, 'update']).as('users.update')
+    // User Picture Management (Now handled by UserDataController)
+    router.get('/:userId/picture', [UserDataController, 'showPicture']).as('users.picture.show')
+    router.post('/:userId/picture', [UserDataController, 'updatePicture']).as('users.picture.update')
   }).prefix('user').use(middleware.adminOnly())
 
   // --- Group 2: Mail Management (Admin/Dashboard) ---

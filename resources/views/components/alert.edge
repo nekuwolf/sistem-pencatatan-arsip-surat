@@ -1,16 +1,36 @@
 @let(_iconName = 'megaphone')
+
 @if(variant === 'info')
   @assign(_iconName = 'info-circle')
 @elseif(variant === 'warning')
   @assign(_iconName = 'exclamation-triangle')
 @elseif(variant === 'danger')
   @assign(_iconName = 'x-circle')
+@elseif(variant === 'error')
+  @assign(variant = 'danger')
+  @assign(_iconName = 'x-circle')
 @end
-<div class="alert alert-{{ variant || 'secondary' }} d-flex align-items-start text-start {{ style || '' }}" role="alert">
+
+<div 
+  class="alert alert-{{ variant || 'secondary' }} d-flex align-items-start text-start {{ isDismissible ? 'alert-dismissible fade show' : '' }} {{ style || '' }}" 
+  role="alert"
+>
   @!component('components/bi_icon', { 
     iconName: iconName || _iconName,
     isFill: isFill || true,
     style: 'me-2',
   })
-  {{ message }}
+  
+  <div>
+    {{ message }}
+  </div>
+
+  @if(isDismissible)
+    <button 
+      type="button" 
+      class="btn-close" 
+      data-bs-dismiss="alert" 
+      aria-label="Close"
+    ></button>
+  @end
 </div>

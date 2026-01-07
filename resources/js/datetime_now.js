@@ -1,39 +1,49 @@
-export function applyDateTimeNow() {
-  const inputs = document.querySelectorAll(
+/**
+ * Initialize inputs with current local date/time
+ * Targets:
+ * input[cstmtag-datetime-now="true"]
+ */
+export function initDateTimeNow(root = document) {
+  const inputs = root.querySelectorAll(
     'input[cstmtag-datetime-now="true"]'
-  )
+  );
 
-  if (!inputs.length) return
+  if (!inputs.length) return;
 
-  const now = new Date()
+  const now = new Date();
   const localNow = new Date(
     now.getTime() - now.getTimezoneOffset() * 60000
-  )
+  );
 
   inputs.forEach((input) => {
     // Do nothing if value already exists
-    if (input.value) return
+    if (input.value) return;
 
-    const type = input.type
+    switch (input.type) {
+      case 'datetime-local':
+        input.value = localNow.toISOString().slice(0, 16);
+        break;
 
-    if (type === 'datetime-local') {
-      input.value = localNow.toISOString().slice(0, 16)
-      return
+      case 'date':
+        input.value = localNow.toISOString().slice(0, 10);
+        break;
+
+      case 'datetime':
+        input.value = localNow.toISOString();
+        break;
     }
-
-    if (type === 'date') {
-      input.value = localNow.toISOString().slice(0, 10)
-      return
-    }
-
-    if (type === 'datetime') {
-      input.value = localNow.toISOString()
-    }
-  })
+  });
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', applyDateTimeNow)
-} else {
-  applyDateTimeNow()
-}
+/**
+ * DOM ready (Vite + AdonisJS)
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  initDateTimeNow();
+  console.log('loaded datetime_now.js');
+});
+
+/**
+ * Optional: allow manual re-init
+ */
+window.initDateTimeNow = initDateTimeNow;

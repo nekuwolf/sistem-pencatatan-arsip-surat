@@ -12,6 +12,9 @@
         @!component('components/bi_icon', { iconName: labelIcon, isFill: labelIconIsFill })
       @end
       {{ labelText }}
+      @if(isRequired)
+        <span class="text-danger fw-bold ms-1">*</span>
+      @end
     </label>
   @end
 @end
@@ -76,6 +79,9 @@
         @!component('components/bi_icon', { iconName: labelIcon, isFill: labelIconIsFill })
       @end
       {{ labelText }}
+      @if(isRequired)
+        <span class="text-danger fw-bold ms-1">*</span>
+      @end
     </label>
     </div>
   @end

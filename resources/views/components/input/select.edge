@@ -15,6 +15,9 @@
         @!component('components/bi_icon', { iconName: labelIcon, isFill: labelIconIsFill })
       @end
       {{ labelText }}
+      @if(isRequired)
+        <span class="text-danger fw-bold ms-1">*</span>
+      @end
     </label>
   @end
 @end
@@ -116,7 +119,7 @@
       @endeach
     @end
 
-    @if(placeholder && !enableTomSelect)
+    @if(placeholder && _tomSelectOptionMaxItems < 2)
       <option value="" {{
         html.attrs({
           disabled: true,
@@ -133,6 +136,9 @@
         @!component('components/bi_icon', { iconName: labelIcon, isFill: labelIconIsFill })
       @end
       {{ labelText }}
+      @if(isRequired)
+        <span class="text-danger fw-bold ms-1">*</span>
+      @end
     </label>
     </div>
   @end

@@ -144,8 +144,8 @@ export default class User extends compose(BaseModel, AuthFinder) {
   /**
    * Returns true if the user has restricted access
    */
-  get isRestrictedEmployee() {
-    return this.roleId === G_USER_ROLE.RESTRICTED_EMPLOYEE.ID
+  get isNotEmployee() {
+    return this.roleId === G_USER_ROLE.NOT_EMPLOYEE.ID
   }
 
   /**
@@ -311,7 +311,5 @@ export default class User extends compose(BaseModel, AuthFinder) {
     })
   }
 
-
-  
 
 }

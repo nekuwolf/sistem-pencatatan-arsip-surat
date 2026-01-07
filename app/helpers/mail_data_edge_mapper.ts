@@ -90,6 +90,13 @@ export function mapMailsDatasToDesktopTableMobileListEdgeView(
             }),
             mark: 'ACTIONVIEWDETAIL',
           },
+          
+          {
+            value: router.makeUrl('mails.show', {
+              mailId: mail.id,
+            }, { qs: { edit: 'true' } }),
+            mark: 'ACTIONEDIT',
+          },
 
           ...(mail.uploadedMailFileId
             ? [

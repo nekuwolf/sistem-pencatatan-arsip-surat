@@ -1,0 +1,222 @@
+@component('components/layout/dashboard', { title: 'Edit Profile', pageDescription: 'Update your account information' })
+
+  @slot('main')
+    @!component('components/dashboard/breadcrumb', {
+      items: [
+        { label: 'Profile', iconName: 'person', href: route('account.profile.index') },
+        { label: 'Edit', iconName: 'pencil' }
+      ]
+    })
+
+    {{-- Header Section (Matches create.edge style) --}}
+    <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mt-4 mb-4">
+        <div>
+            <h4 class="mb-0 fs-4">Edit Account Settings</h4>
+            <div class="text-muted small mt-1">
+                <i class="bi bi-pencil-square me-1"></i> Update Personal Information
+            </div>
+        </div>
+        <div>
+            @!component('components/button/a', {
+              text: 'Cancel', 
+              href: route('account.profile.index'),
+              iconName: 'x-lg', 
+              isOutline: true, 
+              variant: 'secondary'
+            })
+        </div>
+    </div>
+
+    {{-- FORM START --}}
+    <form action="{{ route('account.profile.update') }}" 
+          method="POST" 
+          enctype="multipart/form-data">
+      
+      {{ csrfField() }}
+
+      @if(flashMessages.has('profileFormAlertMessage'))
+        <div class="mb-4">
+          @!component('components/alert', { message: flashMessages.get('profileFormAlertMessage') })
+        </div>
+      @end
+
+      <div class="row g-3">
+        
+        {{-- SECTION 0: PROFILE PICTURE --}}
+        <div class="col-12">
+            <h6 class="fw-bold text-primary mb-0"><i class="bi bi-camera me-2"></i>Profile Picture</h6>
+            <hr class="mt-2 mb-3 opacity-25">
+            
+            <div class="d-flex align-items-center gap-3">
+              {{-- Hidden File Input --}}
+              <input 
+                type="file" 
+                id="hiddenAvatarInput" 
+                name="avatar" 
+                class="d-none" 
+                accept="image/png, image/jpeg, image/jpg, image/webp, image/avif"
+                cstmtag-profile-picture-upload-input
+              >
+
+              {{-- Clickable Avatar Container --}}
+              <div class="profile-box rounded-circle shadow-sm position-relative group" 
+                   style="width: 80px; height: 80px; overflow: hidden; cursor: pointer;"
+                   cstmtag-profile-picture
+                   onclick="document.getElementById('hiddenAvatarInput').click()">
+                
+                <img src="{{ route('account.profile.picture.show', { userId: auth.user?.id }) }}" 
+                     class="w-100 h-100 object-fit-cover" 
+                     alt="User">
+                     
+                {{-- Hover Overlay --}}
+                <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25 d-flex align-items-center justify-content-center opacity-0 hover-opacity-100 transition-opacity">
+                   <i class="bi bi-camera text-white fs-4"></i>
+                </div>
+              </div>
+
+              <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="document.getElementById('hiddenAvatarInput').click()">
+                  Change Photo
+                </button>
+                <div class="text-muted small mt-1">Allowed: PNG, JPG, WEBP. Max 2MB.</div>
+              </div>
+            </div>
+        </div>
+
+        {{-- SECTION 1: PERSONAL INFORMATION --}}
+        <div class="col-12 mt-4">
+            <h6 class="fw-bold text-primary mb-0"><i class="bi bi-person me-2"></i>Personal Information</h6>
+            <hr class="mt-2 mb-0 opacity-25">
+        </div>
+
+        <div class="col-12">
+          @!component('components/input/input', {
+            id: 'fullName', name: 'full_name', labelText: 'Full Name', labelIcon: 'person',
+            value: old('full_name') || auth.user.fullName || ''
+          })
+        </div>
+
+        <div class="col-12">
+          @!component('components/input/select', {
+            id: 'gender', name: 'gender_id', labelText: 'Gender', labelIcon: 'gender-ambiguous',
+            placeholder: "Select gender", isRequired: true, options: genderOptions || [],
+            errorMessage: flashMessages.get('errors.genderId') || ''
+          })
+        </div>
+
+        <div class="col-md-6">
+          @!component('components/input/input', {
+            id: 'birthDate', name: 'birth_date', type: 'date', labelText: 'Date of Birth', labelIcon: 'calendar',
+            value: old('birth_date') || (auth.user.birthDate ? auth.user.birthDate.toISODate() : '') || ''
+          })
+        </div>
+
+        <div class="col-md-6">
+          @!component('components/input/input', {
+            id: 'birthPlace', name: 'birth_place', labelText: 'Place of Birth', labelIcon: 'geo-alt',
+            value: old('birth_place') || auth.user.birthPlace || ''
+          })
+        </div>
+
+        {{-- SECTION 2: CONTACT INFORMATION --}}
+        <div class="col-12 mt-4">
+          <h6 class="fw-bold text-primary mb-0"><i class="bi bi-envelope me-2"></i>Contact Information</h6>
+          <hr class="mt-2 mb-0 opacity-25">
+        </div>
+
+        <div class="col-md-6">
+          @!component('components/input/input', {
+            id: 'email', name: 'email', labelText: 'Email', labelIcon: 'envelope',
+            value: old('email') || auth.user.email || '', isReadonly: true, isDisabled: true
+          })
+        </div>
+
+        <div class="col-md-6">
+          @!component('components/input/input', {
+            id: 'phone', name: 'personal_phone_number', labelText: 'Phone Number', labelIcon: 'telephone',
+            value: old('personal_phone_number') || auth.user.personalPhoneNumber || ''
+          })
+        </div>
+
+        <div class="col-12">
+          @!component('components/input/textarea', {
+            id: 'fullHomeAddress', name: 'full_home_address', labelText: 'Home Address', labelIcon: 'house-door',
+            value: old('full_home_address') || auth.user.fullHomeAddress || '', cstmAutogrowHeight: true
+          })
+        </div>
+
+        {{-- SECTION 3: EMPLOYMENT --}}
+        <div class="col-12 mt-4">
+          <h6 class="fw-bold text-primary mb-0"><i class="bi bi-briefcase me-2"></i>Employment</h6>
+          <hr class="mt-2 mb-0 opacity-25">
+        </div>
+        
+        <div class="col-12">
+          @!component('components/input/input', {
+            id: 'organization', labelText: 'Organization', labelIcon: 'building',
+            value: auth.user.organization?.name || '', isReadonly: true, isDisabled: true
+          })
+        </div>
+
+        <div class="col-md-4">
+          @!component('components/input/input', {
+            id: 'department', labelText: 'Department', labelIcon: 'briefcase',
+            value: auth.user.department?.name || '', isReadonly: true, isDisabled: true
+          })
+        </div>
+
+        <div class="col-md-4">
+          @!component('components/input/input', {
+            id: 'jobRole', labelText: 'Job Role', labelIcon: 'person-gear',
+            value: auth.user.jobRole?.name || '', isReadonly: true, isDisabled: true
+          })
+        </div>
+        
+        <div class="col-md-4">
+          @!component('components/input/input', {
+            id: 'role', labelText: 'Account Role', labelIcon: 'person-gear',
+            value: auth.user.role?.name || '', isReadonly: true, isDisabled: true
+          })
+        </div>
+
+        {{-- ACTION BUTTONS --}}
+        <div class="col-12 mt-4 mb-5">
+          @!component('components/button/button', {
+            type: 'submit', 
+            text: 'Save Changes', 
+            icon: 'save',
+            enableLoadingIndicator: true, 
+            style: 'w-100'
+          })
+        </div>
+      </div>
+    </form>
+
+    {{-- CROP MODAL (Unchanged logic, just ensuring it's present) --}}
+    <div class="modal fade" id="cropModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Adjust Profile Picture</h5>
+            <button type="button" class="btn-close" id="btnCancelCrop" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-0">
+            <div class="cropper-container" style="height: 500px; max-height: 70vh;">
+              <img id="cropperImage" src="" style="display: block; max-width: 100%;" alt="Crop Preview">
+            </div>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <div class="d-flex align-items-center gap-2 flex-grow-1 me-3">
+              <i class="bi bi-zoom-out"></i>
+              <input type="range" class="form-range" id="zoomRange" min="0.1" max="3" step="0.1">
+              <i class="bi bi-zoom-in"></i>
+            </div>
+            <button type="button" class="btn btn-primary px-4" id="btnSaveCrop">
+              Apply
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  @endslot
+@end

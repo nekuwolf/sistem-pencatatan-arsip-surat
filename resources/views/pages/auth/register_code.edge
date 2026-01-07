@@ -1,0 +1,68 @@
+@component('components/layout/index', { title: 'Register Code', pageDescription: 'Register code', bodyStyle: 'd-flex flex-column vh-100 overflow-hidden'})
+  @slot('main')
+    <div class="row g-0 flex-grow-1 overflow-hidden">
+      
+      <div class="col-12 col-lg-4 d-none d-lg-flex h-100">
+        <img 
+          src="{{ asset('public/images/gedung_graha_sewaka_dharma_lumintang.jpg') }}" 
+          alt="Login Cover" 
+          class="img-fluid h-100 w-100"
+          style="object-fit: cover;"
+        />
+      </div>
+
+      <div class="col-12 col-lg-8 d-flex flex-column h-100 overflow-y-auto">
+        <div class="p-4 p-md-5 container-xxl my-auto">
+          <img
+            class="img-fluid logo-pic-size-large"
+            src="{{ asset('public/images/logo_diskominfos_denpasar_small.png') }}"
+            alt="App Logo"
+            style="object-fit: cover;"
+          />
+          <h1 class="h3 mt-3 mb-0 mt-3">Register Code</h1>
+          <p class="text-muted mt-2 mb-0">Please enter register code before continuing</p>
+
+          <form action="{{ route('auth.register.verify') }}" method="POST" class="row g-3 mt-1">
+            @if(formAlertMessage)
+              @!component('components/alert', { variant: 'info', message: formAlertMessage })
+            @end
+
+            {{ csrfField() }}
+
+            <div class="col-12">
+              @!component('components/input/split', {
+                id: 'registerCode',
+                name: 'register_code',
+                labelText: 'Register Code',
+                labelIcon: 'asterisk',
+                labelIconIsFill: false,
+                placeholder: 'Abc123',
+                isRequired: true,
+                fieldCount: G_REGISTER_CODE_LENGTH,
+                helpText: 'Request an register code/invite link from an admin or registered employee',
+                value: old('register_code') || register_code || '',
+                errorMessage: flashMessages.get('errors.register_code') || ''
+              })
+            </div>
+            
+            <div class="col-12">
+              @!component('components/button/button', {
+                style: 'mt-3 w-100',
+                type: 'submit',
+                text: 'Verify',
+                loadingIndicatorText: 'Verifying...',
+                enableLoadingIndicator: true
+              })
+            </div>
+          </form>
+
+          <p class="mt-4 mb-0 text-body-secondary">
+            Already have an account? <a href="{{ route('auth.login.create') }}" class="link-primary">Login here</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    @!footer({})
+  @endslot
+@end

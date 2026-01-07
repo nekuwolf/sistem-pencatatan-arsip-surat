@@ -23,6 +23,35 @@
   <div class="main-content">
     @!component('components/dashboard/topbar')
     <main class="container-fluid {{ mainStyle || 'p-3' }}">
+      {{-- Flash Message Listener --}}
+      <div class="flash-messages">
+        @if(flashMessages.has('notification'))
+          @let(notification = flashMessages.get('notification'))
+          @!component('components/alert', { 
+            variant: notification.type, 
+            message: notification.message,
+            isDismissible: true 
+          })
+        @end
+
+        {{-- Catch-all for basic error/success keys --}}
+        @if(flashMessages.has('success'))
+          @!component('components/alert', { 
+            variant: 'success', 
+            message: flashMessages.get('success'),
+            isDismissible: true 
+          })
+        @end
+
+        @if(flashMessages.has('errorsBag'))
+          @!component('components/alert', { 
+            variant: 'danger', 
+            message: 'There were some issues with your submission.',
+            isDismissible: true 
+          })
+        @end
+      </div>
+
       @if($slots.main)
         {{{ await $slots.main() }}}
       @end
@@ -31,7 +60,7 @@
   </div>
 
   <!-- Modal 1: Image Preview / Selection -->
-  <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
+  {{-- <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header border-0">
@@ -63,10 +92,10 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> --}}
 
   <!-- Modal 2: Cropping -->
-  <div class="modal fade" id="cropModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
+  {{-- <div class="modal fade" id="cropModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -91,10 +120,10 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> --}}
 
   <!-- Modal 3: Error Message -->
-  <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+  {{-- <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header border-0 pb-0">
@@ -109,6 +138,6 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> --}}
 </body>
 </html>

@@ -1,8 +1,7 @@
-import htmx from 'htmx.org';
 import TomSelect from "tom-select/dist/js/tom-select.popular.js";
 
 /**
- * TomSelect + HTMX safe initializer
+ * TomSelect safe initializer (no HTMX)
  * Looks for:
  *   <select data-tom-select="true">
  */
@@ -56,29 +55,21 @@ function initTomSelect(root = document) {
         searchField: select.dataset.tsoSearchField || 'label',
         placeholder: select.dataset.tsoPlaceholder || 'Search and select',
         maxItems: Number(select.dataset.tsoMaxItems) || 1,
-        hideSelected: select.dataset.tsoHideSelected === 'false' ? false : true,
-        closeAfterSelect: select.dataset.tsoCloseAfterSelect === 'true' ? true : false,
-        copyClassesToDropdown: select.dataset.tsoCopyClasessToDropdown === 'false' ? false : true,
-        allowEmptyOption: select.dataset.tsoAllowEmptyOption === 'false' ? false : true,
+        hideSelected: select.dataset.tsoHideSelected !== 'false',
+        closeAfterSelect: select.dataset.tsoCloseAfterSelect === 'true',
+        copyClassesToDropdown: select.dataset.tsoCopyClasessToDropdown !== 'false',
+        allowEmptyOption: select.dataset.tsoAllowEmptyOption !== 'false',
         delimiter: select.dataset.tsoDelimiter || '|',
         loadThrottle: Number(select.dataset.tsoLoadThrottle) || 100,
-        preload: select.dataset.tsoPreload === 'true' ? true : select.dataset.tsoPreload === 'false' ? false : select.dataset.tsoPreload
+        preload:
+          select.dataset.tsoPreload === 'true'
+            ? true
+            : select.dataset.tsoPreload === 'false'
+            ? false
+            : select.dataset.tsoPreload,
       };
 
-      // console.log(`tsPlugins: ${getValidatedTomSelectPlugins(select.dataset.tsPlugins || '')}`)
-      // console.log(`tsoValueField: ${select.dataset.tsoValueField || 'value'}`)
-      // console.log(`tsoLabelField: ${select.dataset.tsoLabelField || 'label'}`)
-      // console.log(`tsoSearchField: ${select.dataset.tsoSearchField || 'label'}`)
-      // console.log(`tsoPlaceholder: ${select.dataset.tsoPlaceholder || 'Search and select'}`)
-      // console.log(`tsoMaxItems: ${Number(select.dataset.tsoMaxItems) || 1}`)
-      // console.log(`tsoHideSelected: ${select.dataset.tsoHideSelected === 'false' ? false : true}`)
-      // console.log(`tsoCloseAfterSelect: ${select.dataset.tsoCloseAfterSelect === 'true' ? true : false}`)
-      // console.log(`tsoCopyClasessToDropdown: ${select.dataset.tsoCopyClasessToDropdown === 'false' ? false : true}`)
-      // console.log(`tsoAllowEmptyOption: ${select.dataset.tsoAllowEmptyOption === 'false' ? false : true}`)
-      // console.log(`tsoDelimiter: ${select.dataset.tsoDelimiter || '|'}`)
-      // console.log(`tsoLoadThrottle: ${Number(select.dataset.tsoLoadThrottle) || 100}`)
-      // console.log(`tsoPreload: ${select.dataset.tsoPreload === 'true' ? true : select.dataset.tsoPreload === 'false' ? false : select.dataset.tsoPreload}`)
-      // console.log('------------------------------------------')
+      console.log(config)
 
       let pendingSelectedValues = [];
       let controller = null;
@@ -101,10 +92,9 @@ function initTomSelect(root = document) {
 
           if (method === 'GET') {
             url.searchParams.set('q', query);
-            url.searchParams.set('resAsJson', 'true');
+            // url.searchParams.set('resAsJson', 'true');
           } else {
-            fetchOptions.headers['Content-Type'] =
-              'application/json';
+            fetchOptions.headers['Content-Type'] = 'application/json';
             fetchOptions.body = JSON.stringify({
               q: query,
               resAsJson: true,
@@ -123,9 +113,7 @@ function initTomSelect(root = document) {
                 : [];
             })
             .catch((err) => {
-              if (err.name !== 'AbortError') {
-                callback();
-              }
+              if (err.name !== 'AbortError') callback();
             });
         };
       }
@@ -146,7 +134,15 @@ function initTomSelect(root = document) {
     });
 }
 
-htmx.onLoad((content) => {
-  initTomSelect(content);
-  console.log("loaded tomselect_select.js")
+/**
+ * DOM ready (Vite-safe)
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  initTomSelect();
+  console.log('TomSelect initialized');
 });
+
+/**
+ * Optional: expose for manual re-init after AJAX / fetch / Alpine / etc.
+ */
+window.initTomSelect = initTomSelect;

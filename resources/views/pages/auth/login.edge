@@ -1,18 +1,8 @@
 @layout({ title: 'Account Login', pageDescription: 'Account Login', bodyStyle: 'd-flex flex-column vh-100 overflow-hidden'})
-  @slot('head')
-    @vite(['resources/css/pages/login.scss', 'resources/js/utils/input_actions.js'])
-  @endslot
-
   @slot('main')
-    {{-- 
-      Added 'flex-grow-1' so this row fills all available space between top and footer.
-      Added 'overflow-hidden' to prevent the row itself from scrolling the body.
-    --}}
     <div class="row g-0 flex-grow-1 overflow-hidden">
-      
-      {{-- 
-         Added 'h-100' to the column. 
-      --}}
+
+      {{-- big left side pict --}}
       <div class="col-12 col-lg-4 d-none d-lg-flex h-100">
         <img 
           src="{{ asset('public/images/gedung_graha_sewaka_dharma_lumintang.jpg') }}" 
@@ -23,10 +13,7 @@
         />
       </div>
 
-      {{-- 
-         Added 'h-100' to fill height.
-         Added 'overflow-y-auto' -> THIS is what makes only this column scroll.
-      --}}
+      {{-- login form --}}
       <div class="col-12 col-lg-8 d-flex flex-column h-100 overflow-y-auto">
         <div class="p-4 p-md-5 container-xxl my-auto">
           <img
@@ -38,7 +25,84 @@
           <h1 class="h3 mt-3 mb-0 mt-3">Login</h1>
           <p class="text-muted mt-2 mb-0">Welcome, please login to access the system</p>
 
-          @include('components/form/login')
+          <form method="POST" action="{{ route('auth.login.store') }}" class="row g-3 mt-1">
+            {{ csrfField() }}
+            
+            {{-- 1. Handle General Error (Invalid Credentials) --}}
+            @if(flashMessages.has('loginFormErrorMessage'))
+              <div class="col-12">
+                @!component('components/alert', { 
+                  variant: 'warning', 
+                  message: flashMessages.get('loginFormErrorMessage') 
+                })
+              </div>
+            @end
+            
+            {{-- 2. Email Input --}}
+            <div class="col-12">
+              @component('components/input/input', {
+                id: 'email',
+                name: 'email',
+                labelText: 'Email',
+                labelIcon: 'envelope',
+                labelIconIsFill: false,
+                type: 'email',
+                // 'old' retrieves the value from the previous request 
+                value: old('email') || '', 
+                placeholder: 'example@company.com',
+                isRequired: true,
+                enableFloatingLabel: true,
+                autocomplete: 'email',
+                // 'flashMessages.get' retrieves validation errors for specific field
+                errorMessage: flashMessages.get('errors.email') || ''
+              })
+              @end
+            </div>
+
+            {{-- 3. Password Input --}}
+            <div class="col-12">
+              @component('components/input/input', {
+                type: 'password',
+                id: 'passwordInput',
+                name: 'password',
+                labelText: 'Password',
+                labelIcon: 'key',
+                labelIconIsFill: false,
+                // Best Practice: Do not use old() for passwords (security risk)
+                value: '', 
+                isRequired: true,
+                autocomplete: 'current-password',
+                enableFloatingLabel: true,
+                placeholder: 'supersecurepassword',
+                cstmDataTogglePassword: 'password',
+                errorMessage: flashMessages.get('errors.password') || ''
+              })
+                @slot('suffix')
+                  @!component('components/button/button', {
+                    style: 'input-group-text',
+                    variant: 'secondary',
+                    isOutline: true,
+                    type: 'button',
+                    text: 'Show',
+                    iconName: 'eye',
+                    textAlt: 'Hide',
+                    iconNameAlt: 'eye-slash',
+                    cstmDataTogglePasswordBtn: 'password'
+                  })
+                @end
+              @end
+            </div>
+            
+            <div class="col-12">
+              @!component('components/button/button', {
+                style: 'mt-3 w-100',
+                type: 'submit',
+                text: 'Login',
+                loadingIndicatorText: 'Logging in...',
+                enableLoadingIndicator: true
+              })
+            </div>
+          </form>
 
           <p class="mt-4 mb-0 text-body-secondary">
             Didn't have an account? <a href="{{ route('auth.register.create') }}" class="link-primary">Register here</a>

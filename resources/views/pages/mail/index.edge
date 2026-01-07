@@ -8,12 +8,11 @@
 
     @!component('components/dashboard/breadcrumb', {
       items: [
-        { label: 'Dashboard', iconName: 'grid-1x2' },
-        { label: 'Arsip Surat', iconName: 'envelope' }
+        { label: 'Data Arsip Surat', iconName: 'envelope' }
       ]
     })
 
-    <h4 class="mt-3 fs-4">Arsip Surat</h4>
+    <h4 class="mt-3 fs-4">Data Arsip Surat</h4>
 
     {{-- Check if we have data AND if that data array is not empty --}}
     @if(mailTableDatas && mailTableDatas.datas.length > 0)

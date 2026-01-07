@@ -1,0 +1,330 @@
+@component('components/layout/dashboard', { title: 'Mail Dashboard Page', pageDescription: 'Mail Dashboard Page' })
+  @slot('main')
+
+    @!component('components/dashboard/breadcrumb', {
+      items: [
+        { label: 'Data Arsip Surat', iconName: 'envelope', href: route('mails.index') },
+        { label: 'Tambahkan', iconName: 'pencil' }
+      ]
+    })
+
+    {{-- Header Section (Matches show.edge style) --}}
+    <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mt-4 mb-4">
+        <div>
+            <h4 class="mb-0 fs-4">Tambahkan Arsip Surat</h4>
+            <div class="text-muted small mt-1">
+                <i class="bi bi-file-earmark-plus me-1"></i> Form Input Data Baru
+            </div>
+        </div>
+        <div>
+            <a href="{{ route('mails.index') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+        </div>
+    </div>
+
+    {{-- Form Content (Removed bg-body-tertiary wrapper to match show.edge open style) --}}
+    <form action="{{ route('mails.store') }}" method="POST" enctype="multipart/form-data">
+      {{ csrfField() }}
+
+      <div class="row g-3">
+        
+        {{-- SECTION 1: INFORMASI SURAT --}}
+        <div class="col-12">
+            <h6 class="fw-bold text-primary mb-0"><i class="bi bi-info-circle me-2"></i>Informasi Surat</h6>
+            <hr class="mt-2 mb-0 opacity-25">
+        </div>
+
+        {{-- Mail Source --}}
+        <div class="col-12">
+          @component('components/input/textarea', {
+            id: 'mailSource',
+            name: 'mail_source',
+            labelText: 'Surat Dari',
+            labelIcon: 'envelope',
+            value: old('mail_source'),
+            placeholder: 'Nama Dinas / Perusahaan / Individu',
+            isRequired: true,
+            enableFloatingLabel: false,
+            cstmAutogrowHeight: true,
+            errorMessage: flashMessages.get('errors.mail_source') || ''
+          })
+          @end
+        </div>
+
+        {{-- Full Mail Code --}}
+        <div class="col-12">
+          @component('components/input/textarea', {
+            id: 'fullMailCode',
+            name: 'full_mail_code',
+            labelText: 'Kode Surat',
+            labelIcon: 'hash',
+            value: old('full_mail_code'),
+            placeholder: 'Kode Surat (cth. B/500/1234/DKIS)',
+            isRequired: true,
+            enableFloatingLabel: false,
+            cstmAutogrowHeight: true,
+            errorMessage: flashMessages.get('errors.full_mail_code') || ''
+          })
+          @end
+        </div>
+
+        {{-- Mail Date --}}
+        <div class="col-md-4">
+          @component('components/input/input', {
+            id: 'mailDate',
+            name: 'mail_date',
+            type: 'date',
+            labelText: 'Tanggal Surat',
+            labelIcon: 'calendar-event',
+            value: old('mail_date'),
+            isRequired: true,
+            enableFloatingLabel: false,
+            errorMessage: flashMessages.get('errors.mail_date') || ''
+          })
+          @end
+        </div>
+
+        {{-- Page Counts --}}
+        <div class="col-md-4">
+          @component('components/input/input', {
+            id: 'mailPaperCount',
+            name: 'mail_paper_count',
+            type: 'number',
+            labelText: 'Jumlah Surat (Lembar)',
+            labelIcon: 'file-earmark',
+            value: old('mail_paper_count') || '1',
+            isRequired: true,
+            enableFloatingLabel: false,
+            helpText: 'Jumlah lembar surat beserta lampiran',
+            errorMessage: flashMessages.get('errors.mail_paper_count') || ''
+          })
+          @end
+        </div>
+
+        <div class="col-md-4">
+          @component('components/input/input', {
+            id: 'mailAttachmentPaperCount',
+            name: 'mail_attachment_paper_count',
+            type: 'number',
+            labelText: 'Jumlah Lembar Lainnya',
+            labelIcon: 'paperclip',
+            value: old('mail_attachment_paper_count') || '0',
+            isRequired: false,
+            enableFloatingLabel: false,
+            helpText: 'Dapat berupa jumlah lembar disposisi, dll.',
+            errorMessage: flashMessages.get('errors.mail_attachment_paper_count') || ''
+          })
+          @end
+        </div>
+
+        {{-- Summary --}}
+        <div class="col-12">
+          @component('components/input/textarea', {
+            id: 'mailContentSummary',
+            name: 'mail_content_summary',
+            labelText: 'Isi Singkat Surat',
+            labelIcon: 'card-text',
+            value: old('mail_content_summary'),
+            placeholder: 'Deskripsikan secara singkat isi surat...',
+            isRequired: true,
+            enableFloatingLabel: false,
+            cstmAutogrowHeight: true,
+            cstmAutogrowHeightMinPx: 120,
+            errorMessage: flashMessages.get('errors.mail_content_summary') || ''
+          })
+          @end
+        </div>
+
+        {{-- File Upload --}}
+        <div class="col-12">
+          @component('components/input/input', {
+            id: 'mailFile',
+            name: 'mail_file',
+            type: 'file',
+            labelText: 'Unggah Softcopy Surat',
+            labelIcon: 'upload',
+            isRequired: false,
+            enableFloatingLabel: false,
+            errorMessage: flashMessages.get('errors.mail_file') || ''
+          })
+          @end
+        </div>
+
+        {{-- SECTION 2: KLASIFIKASI & RELASI --}}
+        <div class="col-12 mt-4">
+            <h6 class="fw-bold text-primary mb-0"><i class="bi bi-tags me-2"></i>Klasifikasi & Relasi</h6>
+            <hr class="mt-2 mb-0 opacity-25">
+        </div>
+
+        <div class="col-md-3">
+          @!component('components/input/select', {
+            id: 'mailTypeId',
+            name: 'mail_type_id',
+            labelText: 'Jenis Surat',
+            labelIcon: 'folder',
+            placeholder: "Pilih jenis surat",
+            isRequired: true,
+            enableFloatingLabel: false,
+            options: mailTypeOptions || [],
+            errorMessage: flashMessages.get('errors.mail_type_id') || '',
+          })
+        </div>
+
+        <div class="col-md-3">
+          @!component('components/input/select', {
+            id: 'mailPriorityId',
+            name: 'mail_priority_id',
+            labelText: 'Sifat Surat',
+            labelIcon: 'exclamation-circle',
+            placeholder: "Pilih sifat surat",
+            isRequired: true,
+            enableFloatingLabel: false,
+            options: mailPriorityOptions || [],
+            errorMessage: flashMessages.get('errors.mail_priority_id') || '',
+          })
+        </div>
+
+        {{-- Agenda Number --}}
+        <div class="col-md-3">
+          @component('components/input/input', {
+            id: 'agendaNumber',
+            name: 'agenda_number',
+            type: 'number',
+            labelText: 'Nomor Agenda',
+            labelIcon: 'list-ol',
+            value: old('agenda_number'),
+            placeholder: '1234',
+            isRequired: true,
+            enableFloatingLabel: false,
+            errorMessage: flashMessages.get('errors.agenda_number') || ''
+          })
+          @end
+        </div>
+
+        <div class="col-md-3">
+          @!component('components/input/select', {
+            id: 'mailCodeId',
+            name: 'mail_code_id',
+            labelText: 'Kode Klasifikasi',
+            labelIcon: 'tag',
+            placeholder: "Pilih kode klasifikasi",
+            isRequired: true,
+            enableFloatingLabel: false,
+            enableTomSelect: true,
+            queryEndpoint: route('mailCode.search'),
+            queryEndpointMethod: 'GET',
+            tomSelectPlugins: 'dropdown_input;',
+            tomSelectOptionValueField: 'value',
+            tomSelectOptionLabelField: 'label',
+            tomSelectOptionSearchField: 'label',
+            tomSelectOptionPreload: 'true',
+            options: mailCodeOptions || [],
+            errorMessage: flashMessages.get('errors.mail_code_id') || '',
+          })
+        </div>
+
+        {{-- SECTION 3: LOKASI PENYIMPANAN FISIK --}}
+        <div class="col-12 mt-4">
+            <h6 class="fw-bold text-primary mb-0"><i class="bi bi-archive me-2"></i>Lokasi Penyimpanan Fisik</h6>
+            <hr class="mt-2 mb-0 opacity-25">
+        </div>
+
+        <div class="col-md-3">
+          @component('components/input/input', {
+            id: 'rackName',
+            name: 'rack_name',
+            labelText: 'Rak',
+            labelIcon: 'bookshelf',
+            value: old('rack_name'),
+            placeholder: 'I, II...',
+            isRequired: true,
+            enableFloatingLabel: false,
+            errorMessage: flashMessages.get('errors.rack_name') || ''
+          })
+          @end
+        </div>
+
+        <div class="col-md-3">
+          @component('components/input/input', {
+            id: 'shelfName',
+            name: 'shelf_name',
+            labelText: 'Baris Rak',
+            labelIcon: 'bookshelf',
+            value: old('shelf_name'),
+            placeholder: '1, 2...',
+            isRequired: true,
+            enableFloatingLabel: false,
+            errorMessage: flashMessages.get('errors.shelf_name') || ''
+          })
+          @end
+        </div>
+
+        <div class="col-md-3">
+          @component('components/input/input', {
+            id: 'boxName',
+            name: 'box_name',
+            labelText: 'Kotak',
+            labelIcon: 'box-seam',
+            value: old('box_name'),
+            placeholder: '100 / UMUM...',
+            isRequired: true,
+            enableFloatingLabel: false,
+            errorMessage: flashMessages.get('errors.box_name') || ''
+          })
+          @end
+        </div>
+
+        <div class="col-md-3">
+          @component('components/input/input', {
+            id: 'envelopeName',
+            name: 'envelope_name',
+            labelText: 'Sampul',
+            labelIcon: 'file-break',
+            labelIconIsFill: false,
+            value: old('envelope_name'),
+            placeholder: '1 / KEU...',
+            isRequired: false,
+            enableFloatingLabel: false,
+            errorMessage: flashMessages.get('errors.envelope_name') || ''
+          })
+          @end
+        </div>
+
+        {{-- SECTION 4: LAINNYA --}}
+        <div class="col-12 mt-4">
+            <h6 class="fw-bold text-primary mb-0"><i class="bi bi-file-text me-2"></i>Lainnya</h6>
+            <hr class="mt-2 mb-0 opacity-25">
+        </div>
+
+        {{-- Registered At --}}
+        <div class="col-12">
+          @component('components/input/input', {
+            id: 'registeredAt',
+            name: 'registered_at',
+            type: 'datetime-local',
+            labelText: 'Waktu Registrasi Sistem',
+            labelIcon: 'clock',
+            value: old('registered_at'),
+            applyDateTimeNow: true,
+            isRequired: true,
+            enableFloatingLabel: false,
+            errorMessage: flashMessages.get('errors.registered_at') || ''
+          })
+          @end
+        </div>
+
+        {{-- ACTION BUTTONS --}}
+        <div class="col-12 mt-4 mb-5">
+          @!component('components/button/button', {
+            style: 'w-100',
+            type: 'submit',
+            text: 'Simpan Arsip',
+            icon: 'save',
+            enableLoadingIndicator: true
+          })
+        </div>
+      </div>
+    </form>
+  @endslot
+@end

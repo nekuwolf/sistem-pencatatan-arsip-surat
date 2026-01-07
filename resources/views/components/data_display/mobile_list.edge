@@ -70,9 +70,11 @@
 
       {{-- CHEVRON --}}
       {{-- Absolute position, sits on top right --}}
-      <span class="position-absolute top-50 end-0 translate-middle-y me-3 text-body-tertiary">
-         <i class="bi bi-chevron-right"></i>
-      </span>
+      @if(actionCol)
+        <span class="position-absolute top-50 end-0 translate-middle-y me-3 text-body-tertiary">
+          <i class="bi bi-chevron-right"></i>
+        </span>
+      @end
       
     </a>
   @end

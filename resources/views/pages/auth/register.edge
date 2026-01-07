@@ -26,11 +26,222 @@
           <h1 class="h3 mt-3 mb-0 mt-3">Register</h1>
           <p class="text-muted mt-2 mb-0">Let's make an account for you</p>
 
-          @if(showRegisterForm)
-            @include('components/form/register')
-          @else
-            @include('components/form/register_code')
-          @endif
+          <form action="{{ route('auth.register.store') }}" method="POST" class="row g-3 mt-1">
+            @if(formAlertMessage)
+              @!component('components/alert', { variant: 'info', message: formAlertMessage })
+            @end
+
+            {{ csrfField() }}
+
+            <input type="hidden" name="register_code" value="{{ register_code || '' }}">
+            
+            <div class="col-12">
+              @component('components/input/input', {
+                id: 'fullName',
+                name: 'full_name',
+                labelText: 'Full Name',
+                labelIcon: 'person',
+                value: old('full_name'),
+                placeholder: 'First middle last name',
+                isRequired: true,
+                enableFloatingLabel: false,
+                errorMessage: flashMessages.get('errors.full_name') || ''
+              })
+              @end
+            </div>
+
+            @if(showNipField)
+              <div class="col-12">
+                @component('components/input/input', {
+                  id: 'nip',
+                  name: 'nip',
+                  labelText: 'NIP',
+                  labelIcon: 'card-heading',
+                  value: old('nip'),
+                  placeholder: 'Employee ID / NIP',
+                  isRequired: true,
+                  enableFloatingLabel: false,
+                  errorMessage: flashMessages.get('errors.nip') || ''
+                })
+                @end
+              </div>
+            @end
+
+            <div class="col-12">
+              @!component('components/input/select', {
+                id: 'gender',
+                name: 'gender_id',
+                labelText: 'Gender',
+                labelIcon: 'gender-ambiguous',
+                placeholder: "Select gender",
+                isRequired: true,
+                enableFloatingLabel: false,
+                options: genderOptions || [],
+                errorMessage: flashMessages.get('errors.gender_id') || '',
+              })
+            </div>
+
+            <div class="col-12 col-md-6">
+              @!component('components/input/input', {
+                id: 'birthDate',
+                name: 'birth_date',
+                labelText: 'Date of Birth',
+                labelIcon: 'calendar',
+                labelIconIsFill: false,
+                type: 'date',
+                isRequired: true,
+                value: old('birth_date'),
+                placeholder: '12/31/2004',
+                enableFloatingLabel: false,
+                errorMessage: flashMessages.get('errors.birth_date') || ''
+              })
+            </div>
+
+            <div class="col-12 col-md-6">
+              @component('components/input/input', {
+                id: 'birthPlace',
+                name: 'birth_place',
+                labelText: 'Place of Birth',
+                labelIcon: 'geo-alt',
+                labelIconIsFill: false,
+                value: old('birth_place'),
+                placeholder: 'Region or province or city',
+                isRequired: true,
+                enableFloatingLabel: false,
+                errorMessage: flashMessages.get('errors.birth_place') || ''
+              })
+              @end
+            </div>
+
+            <div class="col-12">
+              @component('components/input/textarea', {
+                id: 'fullHomeAddress',
+                name: 'full_home_address',
+                labelText: 'Home Address',
+                labelIcon: 'house-door',
+                labelIconIsFill: false,
+                type: 'text',
+                value: old('full_home_address'),
+                placeholder: 'Street Name House No., RT/RW, Administrative Village, District, City/Regency, Province, Postal Code',
+                isRequired: true,
+                enableFloatingLabel: false,
+                cstmAutogrowHeight: true,
+                cstmAutogrowHeightMinPx: 100,
+                errorMessage: flashMessages.get('errors.full_home_address') || ''
+              })
+              @end
+            </div>
+
+            <div class="col-12 col-md-6">
+              @!component('components/input/input', {
+                id: 'phone',
+                name: 'personal_phone_number',
+                labelText: 'Phone Number',
+                labelIcon: 'telephone',
+                labelIconIsFill: false,
+                type: 'number',
+                isRequired: true,
+                inputStyle: 'number-input-no-arrow',
+                value: old('personal_phone_number'),
+                placeholder: '012345678910',
+                errorMessage: flashMessages.get('errors.personal_phone_number') || ''
+              })
+            </div>
+              
+            <div class="col-12 col-md-6">
+              @component('components/input/input', {
+                id: 'email',
+                name: 'email',
+                labelText: 'Email',
+                labelIcon: 'envelope',
+                labelIconIsFill: false,
+                type: 'email',
+                value: old('email'),
+                placeholder: 'email@example.com',
+                isRequired: true,
+                enableFloatingLabel: false,
+                autocomplete: 'email',
+                helpText: 'This email will be used as login credential',
+                errorMessage: flashMessages.get('errors.email') || ''
+              })
+              @end
+            </div>
+            
+            <div class="col-12 col-md-6">
+              @component('components/input/input', {
+                type: 'password',
+                id: 'passwordInput',
+                name: 'password',
+                labelText: 'Password',
+                labelIcon: 'key',
+                labelIconIsFill: false,
+                value: old('password'),
+                isRequired: true,
+                autocomplete: 'new-password',
+                enableFloatingLabel: false,
+                placeholder: 'Password',
+                cstmDataTogglePassword: 'password',
+                helpText: 'Password must consist of minimum 8 character',
+                errorMessage: flashMessages.get('errors.password') || ''
+              })
+                @slot('suffix')
+                  @!component('components/button/button', {
+                    style: 'input-group-text',
+                    variant: 'secondary',
+                    isOutline: true,
+                    type: 'button',
+                    text: 'Show',
+                    iconName: 'eye',
+                    textAlt: 'Hide',
+                    iconNameAlt: 'eye-slash',
+                    cstmDataTogglePasswordBtn: 'password'
+                  })
+                @end
+              @end
+            </div>
+            
+            <div class="col-12 col-md-6">
+              @component('components/input/input', {
+                type: 'password',
+                id: 'confirmPasswordInput',
+                name: 'password_confirmation',
+                labelText: 'Confirm Password',
+                labelIcon: 'key',
+                labelIconIsFill: false,
+                value: old('password_confirmation'),
+                isRequired: true,
+                autocomplete: 'new-password',
+                enableFloatingLabel: false,
+                placeholder: 'Password',
+                cstmDataTogglePassword: 'confirmPasswordInput',
+                helpText: 'Password confirmation must match "Password" input',
+                errorMessage: flashMessages.get('errors.password_confirmation') || ''
+              })
+                @slot('suffix')
+                  @!component('components/button/button', {
+                    style: 'input-group-text',
+                    variant: 'secondary',
+                    isOutline: true,
+                    type: 'button',
+                    text: 'Show',
+                    iconName: 'eye',
+                    textAlt: 'Hide',
+                    iconNameAlt: 'eye-slash',
+                    cstmDataTogglePasswordBtn: 'confirmPasswordInput'
+                  })
+                @end
+              @end
+            </div>
+            
+            <div class="col-12">
+              @!component('components/button/button', {
+                style: 'mt-3 w-100',
+                type: 'submit',
+                text: 'Register',
+                enableLoadingIndicator: true
+              })
+            </div>
+          </form>
 
           <p class="mt-4 mb-0 text-body-secondary">
             Already have an account? <a href="{{ route('auth.login.create') }}" class="link-primary">Login here</a>

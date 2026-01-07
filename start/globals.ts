@@ -10,9 +10,9 @@ export const G_USER_ROLE = {
     ID: 2,
     NAME: 'Employee',
   },
-  RESTRICTED_EMPLOYEE: {
+  NOT_EMPLOYEE: {
     ID: 3,
-    NAME: 'Restricted Employee',
+    NAME: 'Not Employee',
   },
 } as const
 

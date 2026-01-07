@@ -10,14 +10,10 @@ export default defineConfig({
        */
       entrypoints: [
         'resources/js/app.js',
-        'resources/js/utils/input_actions.js',
-        'resources/js/components/sidebar.js',
-        'resources/js/components/profile_picture.js',
         'resources/css/app.scss',
         'resources/css/pages/dashboard.scss',
         'resources/css/pages/login.scss',
         'resources/css/pages/register.scss',
-        'resources/css/pages/verify_otp.scss',
         'resources/css/components/profile_picture.scss'
       ],
 
@@ -27,4 +23,9 @@ export default defineConfig({
       reload: ['resources/views/**/*.edge'],
     }),
   ],
+  server: {
+    allowedHosts: [
+      'sandbox.nekuwolf.my.id' // Add your tunnel domain here
+    ],
+  },
 })
