@@ -1,15 +1,11 @@
 @layout({ title: "Confirm OTP Page" })
-  @slot('head')
-    <meta name="description" content="OTP Confirmation">
-    @vite(['resources/css/pages/verify_otp.scss'])
-  @endslot
 
   @slot('main')
     <main class="form-verify-otp w-100 m-auto">
       <form> {{-- POST /account/register/confirm_otp?email=user@example.com&code= --}}
         <img
           class="mb-4"
-          src="{{ asset('images/placeholder-white-512-512.png') }}"
+          src="{{ asset('images/placeholder-white-512-512.png"
           alt=""
           width="72"
           height="57"

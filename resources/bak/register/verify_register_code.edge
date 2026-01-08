@@ -1,7 +1,4 @@
 @layout({ title: 'Register Code Verification', pageDescription: 'Register Code Verification', bodyStyle: 'd-flex flex-column min-vh-100'})
-  @slot('head')
-    @vite(['resources/css/pages/register.scss', 'resources/js/utils/input_actions.js'])
-  @endslot
 
   @slot('main')
     <main class="container-xxl d-flex align-items-center justify-content-center flex-grow-1 py-4">
@@ -11,7 +8,7 @@
         <!-- Image Placeholder: Updated to use light text on dark primary color for dark mode -->
         <img
           class="mb-4 rounded-circle"
-          src="{{ asset('public/images/valve_source_engine_missing_content_512_512.png') }}"
+          src="/images/valve_source_engine_missing_content_512_512.png"
           alt="App Logo"
           width="72"
           height="72"

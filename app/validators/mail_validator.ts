@@ -74,6 +74,6 @@ export const updateMailValidator = vine.compile(
     rack_name: vine.string().trim().optional(),
     shelf_name: vine.string().trim().optional(),
     box_name: vine.string().trim().optional(),
-    envelope_name: vine.string().trim().optional()
+    envelope_name: vine.string().trim().nullable().optional()
   })
 )

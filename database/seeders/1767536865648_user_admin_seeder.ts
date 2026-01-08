@@ -25,6 +25,7 @@ export default class UserAdminSeeder extends BaseSeeder {
     ]
 
     // 3. Main Loop
+    let j = 1;
     for (const category of categories) {
       for (let i = 1; i <= 10; i++) {
         const email = `${category.prefix}${i}@seeder.seed`
@@ -36,6 +37,8 @@ export default class UserAdminSeeder extends BaseSeeder {
           {
             email: email,
             password: password,
+            personalPhoneNumber: `08123456${j}${i}`,
+            nip: category.roleId != G_USER_ROLE.NOT_EMPLOYEE.ID ? `500${j}${i}` : '',
             roleId: category.roleId,
             organizationId: organization.id,
             jobRoleId: jobRole.id,
@@ -51,6 +54,7 @@ export default class UserAdminSeeder extends BaseSeeder {
           G_USER_STATUS_TAG.EMAILVERIFIED.ID
         ])
       }
+      j++
     }
   }
 }

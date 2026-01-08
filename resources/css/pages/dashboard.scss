@@ -1,8 +1,8 @@
-/* Use Inter font */
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bs-body-bg);
-}
+/* 1. Import Bootstrap Tools ONLY (No CSS output, just variables/mixins) */
+/* Note: Adjust the path if your node_modules is further up, usually ../../ works in standard Adonis setups */
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
 
 :root {
   --sidebar-width: 260px;
@@ -22,12 +22,16 @@ body {
   left: 0;
   z-index: 1050;
 
-  /* ... rest of your styles ... */
   background-color: var(--bs-secondary-bg);
   color: var(--bs-body-color);
   transition: all 0.3s ease-in-out;
   overflow-y: auto;
   overflow-x: hidden;
+  
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.2s ease;
+  will-change: width, transform;
 }
 
 /* Sidebar Brand */
@@ -87,14 +91,14 @@ body {
 
 /* Hover uses translucent bg */
 .sidebar .nav-link:hover {
-  background-color: rgba(var(--bs-secondary-rgb), 0.15); /* clearer! */
+  background-color: rgba(var(--bs-secondary-rgb), 0.15);
   color: var(--bs-body-color);
 }
 
 
 .sidebar .nav-link.active {
-  background-color: var(--bs-primary);
-  color: var(--bs-primary-contrast);
+  // background-color: var(--bs-primary);
+  // color: var(--bs-primary-contrast);
 }
 
 .sidebar .nav-link i {
@@ -118,7 +122,7 @@ body {
 .sidebar .submenu .nav-link {
   padding-left: 3rem !important;
   font-size: 0.875rem;
-  color: var(--bs-secondary-color);
+  // color: var(--bs-secondary-color);
 }
 
 .sidebar .submenu .nav-link:hover {
@@ -173,8 +177,11 @@ body.sidebar-collapsed .sidebar .sidebar-header,
 body.sidebar-collapsed .sidebar .nav-link[data-bs-toggle="collapse"]::after {
   display: none;
   opacity: 0;
-  transition: opacity 0.25s ease-in-out;
+  transition: opacity 0.2s ease, max-width 0.3s ease;
   pointer-events: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 body.sidebar-collapsed .sidebar .sidebar-brand {
@@ -191,6 +198,10 @@ body.sidebar-collapsed .sidebar .nav-link {
 
 body.sidebar-collapsed .sidebar:not(:hover) .submenu {
   display: none;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
 /* Collapsed Hover */
@@ -219,15 +230,24 @@ body.sidebar-collapsed .sidebar:hover .nav-link {
   padding-right: 1rem !important;
 }
 
+body.sidebar-collapsed .sidebar:hover .submenu {
+  height: auto;
+  opacity: 1;
+}
+
 body.sidebar-collapsed .sidebar:hover .submenu .nav-link {
   padding-left: 3rem !important;
 }
 
 /* Mobile */
-@media (max-width: 992px) {
+/* 3. IMPROVED: Use Bootstrap Mixin instead of hardcoded @media */
+/* Was: @media (max-width: 992px) */
+@include media-breakpoint-down(lg) {
   .sidebar {
-    left: calc(-1 * var(--sidebar-width));
-    transition: all 0.3s ease-in-out;
+    /* Use transform instead of left */
+    left: 0; 
+    transform: translateX(-100%); 
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .main-content {
@@ -248,7 +268,7 @@ body.sidebar-collapsed .sidebar:hover .submenu .nav-link {
   }
 
   body.sidebar-open .sidebar {
-    left: 0;
+    transform: translateX(0);
   }
 
   body.sidebar-open .sidebar-backdrop {

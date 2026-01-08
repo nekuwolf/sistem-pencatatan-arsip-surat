@@ -31,7 +31,7 @@ export function mapRegisterInviteLinksToEdgeView(links: RegisterInviteLink[] | R
 
     datas: linkArray.map((link: RegisterInviteLink) => {
       // Logic for Status Badge
-      let statusValue = 'Aktif'
+      let statusValue = 'Aktif (Belum Dipakai)'
       // Note: Ensure your Model has these fields or relations loaded
       if (link.usedAt) {
         statusValue = 'Sudah Dipakai'

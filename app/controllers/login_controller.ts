@@ -1,9 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import { createLoginValidator, storeLoginValidator } from '#validators/login_validator'
-import { mapVineJSValidationErrorMessages } from '../helpers/map_vinejs_validation_error_messages.js'
-import router from '@adonisjs/core/services/router'
+import { storeLoginValidator } from '#validators/login_validator'
 import User from '#models/user'
-import { dd } from '@adonisjs/core/services/dumper'
 
 export default class LoginController {
   /**
@@ -34,11 +31,14 @@ export default class LoginController {
 
       return response.redirect().toRoute('mails.index')
       
-    } catch (error) {
-      // 3. Handle Bad Credentials
-      // Flash a generic error message and redirect back to the login form
-      session.flash('loginFormErrorMessage', 'Invalid credentials')
-      return response.redirect().back()
+    // ... inside your store method
+      } catch (error) {
+        // 3. Handle Bad Credentials
+        // Flash the error message
+        session.flash('loginFormErrorMessage', 'Invalid credentials')
+        // Flash all current request inputs EXCEPT the password for security
+        session.flashExcept(['password']) 
+        return response.redirect().back()
     }
   }
 }

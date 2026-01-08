@@ -6,12 +6,7 @@
     </a>
 
     <ul class="nav nav-pills flex-column px-2 py-2 sidebar-nav">
-        @let(mailCategorySubmenuExpand = 
-            request.matchesRoute('mails.index') || 
-            request.matchesRoute('mails.create') || 
-            request.matchesRoute('mails.show')
-            request.matchesRoute('mails.edit')
-        )
+        @let(mailCategorySubmenuExpand = request.url() === route('mails.index') || request.url() === route('mails.create'))
         <li class="nav-item mt-2">
             <a class="nav-link collapsed {{ mailCategorySubmenuExpand ? 'active' : '' }}" data-bs-toggle="collapse" href="#mailCategorySubmenu" role="button" aria-expanded="false" aria-controls="mailCategorySubmenu">
                 <i class="bi bi-envelope-fill"></i>

@@ -138,7 +138,7 @@ export default class MailDashboardController {
    * 4. Show Detail OR Edit Form
    * Handles logic based on your `show.edge` "Edit Data" button
    */
-  async show({ params, view, request, response }: HttpContext) {
+  async show({ params, view, request }: HttpContext) {
     // 1. Fetch the mail with all necessary relationships
     const mail = await Mail.query()
       .where('id', params.mailId)

@@ -1,8 +1,4 @@
 @layout.dashboard({ pageTitle: 'User Data Dashboard' })
-  @slot('head')
-    @vite(['resources/css/components/profile_picture.scss', 'resources/js/components/profile_picture.js', 'resources/js/utils/input_actions.js'])
-  @endslot
-
   @slot('main')
     @!component('components/dashboard/breadcrumb', {
       items: [

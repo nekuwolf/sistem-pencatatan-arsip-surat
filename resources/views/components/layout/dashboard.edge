@@ -8,7 +8,7 @@
   @if ($slots.head)
     {{{ await $slots.head() }}}
   @endif
-  @vite(['resources/js/app.js', 'resources/js/components/profile_picture.js', 'resources/css/components/profile_picture.scss', 'resources/css/app.scss', 'resources/css/pages/dashboard.scss', 'resources/js/components/sidebar.js'])
+  @vite(['resources/js/app.js', 'resources/css/app.scss'])
 </head>
 <body {{
   html.attrs({

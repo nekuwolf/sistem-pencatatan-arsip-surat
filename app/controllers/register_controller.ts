@@ -3,7 +3,6 @@ import { createRegisterValidator, storeRegisterValidator } from '#validators/reg
 import RegisterInviteLink from '#models/register_invite_link'
 import User from '#models/user'
 import Gender from '#models/gender'
-import { SimpleErrorReporter } from '@vinejs/vine'
 import { errors as vineErrors } from '@vinejs/vine'
 import { G_USER_ROLE } from '#start/globals'
 

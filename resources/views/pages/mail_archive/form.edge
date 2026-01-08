@@ -1,9 +1,4 @@
 @component('components/layout/dashboard', { title: 'Mail Dashboard Page', pageDescription: 'Mail Dashboard Page' })
-  @slot('head')
-    <meta name="description" content="Profile">
-    @vite(['resources/js/utils/input_actions.js'])
-  @endslot
-
   @slot('main')
 
     @!component('components/dashboard/breadcrumb', {

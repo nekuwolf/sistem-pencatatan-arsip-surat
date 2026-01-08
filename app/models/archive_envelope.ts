@@ -3,7 +3,7 @@ import { BaseModel, column, belongsTo, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import ArchiveBox from '#models/archive_box'
 import MailArchive from './mail_archive.js'
-import Organization from './organization.js'
+// import Organization from './organization.js'
 import Department from './department.js'
 
 export default class ArchiveEnvelope extends BaseModel {

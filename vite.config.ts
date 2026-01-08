@@ -11,10 +11,6 @@ export default defineConfig({
       entrypoints: [
         'resources/js/app.js',
         'resources/css/app.scss',
-        'resources/css/pages/dashboard.scss',
-        'resources/css/pages/login.scss',
-        'resources/css/pages/register.scss',
-        'resources/css/components/profile_picture.scss'
       ],
 
       /**

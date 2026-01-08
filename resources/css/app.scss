@@ -3,6 +3,10 @@
 
 @import 'tom-select/dist/css/tom-select.bootstrap5.css';
 
+@import './pages/dashboard.scss';
+
+@import './components/profile_picture.scss';
+
 .cstm-mt-n1-px {
     margin-top: -1px !important;
 }

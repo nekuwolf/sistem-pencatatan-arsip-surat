@@ -1,10 +1,10 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import db from '@adonisjs/lucid/services/db'
+// import db from '@adonisjs/lucid/services/db'
 import RegisterInviteLink from '#models/register_invite_link'
-import Department from '#models/department'
+// import Department from '#models/department'
 import UserRole from '#models/users_role'
 import UserJobRole from '#models/users_job_role'
-import Organization from '#models/organization'
+// import Organization from '#models/organization'
 import vine from '@vinejs/vine'
 import { mapRegisterInviteLinksToEdgeView } from '../helpers/register_invite_link_data_edge_mapper.js'
 

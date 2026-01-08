@@ -5,7 +5,6 @@ import { DateTime } from 'luxon'
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 
-import User from '#models/user'
 import UploadedFile from '#models/uploaded_file'
 import AvatarGeneratorService from '#services/avatar_generator_service'
 import { updateUserProfileValidator } from '#validators/user_profile_validator'
@@ -104,70 +103,80 @@ export default class UserProfileController {
    * Combined Update: Handles both Text and File Upload
    */
   public async update({ auth, request, response, session }: HttpContext) {
-    const user = auth.user!
-    const disk = drive.use('localStoragePrivate')
+    try {
+      const user = auth.user!
+      const disk = drive.use('localStoragePrivate')
 
-    // 1. Validate the request
-    const payload = await request.validateUsing(updateUserProfileValidator)
+      // 1. Validate the request
+      const payload = await request.validateUsing(
+        updateUserProfileValidator, 
+        { meta: { userId: user.id } }
+      )
 
-    // 2. Handle Avatar File (if provided in payload)
-    if (payload.avatar) {
-      const avatarFile = payload.avatar
+      // 2. Handle Avatar File (if provided in payload)
+      if (payload.avatar) {
+        const avatarFile = payload.avatar
 
-      // Cleanup: Delete old avatar if it exists
-      await user.load('profilePictureFile')
-      const oldAvatar = user.profilePictureFile
-      if (oldAvatar) {
-        user.profilePictureFileId = null
-        await user.save()
-        
-        if (await disk.exists(oldAvatar.fileLocationPath)) {
-          await disk.delete(oldAvatar.fileLocationPath)
+        // Cleanup: Delete old avatar if it exists
+        await user.load('profilePictureFile')
+        const oldAvatar = user.profilePictureFile
+        if (oldAvatar) {
+          user.profilePictureFileId = null
+          await user.save()
+          
+          if (await disk.exists(oldAvatar.fileLocationPath)) {
+            await disk.delete(oldAvatar.fileLocationPath)
+          }
+          await oldAvatar.delete()
         }
-        await oldAvatar.delete()
+
+        // Process new file
+        const uploadedAt = DateTime.utc()
+        const folderPath = `user/${user.id}/profile_pictures`
+        const sanitizedName = (avatarFile.clientName || 'avatar').replace(/[^a-zA-Z0-9._-]/g, '_')
+        const fullPathKey = `${folderPath}/${uploadedAt.toMillis()}_${sanitizedName}`
+
+        // Calculate checksum for integrity
+        const fileBuffer = await fs.promises.readFile(avatarFile.tmpPath!)
+        const checksum = crypto.createHash('sha256').update(fileBuffer).digest('hex')
+
+        // Move to private storage
+        await avatarFile.moveToDisk(fullPathKey, 'localStoragePrivate')
+
+        // Create record in UploadedFile table
+        const uploadedFile = await UploadedFile.create({
+          filename: sanitizedName,
+          fileSizeByte: avatarFile.size,
+          uploadDate: uploadedAt,
+          fileLocationPath: fullPathKey,
+          uploadedByUserId: user.id,
+          sha256Checksum: checksum,
+        })
+
+        user.profilePictureFileId = uploadedFile.id
       }
 
-      // Process new file
-      const uploadedAt = DateTime.utc()
-      const folderPath = `user/${user.id}/profile_pictures`
-      const sanitizedName = (avatarFile.clientName || 'avatar').replace(/[^a-zA-Z0-9._-]/g, '_')
-      const fullPathKey = `${folderPath}/${uploadedAt.toMillis()}_${sanitizedName}`
-
-      // Calculate checksum for integrity
-      const fileBuffer = await fs.promises.readFile(avatarFile.tmpPath!)
-      const checksum = crypto.createHash('sha256').update(fileBuffer).digest('hex')
-
-      // Move to private storage
-      await avatarFile.moveToDisk(fullPathKey, 'localStoragePrivate')
-
-      // Create record in UploadedFile table
-      const uploadedFile = await UploadedFile.create({
-        filename: sanitizedName,
-        fileSizeByte: avatarFile.size,
-        uploadDate: uploadedAt,
-        fileLocationPath: fullPathKey,
-        uploadedByUserId: user.id,
-        sha256Checksum: checksum,
+      // 3. Update Model with payload data
+      user.merge({
+        fullName: payload.full_name || '',
+        personalPhoneNumber: payload.personal_phone_number || '',
+        birthDate: payload.birth_date ? DateTime.fromJSDate(payload.birth_date) : undefined,
+        birthPlace: payload.birth_place || '',
+        fullHomeAddress: payload.full_home_address || '',
+        genderId: payload.gender_id,
+        password: payload.password,
       })
 
-      user.profilePictureFileId = uploadedFile.id
+      // 4. Persist changes
+      await user.save()
+
+      session.flash('profileFormAlertMessage', 'Data profil berhasil diperbarui')
+      return response.redirect().toRoute('account.profile.index')
+
+    } catch (error) {
+      console.error(error)
+      session.flash('notification', { type: 'error', message: 'Gagal memperbarui data profil' })
+      return response.redirect().back()
     }
-
-    // 3. Update Model with payload data
-    user.merge({
-      fullName: payload.full_name || '',
-      personalPhoneNumber: payload.personal_phone_number || '',
-      birthDate: payload.birth_date ? DateTime.fromJSDate(payload.birth_date) : undefined,
-      birthPlace: payload.birth_place || '',
-      fullHomeAddress: payload.full_home_address || '',
-      genderId: payload.gender_id,
-      password: payload.password,
-    })
-
-    // 4. Persist changes
-    await user.save()
-
-    session.flash('profileFormAlertMessage', 'Profile updated successfully!')
-    return response.redirect().toRoute('account.profile.index')
   }
 }

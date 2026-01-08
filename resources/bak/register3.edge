@@ -1,8 +1,4 @@
 @component('components/layout/index', { title: 'Register Account', pageDescription: 'Register Account', bodyStyle: 'd-flex flex-column vh-100 overflow-hidden'})
-  @slot('head')
-    @vite(['resources/css/pages/register.scss', 'resources/js/utils/input_actions.js'])
-  @endslot
-
   @slot('main')
     {{-- 
       Added 'flex-grow-1' so this row fills all available space between top and footer.
@@ -15,7 +11,7 @@
       --}}
       <div class="col-12 col-lg-4 d-none d-lg-flex h-100">
         <img 
-          src="{{ asset('public/images/gedung_graha_sewaka_dharma_lumintang.jpg') }}" 
+          src="/images/gedung_graha_sewaka_dharma_lumintang.jpg" 
           alt="Login Cover" 
           {{-- Added 'h-100 w-100' so the image fills the column completely --}}
           class="img-fluid h-100 w-100"
@@ -31,7 +27,7 @@
         <div class="p-4 p-md-5 container-xxl my-auto">
           <img
             class="img-fluid logo-pic-size-large"
-            src="{{ asset('public/images/logo_diskominfos_denpasar_small.png') }}"
+            src="/images/logo_diskominfos_denpasar_small.png"
             alt="App Logo"
             style="object-fit: cover;"
           />

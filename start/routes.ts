@@ -8,22 +8,22 @@
 */
 
 import router from '@adonisjs/core/services/router'
-import DashboardController from '#controllers/dashboard_controller'
+// import DashboardController from '#controllers/dashboard_controller'
 import LoginController from '#controllers/login_controller'
 import RegisterController from '#controllers/register_controller'
 import UserProfileController from '#controllers/user_profile_controller'
 import UserDataController from '#controllers/user_data_controller'
-import SandboxesController from '#controllers/sandboxes_controller'
-import GenderController from '#controllers/gender_controller'
+// import SandboxesController from '#controllers/sandboxes_controller'
+// import GenderController from '#controllers/gender_controller'
 import RegisterInviteLinkController from '#controllers/register_invite_link_controller'
 import LogoutController from '#controllers/logout_controller'
 import { middleware } from '#start/kernel'
-import UserProfilePictureController from '#controllers/user_profile_picture_controller'
-import UserDataProfilePictureController from '#controllers/user_data_profile_picture_controller'
+// import UserProfilePictureController from '#controllers/user_profile_picture_controller'
+// import UserDataProfilePictureController from '#controllers/user_data_profile_picture_controller'
 import MailDashboardController from '#controllers/mail_dashboard_controller'
-import MailFileController from '#controllers/mail_file_controller'
-import MailArchiveDashboardController from '#controllers/mail_archive_dashboard_controller'
-import MailCode from '#models/mail_code'
+// import MailFileController from '#controllers/mail_file_controller'
+// import MailArchiveDashboardController from '#controllers/mail_archive_dashboard_controller'
+// import MailCode from '#models/mail_code'
 import MailCodesController from '#controllers/mail_code_controller'
 
 router.on('/').redirect('mails.index')
@@ -119,10 +119,10 @@ router.group(() => {
 
 // profile picture api
 
-router.get('/archive', [SandboxesController, 'index']).as('archive.index').use(middleware.auth({ guards: ['web'] }))
+// router.get('/archive', [SandboxesController, 'index']).as('archive.index').use(middleware.auth({ guards: ['web'] }))
 // router.get('/register_invite_link', [RegisterInviteLinkController, 'index']).as('registerInviteLink.index')
 
-router.get('/api/v1/gender/search', [GenderController, 'searchApi']).as('api.gender.search')
+// router.get('/api/v1/gender/search', [GenderController, 'searchApi']).as('api.gender.search')
 
 
 router.get('/logout', [LogoutController, 'store']).as('auth.logout.store').use(middleware.auth({ guards: ['web'] }))
@@ -179,19 +179,19 @@ router.group(() => {
 
   }).prefix('mail')
 
-  router.group(() => {
-    // static
-    router.get('/create', [MailArchiveDashboardController, 'create']).as('mailArchives.create')
-    router.post('/create', [MailArchiveDashboardController, 'store']).as('mailArchives.store')
+  // router.group(() => {
+  //   // static
+  //   router.get('/create', [MailArchiveDashboardController, 'create']).as('mailArchives.create')
+  //   router.post('/create', [MailArchiveDashboardController, 'store']).as('mailArchives.store')
 
-    // 2. Dynamic Routes (General)
-    router.get('/', [MailArchiveDashboardController, 'index']).as('mailArchives.index')
-    router.get('/:mailArchiveId', [MailArchiveDashboardController, 'show']).as('mailArchives.show')
+  //   // 2. Dynamic Routes (General)
+  //   router.get('/', [MailArchiveDashboardController, 'index']).as('mailArchives.index')
+  //   router.get('/:mailArchiveId', [MailArchiveDashboardController, 'show']).as('mailArchives.show')
     
-    // Update Mail
-    router.post('/:mailArchiveId', [MailArchiveDashboardController, 'update']).as('mailArchives.update')
+  //   // Update Mail
+  //   router.post('/:mailArchiveId', [MailArchiveDashboardController, 'update']).as('mailArchives.update')
 
-  }).prefix('mail_archive')
+  // }).prefix('mail_archive')
 
   router.group(() => {
     // 1. Static Routes (Create & Store)

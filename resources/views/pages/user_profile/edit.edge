@@ -127,14 +127,14 @@
         <div class="col-md-6">
           @!component('components/input/input', {
             id: 'email', name: 'email', labelText: 'Email', labelIcon: 'envelope',
-            value: old('email') || auth.user.email || '', isReadonly: true, isDisabled: true
+            value: old('email') || auth.user.email || '', isReadonly: true, isDisabled: true, isRequired: true
           })
         </div>
 
         <div class="col-md-6">
           @!component('components/input/input', {
             id: 'phone', name: 'personal_phone_number', labelText: 'Phone Number', labelIcon: 'telephone',
-            value: old('personal_phone_number') || auth.user.personalPhoneNumber || '', isReadonly: true, isDisabled: true
+            value: old('personal_phone_number') || auth.user.personalPhoneNumber || '', isRequired: true
           })
         </div>
 
@@ -155,7 +155,7 @@
           <div class="col-12">
             @!component('components/input/input', {
               id: 'nip', labelText: 'NIP', labelIcon: 'person-badge',
-              value: auth.user.nip || '-', isReadonly: true, isDisabled: true
+              value: auth.user.nip || '-', isReadonly: true, isDisabled: true, isRequired: true
             })
           </div>
         @end
@@ -163,28 +163,28 @@
         <div class="col-12">
           @!component('components/input/input', {
             id: 'organization', labelText: 'Organization', labelIcon: 'building',
-            value: auth.user.organization?.name || '', isReadonly: true, isDisabled: true
+            value: auth.user.organization?.name || '', isReadonly: true, isDisabled: true, isRequired: true
           })
         </div>
 
         <div class="col-md-4">
           @!component('components/input/input', {
             id: 'department', labelText: 'Department', labelIcon: 'briefcase',
-            value: auth.user.department?.name || '', isReadonly: true, isDisabled: true
+            value: auth.user.department?.name || '', isReadonly: true, isDisabled: true, isRequired: true
           })
         </div>
 
         <div class="col-md-4">
           @!component('components/input/input', {
             id: 'jobRole', labelText: 'Job Role', labelIcon: 'person-gear',
-            value: auth.user.jobRole?.name || '', isReadonly: true, isDisabled: true
+            value: auth.user.jobRole?.name || '', isReadonly: true, isDisabled: true, isRequired: true
           })
         </div>
         
         <div class="col-md-4">
           @!component('components/input/input', {
             id: 'role', labelText: 'Account Role', labelIcon: 'person-gear',
-            value: auth.user.role?.name || '', isReadonly: true, isDisabled: true
+            value: auth.user.role?.name || '', isReadonly: true, isDisabled: true, isRequired: true
           })
         </div>
 

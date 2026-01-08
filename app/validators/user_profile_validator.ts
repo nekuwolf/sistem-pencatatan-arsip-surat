@@ -8,7 +8,16 @@ import vine from '@vinejs/vine'
 export const updateUserProfileValidator = vine.compile(
   vine.object({
     full_name: vine.string().trim().minLength(3).maxLength(255).optional(),
-    personal_phone_number: vine.string().mobile().optional(),
+    personal_phone_number: vine.string()
+      .minLength(5) // Optional: basic length check
+      .unique(async (db, value, field) => {
+        const user = await db
+          .from('user')
+          .where('personal_phone_number', value)
+          .whereNot('id', field.meta.userId) // Ignore the current user!
+          .first()
+        return !user
+    }),
     
     // HTML5 date inputs usually send YYYY-MM-DD
     birth_date: vine.date({ formats: ['YYYY-MM-DD'] }).optional(),
