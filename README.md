@@ -4,6 +4,7 @@
 3. Run "mkdir tmp" (if needed)
 4. Make the .env file, use the .env.example as starting point
    * Run "copy .env.example .env"
+5. Run "node ace generate:key"
 6. Run "node ace migration:run --force"
 7. Run "node ace db:seed"
 8. Run "npm run dev" to start development server
